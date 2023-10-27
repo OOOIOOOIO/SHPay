@@ -44,6 +44,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 //    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
+
+    //redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
     //querydsl 추가
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}" // querydsl 라이브러리
     implementation "com.querydsl:querydsl-apt:${queryDslVersion}" //  Querydsl 관련 코드 생성 기능 제공
