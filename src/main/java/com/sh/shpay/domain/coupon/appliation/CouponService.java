@@ -1,4 +1,4 @@
-package com.sh.shpay.test.change.domain.Coupon.appliation;
+package com.sh.shpay.domain.coupon.appliation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

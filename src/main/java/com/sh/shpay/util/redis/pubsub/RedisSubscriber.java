@@ -1,4 +1,4 @@
-package com.sh.shpay.test.change.util.pubsub;
+package com.sh.shpay.util.redis.pubsub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

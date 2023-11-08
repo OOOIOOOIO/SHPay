@@ -1,7 +1,6 @@
-package com.sh.shpay.test.change.domain.Coupon.domain;
+package com.sh.shpay.domain.coupon.domain;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

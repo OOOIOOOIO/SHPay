@@ -1,6 +1,6 @@
-package com.sh.shpay.test.change.domain.Coupon.api;
+package com.sh.shpay.domain.coupon.api;
 
-import com.sh.shpay.test.change.util.pubsub.PubSubService;
+import com.sh.shpay.util.redis.pubsub.PubSubService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.listener.ChannelTopic;

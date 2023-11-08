@@ -1,4 +1,4 @@
-package com.sh.shpay.test.change.domain.Coupon.domain.repository;
+package com.sh.shpay.domain.coupon.domain.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;

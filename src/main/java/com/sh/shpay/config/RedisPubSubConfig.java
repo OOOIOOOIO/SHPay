@@ -1,6 +1,6 @@
-package com.sh.shpay.test.change.config;
+package com.sh.shpay.config;
 
-import com.sh.shpay.test.change.util.pubsub.RedisSubscriber;
+import com.sh.shpay.util.redis.pubsub.RedisSubscriber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

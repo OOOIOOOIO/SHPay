@@ -44,6 +44,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 //    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
+    // apache
+    implementation 'org.apache.httpcomponents:httpclient:4.5'
+    implementation 'com.google.code.gson:gson:2.8.5'
+
 
     //redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
