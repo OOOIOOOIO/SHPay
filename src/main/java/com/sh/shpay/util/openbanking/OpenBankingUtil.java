@@ -14,7 +14,7 @@ public class OpenBankingUtil {
     /**
      * 은행 거래 거유번호(bank_tran_id) 뒤 9자 생성
      */
-    public static String makeBankTranId(String bank_tran_id){
+    public static String generateBankTranId(String bank_tran_id){
         Random random = new Random();
 
         String ranStr = "";
@@ -31,7 +31,8 @@ public class OpenBankingUtil {
      */
     public static String transTime(){
         LocalDateTime localDateTime = LocalDateTime.now();
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.hh:mm:ss");
+//        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.hh:mm:ss");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddhhmmss");
 
         return localDateTime.format(dateTimeFormatter);
     }

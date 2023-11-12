@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div>
+    <button onclick="handleClick()">인증하기</button> // 팝업으로 해야하려나
+
+<!--    clientId주기-->
+</div>
+
+<script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+
+    function showSearchList(){
+
+        $.ajax(
+            {
+                type:"POST",
+                url:"/charityOrg/search",
+                data:JSON.stringify(searchInfo),
+                contentType:"application/json; charset=utf-8",
+                success:function(result, status, xhr){
+                    console.log("success ajax");
+                    console.log("data"+searchInfo.toString());
+                    console.log(result);
+                    // dom 만들기
+
+                    let errStr = ""
+
+                    errStr +=	'<div class="alt list">';
+                    errStr +=		'<span class="list-group-item" style="text-align: center;">현재 기부 공고가 없습니다.</span>';
+                    errStr +=	'<div>';
+                    if(result == null || result.length == 0){
+                        alt.html(errStr);
+                        return;
+                    }
+
+                    let str = "";
+
+                    str += '<div class="alt list">';
+
+                    for(let i = 0, len = result.length; i < len; i++){
+                        if(result[i].donationTimes == null){
+                            result[i].donationTimes = 0;
+                        }
+                        if(result[i].donationCash == null){
+                            result[i].donationCash = 0;
+                        }
+                        if(result[i].donationPoint == null){
+                            result[i].donationPoint = 0;
+                        }
+
+                        str += '<a href="/charityOrg/information/'+result[i].c_board_num+'" class="list-group-item list-group-item-action">';
+                        str +=     '<div class="d-flex w-100 justify-content-between" style="margin-bottom: 5px">';
+                        str +=         '<h5 class="mb-1">'+result[i].c_title+'</h5>';
+                        str += 			'<small class="text-muted">'+result[i].c_field+'</small>';
+                        str += 		'</div>';
+                        str += 		'<small class="text-muted">현재 총 기부 인원 : '+result[i].donationTimes+' 명</small><br>';
+                        str += 		'<small class="text-muted">현재 총 기부 금액 : '+result[i].donationCash+' 원</small><br>';
+                        str += 		'<small class="text-muted">현재 총 기부 포인트 : '+result[i].donationPoint+' point</small><br>';
+                        str += '</a>';
+
+
+                    }
+
+                    str += '</div>';
+
+                    alt.replaceWith(str);
+
+
+                },
+                error:function(e, status, xhr){
+                    console.log("fail ajax");
+                }
+
+            }
+
+        )
+    }
+</script>
+</body>
+</html>
