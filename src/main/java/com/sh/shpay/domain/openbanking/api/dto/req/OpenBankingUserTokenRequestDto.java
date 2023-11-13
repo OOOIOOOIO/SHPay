@@ -12,7 +12,7 @@ import org.springframework.util.MultiValueMap;
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OpenBankingUserRequestTokenDto {
+public class OpenBankingUserTokenRequestDto {
     private String code;
     private String client_id;
     private String client_secret;
@@ -20,7 +20,7 @@ public class OpenBankingUserRequestTokenDto {
     private String grant_type; // authorization_code 고정
 
     @Builder
-    public OpenBankingUserRequestTokenDto(String code, String client_id, String client_secret, String redirect_uri, String grant_type) {
+    public OpenBankingUserTokenRequestDto(String code, String client_id, String client_secret, String redirect_uri, String grant_type) {
         this.code = code;
         this.client_id = client_id;
         this.client_secret = client_secret;

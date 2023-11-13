@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OpenBankingUserResponseTokenDto {
+public class OpenBankingUserTokenResponseDto {
     private String rsp_code;
     private String rsp_message;
     private String access_token;

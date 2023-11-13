@@ -1,8 +1,7 @@
-package com.sh.shpay.common;
+package com.sh.shpay.util.openbanking;
 
 import com.sh.shpay.domain.openbanking.api.dto.req.*;
 import com.sh.shpay.domain.openbanking.api.dto.res.*;
-import com.sh.shpay.util.openbanking.OpenBankingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -25,11 +24,11 @@ public class OpenBankingApiClient {
     /**
      * 토큰 발급 요청
      */
-    public OpenBankingUserResponseTokenDto requestUserToken(OpenBankingUserRequestTokenDto openBankingUserRequestToken){
+    public OpenBankingUserTokenResponseDto requestUserToken(OpenBankingUserTokenRequestDto openBankingUserRequestToken){
         HttpHeaders httpHeaders = generateHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
         HttpEntity httpEntity = generateHttpEntityWithBody(httpHeaders, openBankingUserRequestToken.toMultiValueMap());
 
-        OpenBankingUserResponseTokenDto openBankingUserResponseToken = restTemplate.exchange(BASE_URL + "/oauth/2.0/token", HttpMethod.POST, httpEntity, OpenBankingUserResponseTokenDto.class).getBody();
+        OpenBankingUserTokenResponseDto openBankingUserResponseToken = restTemplate.exchange(BASE_URL + "/oauth/2.0/token", HttpMethod.POST, httpEntity, OpenBankingUserTokenResponseDto.class).getBody();
 
         if(!isCodeValid(openBankingUserResponseToken.getRsp_code())){
             log.error("error code : {}, error msg : {}", openBankingUserResponseToken.getRsp_code(), openBankingUserResponseToken.getRsp_message());
@@ -90,7 +89,7 @@ public class OpenBankingApiClient {
     }
 
     /**
-     * 계좌이체
+     * 계좌이체(출금이체)
      */
     public OpenBankingTransferResponseDto requestTransfer(String access_token, OpenBankingTransferRequestDto openBankingTransferRequestDto){
         String url = BASE_URL + "/v2.0/transfer/withdraw/fin_num";
