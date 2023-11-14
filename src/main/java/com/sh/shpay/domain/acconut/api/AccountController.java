@@ -24,7 +24,7 @@ public class AccountController {
      * @param userId
      * @return
      */
-    @GetMapping("members/{userid}/account")
+    @GetMapping("/members/{userid}/account")
     public ResponseEntity<List<UserAccountDto>> requestAccount(@PathVariable(name = "userId") Long userId){
         List<UserAccountDto> accounts = accountService.requestAccountByUserId(userId);
         return ResponseEntity.ok().body(accounts);
@@ -35,7 +35,7 @@ public class AccountController {
      * @param userId
      * @return
      */
-    @PostMapping("users/{userId}/account")
+    @PostMapping("/users/{userId}/account")
     public ResponseEntity<Long> saveAccounts(@PathVariable(name = "userId") Long userId){
         Long size = accountService.saveAccountList(userId);
         return ResponseEntity.ok().body(size);
@@ -47,7 +47,7 @@ public class AccountController {
      * @param accountId
      * @return
      */
-    @PutMapping("users/{userId}/account/{accountId}")
+    @PutMapping("/users/{userId}/account/{accountId}")
     public ResponseEntity updateAccountType(@PathVariable(name = "userId") Long userId, @PathVariable("accountId") Long accountId) {
         accountService.updateAccountType(userId, accountId);
         return ResponseEntity.status(200).build();
