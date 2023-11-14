@@ -32,7 +32,7 @@ public class OpenBankingToken extends BaseTimeEntity {
     private Long expireMin;
     private String userSeqNo; // user_seq_no
     @Column(unique = true)
-    private Long userId; // oneToone 고려
+    private Long userId; // oneToOne 고려
 
     @Builder
     private OpenBankingToken(Long tokenId, Long userId, String accessToken, String refreshToken, Long expireMin, String userSeqNo) {
