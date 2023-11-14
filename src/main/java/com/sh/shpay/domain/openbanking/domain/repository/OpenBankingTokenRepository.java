@@ -8,4 +8,7 @@ import java.util.Optional;
 public interface OpenBankingTokenRepository extends JpaRepository<OpenBankingToken, Long> {
 
     Optional<OpenBankingToken> findByUserId(Long userId);
+
+    boolean existsByUserId(Long userId);
+
 }

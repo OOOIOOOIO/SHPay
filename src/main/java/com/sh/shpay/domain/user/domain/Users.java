@@ -45,4 +45,32 @@ public class Users extends BaseTimeEntity {
 
     }
 
+    public void updateUserSeqNo(String userSeqNo){
+        this.userSeqNo = userSeqNo;
+    }
+    public void updateOpenBankCi(String openBankCi){
+        this.openBankCi = openBankCi;
+    }
+
+    public boolean isValidPassword(String password){
+        if (!this.password.equals(password)){
+            return false;
+        }
+        return true;
+    }
+
+    public boolean hasOpenBankCi(){
+        if (this.openBankCi == null || this.openBankCi.isBlank()){
+            return false;
+        }
+        return true;
+    }
+
+    public boolean hasUserSeqNo(){
+        if (this.userSeqNo == null || this.userSeqNo.isBlank()){
+            return false;
+        }
+        return true;
+    }
+
 }

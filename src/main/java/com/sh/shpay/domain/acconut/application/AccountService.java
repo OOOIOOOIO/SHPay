@@ -89,6 +89,7 @@ public class AccountService {
      * 계좌 저장
      */
     public Long saveAccountList(Long userId){
+
         if(!userRepository.existsById(userId)){
             throw new RuntimeException("유저가 존재하지 않습니다.");
         }

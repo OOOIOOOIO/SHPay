@@ -35,8 +35,7 @@ public class OpenBankingToken extends BaseTimeEntity {
     private Long userId; // oneToOne 고려
 
     @Builder
-    private OpenBankingToken(Long tokenId, Long userId, String accessToken, String refreshToken, Long expireMin, String userSeqNo) {
-        this.tokenId = tokenId;
+    private OpenBankingToken(Long userId, String accessToken, String refreshToken, Long expireMin, String userSeqNo) {
         this.userId = userId;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
@@ -44,9 +43,8 @@ public class OpenBankingToken extends BaseTimeEntity {
         this.userSeqNo = userSeqNo;
     }
 
-    public static OpenBankingToken createOpenBankingToken(Long tokenId, Long userId, String accessToken, String refreshToken, Long expireMin, String userSeqNo){
+    public static OpenBankingToken createOpenBankingToken(Long userId, String accessToken, String refreshToken, Long expireMin, String userSeqNo){
         return OpenBankingToken.builder()
-                .tokenId(tokenId)
                 .userId(userId)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)

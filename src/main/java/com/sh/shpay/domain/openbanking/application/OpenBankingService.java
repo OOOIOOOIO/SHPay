@@ -32,6 +32,7 @@ public class OpenBankingService {
 
     /**
      * 토큰 발급 요청
+     * 여기서 code가 ""(blnak)면 핸드폰, ars 인증화면으로 넘어감
      */
     public OpenBankingUserTokenResponseDto requestUserToken(OpenBankingUserCodeRequestDto openBankingUserCodeRequestDto){
 
@@ -59,6 +60,7 @@ public class OpenBankingService {
      * 계좌조회
      */
     public OpenBankingSearchAccountResponseDto requestAccountList(AccountRequestDto accountRequestDto){
+
         OpenBankingSearchAccountRequestDto openBankingSearchAccountRequestDto = OpenBankingSearchAccountRequestDto.builder()
                 .user_seq_no(accountRequestDto.getUserSeqNo())
                 .accessToken(accountRequestDto.getAccessToken())
