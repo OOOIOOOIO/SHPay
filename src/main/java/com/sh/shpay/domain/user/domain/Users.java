@@ -25,7 +25,8 @@ public class Users extends BaseTimeEntity {
     private String openBankCi;
     private String userSeqNo; // user_seq_no
 
-    // account랑 oneToMany 생각
+    // Account OneToMany 생각
+    // OpenBankingToken OneToOne 생각
 
     @Builder
     private Users(String email, String password, String openBankCi, String userSeqNo) {

@@ -2,7 +2,6 @@ package com.sh.shpay.domain.acconut.api;
 
 import com.sh.shpay.domain.acconut.api.dto.UserAccountDto;
 import com.sh.shpay.domain.acconut.application.AccountService;
-import com.sh.shpay.domain.openbanking.api.dto.OpenBankingAccountDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
