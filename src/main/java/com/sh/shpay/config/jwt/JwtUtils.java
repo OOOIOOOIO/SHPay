@@ -1,6 +1,6 @@
 package com.sh.shpay.config.jwt;
 
-import com.gdsc.side.api.exception.type.JwtTokenExpiredException;
+import com.sh.shpay.global.exception.custom.JwtTokenExpiredException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;

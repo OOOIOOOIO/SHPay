@@ -1,7 +1,11 @@
 package com.sh.shpay.config.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sh.shpay.global.exception.CustomException;
+import com.sh.shpay.global.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -33,13 +37,11 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 error
 
         final Map<String, Object> body = new HashMap<>();
-        body.put("errorCode", JwtCustomErrorCode.UnauthorizedException.code()); // S002
+        body.put("errorCode", new CustomException(ErrorCode.UnauthorizedException).getErrorCode().getCode());
         body.put("date", new Date());
         body.put("message", authException.getMessage());
         body.put("request", request.getRequestURI());
-
         final ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(response.getOutputStream(), body);
-
     }
 }

@@ -2,6 +2,7 @@ package com.sh.shpay.config;
 
 import com.sh.shpay.config.jwt.AuthEntryPointJwt;
 import com.sh.shpay.config.jwt.AuthTokenFilter;
+import com.sh.shpay.config.jwt.JwtExceptionHandlerFilter;
 import com.sh.shpay.util.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -84,6 +85,7 @@ public class WebSecurityConfig {  // extends WebSecurityConfigurerAdapte, Spring
                 .authorizeRequests()
 //                .antMatchers("/", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/profile",).permitAll() //정적리소스 물어보기
                 .antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/api/**").permitAll()
                 .anyRequest().authenticated();
 
         http.authenticationProvider(authenticationProvider());
