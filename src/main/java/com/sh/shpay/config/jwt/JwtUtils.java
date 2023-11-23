@@ -1,6 +1,7 @@
 package com.sh.shpay.config.jwt;
 
-import com.sh.shpay.global.exception.custom.JwtTokenExpiredException;
+import com.sh.shpay.global.exception.CustomException;
+import com.sh.shpay.global.exception.ErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
@@ -68,15 +69,15 @@ public class JwtUtils {
 
             return true;
         } catch (SignatureException e) {
-            throw new SignatureException("Invalid JWT signature : " + e.getMessage());
+            throw new CustomException(ErrorCode.SignatureException);
         } catch (MalformedJwtException e) {
-            throw new MalformedJwtException("Invalid JWT token : {}" + e.getMessage());
+            throw new CustomException(ErrorCode.MalformedJwtException);
         } catch (ExpiredJwtException e) {
-            throw new JwtTokenExpiredException("JWT token is expired : " + e.getMessage());
+            throw new CustomException(ErrorCode.JwtTokenExpiredException);
         } catch (UnsupportedJwtException e) {
-            throw new UnsupportedJwtException("JWT token is unsupported :" + e.getMessage());
+            throw new CustomException(ErrorCode.UnsupportedJwtException);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("JWT claims string is empty: " + e.getMessage());
+            throw new CustomException(ErrorCode.IllegalArgumentException);
         }
 
     }

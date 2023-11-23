@@ -30,33 +30,20 @@ public class JwtExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (SignatureException e) {
-            errorResponse(request, response, e, new CustomException(ErrorCode.SignatureException));
+            throw new CustomException(ErrorCode.SignatureException);
         } catch (MalformedJwtException e) {
-            errorResponse(request, response, e, new CustomException(ErrorCode.MalformedJwtException));
+            throw new CustomException(ErrorCode.MalformedJwtException);
         } catch (JwtTokenExpiredException e) {
-            errorResponse(request, response, e, new CustomException(ErrorCode.JwtTokenExpiredException));
+            throw new CustomException(ErrorCode.JwtTokenExpiredException);
         } catch (UnsupportedJwtException e) {
-            errorResponse(request, response, e, new CustomException(ErrorCode.UnsupportedJwtException));
+            throw new CustomException(ErrorCode.UnsupportedJwtException);
         } catch (IllegalArgumentException e) {
-            errorResponse(request, response, e, new CustomException(ErrorCode.IllegalArgumentException));
+            throw new CustomException(ErrorCode.IllegalArgumentException);
         } catch (UsernameNotFoundException e) {
-            errorResponse(request, response, e, new CustomException(ErrorCode.UsernameNotFoundException));
+            throw new CustomException(ErrorCode.UsernameNotFoundException);
         }
     }
 
-    private static void errorResponse(HttpServletRequest request, HttpServletResponse response, Exception e, CustomException customException) throws IOException {
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400 error
-
-        final Map<String, Object> body = new HashMap<>();
-        body.put("errorCode ", customException.getErrorCode().getCode());
-        body.put("date", new Date());
-        body.put("message", customException.getErrorCode().getMessage());
-        body.put("request", request.getRequestURI());
-
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(response.getOutputStream(), body);
-    }
 
 
 }
