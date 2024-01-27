@@ -30,14 +30,7 @@ public enum ErrorCode {
 
     // security
     UsernameNotFoundException(NOT_FOUND, "SC001", "유저가 존재하지 않습니다."),
-    UnauthorizedException(UNAUTHORIZED, "SC002", "인증에 실패하였습니다."),
-
-    // jwt
-    RefreshTokenExpiredException(FORBIDDEN, "J001", "Refresh Token이 만료되었습니다."),
-    SignatureException(FORBIDDEN, "J004", "JWT의 Signature가 일치하지 않습니다."),
-    MalformedJwtException(FORBIDDEN, "J003", "JWT 구조가 잘못되었습니다."),
-    UnsupportedJwtException(FORBIDDEN, "J002", "JWT의 형식이 잘못되었습니다."),
-    JwtTokenExpiredException(FORBIDDEN, "J005", "Access Token이 만료되었습니다.");
+    UnauthorizedException(UNAUTHORIZED, "SC002", "인증에 실패하였습니다.");
 
 
 

@@ -8,7 +8,6 @@ build/
 ## yml
 **/src/main/resources/application-local.yml
 **/src/main/resources/application-real.yml
-**/src/test/resources/application.yml
 
 src/main/java/com/sh/chicken/domain/test/
 

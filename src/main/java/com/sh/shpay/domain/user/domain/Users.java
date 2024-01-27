@@ -1,13 +1,13 @@
 package com.sh.shpay.domain.user.domain;
 
 import com.sh.shpay.domain.common.BaseTimeEntity;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Getter
 @Entity
@@ -22,8 +22,8 @@ public class Users extends BaseTimeEntity {
     private String email;
     @NotNull
     private String password;
-    private String openBankCi;
-    private String userSeqNo; // user_seq_no
+    private String openBankCi; // user_ci인가? 확인
+    private String userSeqNo; // user_seq_no(유저고유번호)
 
     // Account OneToMany 생각
     // OpenBankingToken OneToOne 생각

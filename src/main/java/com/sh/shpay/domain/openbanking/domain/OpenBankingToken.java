@@ -1,13 +1,13 @@
 package com.sh.shpay.domain.openbanking.domain;
 
 import com.sh.shpay.domain.common.BaseTimeEntity;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Getter
 @Entity

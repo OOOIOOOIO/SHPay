@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <form name="signInForm"  th:action="@{/api/users/signin}" method="post">
+
+            <div class="row mb-3" >
+                <label for="email" class="col-sm-2 col-form-label login-text-r" >이메일</label>
+                <input type="text" class="form-control login-input" id="email" name="email">
+            </div>
+            <div class="row mb-3" >
+                <label for="password" class="col-sm-2 col-form-label login-text-l" >비밀번호</label>
+                <input type="password" class="form-control login-input" id="password" name="password">
+            </div>
+
+            <div class="container-fluid" style="text-align: right;">
+                <br>
+                <div class="container-fluid" style="text-align: right;"> <!--글씨 좀 작게 그리고 오른쪽 정렬-->
+                    <a th:href="@{/users/signup}" class="etc-text shadow-sm" style="color: black">회원가입</a>
+                </div>
+            </div>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <div style="text-align: center;">
+                <button type="submit" class="btn btn-primary login-btn" >로그인</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

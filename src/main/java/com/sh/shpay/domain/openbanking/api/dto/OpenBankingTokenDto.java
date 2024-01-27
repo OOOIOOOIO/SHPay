@@ -1,7 +1,6 @@
 package com.sh.shpay.domain.openbanking.api.dto;
 
 import com.sh.shpay.domain.openbanking.domain.OpenBankingToken;
-import lombok.Builder;
 
 public class OpenBankingTokenDto {
     private Long userId;

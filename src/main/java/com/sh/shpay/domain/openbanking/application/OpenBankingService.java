@@ -3,24 +3,21 @@ package com.sh.shpay.domain.openbanking.application;
 
 import com.sh.shpay.domain.acconut.api.dto.req.AccountRequestDto;
 import com.sh.shpay.domain.acconut.api.dto.req.BalanceRequestDto;
-import com.sh.shpay.domain.openbanking.api.dto.OpenBankingAccountDto;
 import com.sh.shpay.domain.openbanking.api.dto.req.*;
 import com.sh.shpay.domain.openbanking.api.dto.res.*;
-import com.sh.shpay.util.openbanking.OpenBankingApiClient;
-import com.sh.shpay.util.openbanking.OpenBankingUtil;
+import com.sh.shpay.global.util.openbanking.OpenBankingApiClient;
+import com.sh.shpay.global.util.openbanking.OpenBankingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class OpenBankingService {
 
-    private String code = ""; // ars인증까지 하면 넘어옴 그 때 저장 / code 있나 확인
+//    private String code = ""; // ars인증까지 하면 넘어옴 그 때 저장 / code 있나 확인
     private static final String GRANT_TYPE = "authorization_code";
     @Value("${openbanking.client-id}")
     private String clientId;
@@ -33,11 +30,12 @@ public class OpenBankingService {
     /**
      * 토큰 발급 요청
      * 여기서 code가 ""(blnak)면 핸드폰, ars 인증화면으로 넘어감
+     * 이건 front단에서 해결하고 authcode 받아오면 authresult에서 authcode 가지고 다시 통신 후 accesstoken이랑 user_Seq 받아옴 이후 db저장
      */
     public OpenBankingUserTokenResponseDto requestUserToken(OpenBankingUserCodeRequestDto openBankingUserCodeRequestDto){
 
-        // code 받아오기
-        if(code.isBlank()){
+        if(openBankingUserCodeRequestDto.getCode().isBlank()){
+            log.error("code가 존재하지 않습니다.");
 
             return null;
         }
@@ -115,10 +113,3 @@ public class OpenBankingService {
 
 
 }
-
-/**
- * 9시까지 스튜디오 도착(7시 30분 출발)
- * 스튜디오는 서울(마포, 합정)
- * 10시~ 15시(나쁘지 않지)
- * 6시에 학교
- */

@@ -1,12 +1,12 @@
 package com.sh.shpay.domain.acconut.domain;
 
 import com.sh.shpay.domain.common.BaseTimeEntity;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 
 @Getter
 @Entity

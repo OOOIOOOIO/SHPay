@@ -2,8 +2,8 @@ package com.sh.shpay.domain.user.application;
 
 import com.sh.shpay.domain.openbanking.application.OpenBankingService;
 import com.sh.shpay.domain.openbanking.domain.repository.OpenBankingTokenRepository;
-import com.sh.shpay.domain.user.api.dto.req.SignInRequestDto;
-import com.sh.shpay.domain.user.api.dto.req.SignUpRequestDto;
+import com.sh.shpay.domain.user.api.dto.req.UserSignInRequestDto;
+import com.sh.shpay.domain.user.api.dto.req.UserSignUpRequestDto;
 import com.sh.shpay.domain.user.api.dto.res.UserResponseDto;
 import com.sh.shpay.domain.user.domain.Users;
 import com.sh.shpay.domain.user.domain.repository.UserRepository;
@@ -25,9 +25,9 @@ public class UserService {
     /**
      * 회원가입
      */
-    public void signUp(SignUpRequestDto signUpRequestDto){
-        Users user = Users.createUser(signUpRequestDto.getEmail(),
-                signUpRequestDto.getPassword(),
+    public void signUp(UserSignUpRequestDto userSignUpRequestDto){
+        Users user = Users.createUser(userSignUpRequestDto.getEmail(),
+                userSignUpRequestDto.getPassword(),
                 null,
                 null);
 
@@ -40,7 +40,7 @@ public class UserService {
     /**
      * 로그인
      */
-    public UserResponseDto signIn(SignInRequestDto signInRequestDto){
+    public UserResponseDto signIn(UserSignInRequestDto signInRequestDto){
         Users users = userRepository.findByEmail(signInRequestDto.getEmail()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
 
         boolean validPassword = users.isValidPassword(signInRequestDto.getPassword());
