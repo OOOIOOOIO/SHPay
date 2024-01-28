@@ -22,28 +22,15 @@ public class OpenBankingApiClient {
 
 
     /**
-     * 토큰 발급 요청
+     * 사용자 토큰 발급 요청, 3-legged
      */
     public OpenBankingUserTokenResponseDto requestUserToken(OpenBankingUserTokenRequestDto openBankingUserRequestToken){
-
-        log.info("======");
-        log.info(openBankingUserRequestToken.getCode());
-        log.info(openBankingUserRequestToken.getClient_id());
-        log.info(openBankingUserRequestToken.getClient_secret());
-        log.info(openBankingUserRequestToken.getGrant_type());
-        log.info(openBankingUserRequestToken.getRedirect_uri());
 
         HttpHeaders httpHeaders = generateHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
         HttpEntity httpEntity = generateHttpEntityWithBody(httpHeaders, openBankingUserRequestToken.toMultiValueMap());
 
         OpenBankingUserTokenResponseDto openBankingUserResponseToken = restTemplate.exchange(BASE_URL + "/oauth/2.0/token", HttpMethod.POST, httpEntity, OpenBankingUserTokenResponseDto.class).getBody();
 
-        log.info("=====");
-        log.info(openBankingUserResponseToken.getAccess_token());
-        log.info(openBankingUserResponseToken.getRefresh_token());
-        log.info(openBankingUserResponseToken.getUser_seq_no());
-        log.info(openBankingUserResponseToken.getRsp_message());
-        log.info(openBankingUserResponseToken.getRsp_code());
 
         if(!isCodeValid(openBankingUserResponseToken.getRsp_code())){
             log.error("error code : {}, error msg : {}", openBankingUserResponseToken.getRsp_code(), openBankingUserResponseToken.getRsp_message());
@@ -53,6 +40,27 @@ public class OpenBankingApiClient {
         return openBankingUserResponseToken;
 
     }
+
+
+    /**
+     * 사용자 토큰 갱신(Access Token), 3-legged
+     */
+    public OpenBankingUserRefreshTokenResponseDto refreshUserToken(OpenBankingUserRefreshTokenRequestDto openBankingUserRefreshTokenRequestDto) {
+
+        HttpHeaders httpHeaders = generateHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+        HttpEntity httpEntity = generateHttpEntityWithBody(httpHeaders, openBankingUserRefreshTokenRequestDto.toMultiValueMap());
+
+        OpenBankingUserRefreshTokenResponseDto openBankingUserRefreshTokenResponseDto = restTemplate.exchange(BASE_URL + "/oauth/2.0/token", HttpMethod.POST, httpEntity, OpenBankingUserRefreshTokenResponseDto.class).getBody();
+
+        if(openBankingUserRefreshTokenResponseDto == null){
+            log.error("token 갱신 실패");
+            throw new RuntimeException("token 갱신 실패");
+        }
+
+        return openBankingUserRefreshTokenResponseDto;
+
+    }
+
 
     /**
      * 계좌조회

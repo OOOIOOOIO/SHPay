@@ -18,7 +18,9 @@ import org.springframework.stereotype.Service;
 public class OpenBankingService {
 
 //    private String code = ""; // ars인증까지 하면 넘어옴 그 때 저장 / code 있나 확인
-    private static final String GRANT_TYPE = "authorization_code";
+    private static final String ACCESS_TOKEN_GRANT_TYPE = "authorization_code";
+    private static final String REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
+    private static final String REFRESH_TOKEN_SCOPE = "login inquirt transfer cardinfo fintechinfo"; // 우선 전체범위로 설정
     @Value("${openbanking.client-id}")
     private String clientId;
     @Value("${openbanking.client-secret}")
@@ -28,9 +30,7 @@ public class OpenBankingService {
     private final OpenBankingApiClient openBankingApiClient;
 
     /**
-     * 토큰 발급 요청
-     * 여기서 code가 ""(blnak)면 핸드폰, ars 인증화면으로 넘어감
-     * 이건 front단에서 해결하고 authcode 받아오면 authresult에서 authcode 가지고 다시 통신 후 accesstoken이랑 user_Seq 받아옴 이후 db저장
+     * 사용자 토큰 발급 요청, 3-legged
      */
     public OpenBankingUserTokenResponseDto requestUserToken(OpenBankingUserCodeRequestDto openBankingUserCodeRequestDto){
 
@@ -45,7 +45,7 @@ public class OpenBankingService {
                 .client_id(clientId)
                 .client_secret(clientSecret)
                 .redirect_uri(redirectUri)
-                .grant_type(GRANT_TYPE)
+                .grant_type(ACCESS_TOKEN_GRANT_TYPE)
                 .build();
 
         OpenBankingUserTokenResponseDto openBankingUserTokenResponseDto = openBankingApiClient.requestUserToken(openBankingUserTokenRequestDto);
@@ -53,6 +53,33 @@ public class OpenBankingService {
         return openBankingUserTokenResponseDto;
 
     }
+
+    /**
+     * 사용자 토큰 갱신(Access Token), 3-legged
+     */
+    public OpenBankingUserRefreshTokenResponseDto refreshUserToken(String refreshToken) {
+
+        if (refreshToken.isBlank() || refreshToken == null) {
+            log.error("refresh_token이 존재하지 않습니다.");
+
+            return null;
+        }
+
+        OpenBankingUserRefreshTokenRequestDto openBankingUserRefreshTokenRequestDto = OpenBankingUserRefreshTokenRequestDto.builder()
+                .client_id(clientId)
+                .client_secret(clientSecret)
+                .scope(REFRESH_TOKEN_SCOPE)
+                .refresh_token(refreshToken)
+                .grant_type(REFRESH_TOKEN_GRANT_TYPE)
+                .build();
+
+        openBankingApiClient.refreshUserToken(openBankingUserRefreshTokenRequestDto);
+
+
+
+        return null;
+    }
+
 
     /**
      * 계좌조회
