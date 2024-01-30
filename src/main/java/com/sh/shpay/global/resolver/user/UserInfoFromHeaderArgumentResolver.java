@@ -1,6 +1,5 @@
-package com.sh.shpay.global.resolver;
+package com.sh.shpay.global.resolver.user;
 
-import com.sh.shpay.domain.user.api.dto.UserInfoDto;
 import com.sh.shpay.global.common.SessionConst;
 import com.sh.shpay.global.session.resolver.usersession.UserInfoFromSessionDto;
 import jakarta.servlet.http.HttpServletRequest;

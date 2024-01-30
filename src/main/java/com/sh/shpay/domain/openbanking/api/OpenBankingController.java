@@ -4,6 +4,8 @@ import com.sh.shpay.domain.openbanking.api.dto.req.OpenBankingUserCodeRequestDto
 import com.sh.shpay.domain.openbanking.api.dto.res.OpenBankingUserRefreshTokenResponseDto;
 import com.sh.shpay.domain.openbanking.api.dto.res.OpenBankingUserTokenResponseDto;
 import com.sh.shpay.domain.openbanking.application.OpenBankingService;
+import com.sh.shpay.global.resolver.token.TokenInfoFromHeader;
+import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -61,11 +63,11 @@ public class OpenBankingController {
      * GET/POST 둘 다 가능
      */
     @PostMapping("/token/refresh")
-    public ResponseEntity<OpenBankingUserRefreshTokenResponseDto> refreshUserToken(@RequestParam(name = "refresh_token") String refreshToken){
+    public ResponseEntity<OpenBankingUserRefreshTokenResponseDto> refreshUserToken(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto){
 
         log.info("================= OpenBankingController | api/openbanking/token/request =================");
 
-        OpenBankingUserRefreshTokenResponseDto openBankingUserRefreshTokenResponseDto = openBankingService.refreshUserToken(refreshToken);
+        OpenBankingUserRefreshTokenResponseDto openBankingUserRefreshTokenResponseDto = openBankingService.refreshUserToken(tokenInfoFromHeaderDto);
 
         log.info("access_token : " + openBankingUserRefreshTokenResponseDto.getAccess_token());
         log.info("user_seq_no : " + openBankingUserRefreshTokenResponseDto.getUser_seq_no());

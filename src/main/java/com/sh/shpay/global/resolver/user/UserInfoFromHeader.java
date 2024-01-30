@@ -1,4 +1,4 @@
-package com.sh.shpay.global.resolver;
+package com.sh.shpay.global.resolver.user;
 
 
 import java.lang.annotation.ElementType;

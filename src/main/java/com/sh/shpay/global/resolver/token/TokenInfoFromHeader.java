@@ -1,4 +1,4 @@
-package com.sh.shpay.global.resolver.user;
+package com.sh.shpay.global.resolver.token;
 
 
 import java.lang.annotation.ElementType;
@@ -8,6 +8,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface UserInfoFromHeader
+public @interface TokenInfoFromHeader
 {
 }

@@ -1,9 +1,6 @@
-package com.sh.shpay.global.resolver.user;
+package com.sh.shpay.global.resolver.token;
 
-import com.sh.shpay.global.common.SessionConst;
-import com.sh.shpay.global.session.resolver.usersession.UserInfoFromSessionDto;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -17,29 +14,38 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class UserInfoFromHeaderArgumentResolver implements HandlerMethodArgumentResolver {
+//public class TokenInfoFromHeaderArgumentResolver implements HandlerMethodArgumentResolver {
+public class TokenInfoFromHeaderArgumentResolver implements HandlerMethodArgumentResolver {
+
+
 
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(UserInfoFromHeaderDto.class);
+        return parameter.getParameterType().equals(TokenInfoFromHeaderDto.class);
     }
 
     /**
-     * session에서 추출
+     * Header에서 accessToken, refreshToken 추출
      */
     @Override
-    public UserInfoFromSessionDto resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        HttpServletRequest request = (HttpServletRequest) webRequest;
-        HttpSession session = request.getSession();
+    public TokenInfoFromHeaderDto resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+        HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest(); // jakarta로 변경 후 getNativeRequest 붙여줘야 함
 
-        UserInfoFromSessionDto userInfoFromSessionDto = (UserInfoFromSessionDto) session.getAttribute(SessionConst.COMMON_USER.name());
+        String accessToken = request.getHeader("Authorization");
+        String refreshToken = request.getHeader("refresh_token");
 
 
+        TokenInfoFromHeaderDto tokenInfoFromHeaderDto = TokenInfoFromHeaderDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
 
-        log.info("========== UserInfo From Session by ArgumentResolver ==========");
-        log.info("========== Get email : " + userInfoFromSessionDto.getEmail() + " ==========");
 
-        return userInfoFromSessionDto;
+        log.info("========== TokenInfo From Header by ArgumentResolver ==========");
+        log.info("========== accessToken : " + tokenInfoFromHeaderDto.getAccessToken() + " ==========");
+        log.info("========== refreshToken : " + tokenInfoFromHeaderDto.getRefreshToken() + " ==========");
+
+        return tokenInfoFromHeaderDto;
     }
 }

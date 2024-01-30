@@ -5,6 +5,7 @@ import com.sh.shpay.domain.acconut.api.dto.req.AccountRequestDto;
 import com.sh.shpay.domain.acconut.api.dto.req.BalanceRequestDto;
 import com.sh.shpay.domain.openbanking.api.dto.req.*;
 import com.sh.shpay.domain.openbanking.api.dto.res.*;
+import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderDto;
 import com.sh.shpay.global.util.openbanking.OpenBankingApiClient;
 import com.sh.shpay.global.util.openbanking.OpenBankingUtil;
 import lombok.RequiredArgsConstructor;
@@ -57,9 +58,9 @@ public class OpenBankingService {
     /**
      * 사용자 토큰 갱신(Access Token), 3-legged
      */
-    public OpenBankingUserRefreshTokenResponseDto refreshUserToken(String refreshToken) {
+    public OpenBankingUserRefreshTokenResponseDto refreshUserToken(TokenInfoFromHeaderDto tokenInfoFromHeaderDto) {
 
-        if (refreshToken.isBlank() || refreshToken == null) {
+        if (tokenInfoFromHeaderDto.getRefreshToken().isBlank() || tokenInfoFromHeaderDto.getRefreshToken() == null) {
             log.error("refresh_token이 존재하지 않습니다.");
 
             return null;
@@ -69,7 +70,7 @@ public class OpenBankingService {
                 .client_id(clientId)
                 .client_secret(clientSecret)
                 .scope(REFRESH_TOKEN_SCOPE)
-                .refresh_token(refreshToken)
+                .refresh_token(tokenInfoFromHeaderDto.getRefreshToken())
                 .grant_type(REFRESH_TOKEN_GRANT_TYPE)
                 .build();
 
