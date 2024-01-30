@@ -27,12 +27,13 @@ public class OpenBankingController {
      * 3000113 : code가 만료 되었을 때
      * 3000114 : 콜백url이 다를떄
      *
+     * POST는 안먹힘
      */
     @GetMapping("/token/request")
     public ResponseEntity<OpenBankingUserTokenResponseDto> requestUserToken(@RequestParam(name = "code") String code,
                                          @RequestParam(name = "scope") String scope,
                                          @RequestParam(name = "state") String state) {
-        log.info("==== OpenBankingController | api/openbanking/token/request === ");
+        log.info("================= OpenBankingController | api/openbanking/token/request =================");
 
         /**
          * userId 수정
@@ -42,11 +43,11 @@ public class OpenBankingController {
         OpenBankingUserTokenResponseDto openBankingUserTokenResponseDto = openBankingService.requestUserToken(openBankingUserCodeRequestDto);
 
         log.info("access_token : " + openBankingUserTokenResponseDto.getAccess_token());
-        log.info("access_token : " + openBankingUserTokenResponseDto.getUser_seq_no());
-        log.info("access_token : " + openBankingUserTokenResponseDto.getRefresh_token());
-        log.info("access_token : " + openBankingUserTokenResponseDto.getExpires_in());
-        log.info("access_token : " + openBankingUserTokenResponseDto.getToken_type());
-        log.info("access_token : " + openBankingUserTokenResponseDto.getScope());
+        log.info("user_seq_no : " + openBankingUserTokenResponseDto.getUser_seq_no());
+        log.info("refresh_token : " + openBankingUserTokenResponseDto.getRefresh_token());
+        log.info("expires_in : " + openBankingUserTokenResponseDto.getExpires_in());
+        log.info("token_type : " + openBankingUserTokenResponseDto.getToken_type());
+        log.info("scope : " + openBankingUserTokenResponseDto.getScope());
 
 
         return new ResponseEntity<>(openBankingUserTokenResponseDto, HttpStatus.OK);
@@ -56,11 +57,22 @@ public class OpenBankingController {
      * 사용자 토큰 갱신(Access Token), 3-legged
      *
      * refreshToken Header에서 파싱하는 거로 수정
+     *
+     * GET/POST 둘 다 가능
      */
-    @GetMapping("/token/refresh")
+    @PostMapping("/token/refresh")
     public ResponseEntity<OpenBankingUserRefreshTokenResponseDto> refreshUserToken(@RequestParam(name = "refresh_token") String refreshToken){
 
-        OpenBankingUserRefreshTokenResponseDto openBankingUserRefreshTokenResponseDto = null;
+        log.info("================= OpenBankingController | api/openbanking/token/request =================");
+
+        OpenBankingUserRefreshTokenResponseDto openBankingUserRefreshTokenResponseDto = openBankingService.refreshUserToken(refreshToken);
+
+        log.info("access_token : " + openBankingUserRefreshTokenResponseDto.getAccess_token());
+        log.info("user_seq_no : " + openBankingUserRefreshTokenResponseDto.getUser_seq_no());
+        log.info("refresh_token : " + openBankingUserRefreshTokenResponseDto.getRefresh_token());
+        log.info("expires_in : " + openBankingUserRefreshTokenResponseDto.getExpires_in());
+        log.info("token_type : " + openBankingUserRefreshTokenResponseDto.getToken_type());
+        log.info("scope : " + openBankingUserRefreshTokenResponseDto.getScope());
 
         return new ResponseEntity<>(openBankingUserRefreshTokenResponseDto, HttpStatus.OK);
     }

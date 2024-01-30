@@ -20,7 +20,7 @@ public class OpenBankingService {
 //    private String code = ""; // ars인증까지 하면 넘어옴 그 때 저장 / code 있나 확인
     private static final String ACCESS_TOKEN_GRANT_TYPE = "authorization_code";
     private static final String REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
-    private static final String REFRESH_TOKEN_SCOPE = "login inquirt transfer cardinfo fintechinfo"; // 우선 전체범위로 설정
+    private static final String REFRESH_TOKEN_SCOPE = "login inquiry transfer"; // 우선 code 받을 때 3가지로 설정 | cardinfo fintechinfo
     @Value("${openbanking.client-id}")
     private String clientId;
     @Value("${openbanking.client-secret}")
@@ -73,11 +73,10 @@ public class OpenBankingService {
                 .grant_type(REFRESH_TOKEN_GRANT_TYPE)
                 .build();
 
-        openBankingApiClient.refreshUserToken(openBankingUserRefreshTokenRequestDto);
+        OpenBankingUserRefreshTokenResponseDto openBankingUserRefreshTokenResponseDto = openBankingApiClient.refreshUserToken(openBankingUserRefreshTokenRequestDto);
 
 
-
-        return null;
+        return openBankingUserRefreshTokenResponseDto;
     }
 
 
