@@ -1,8 +1,8 @@
 package com.sh.shpay.global.config;
 
-import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderArgumentResolver;
+import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderResolver;
 import com.sh.shpay.global.session.interceptor.sessionCheckInterceptor.UserSessionCheckInterceptor;
-import com.sh.shpay.global.session.resolver.usersession.UserInfoFromSessionResolver;
+import com.sh.shpay.global.resolver.session.UserInfoFromSessionResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -21,19 +21,21 @@ import java.util.List;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     private final UserInfoFromSessionResolver userInfoFromSessionResolver;
-    private final TokenInfoFromHeaderArgumentResolver tokenInfoFromHeaderArgumentResolver;
+    private final TokenInfoFromHeaderResolver tokenInfoFromHeaderResolver;
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new UserSessionCheckInterceptor())
                 .order(1)
                 .addPathPatterns("/api/**")
-                .excludePathPatterns("/api/openbanking/**", "/api/users/**", "/api/menu/**", "/api/main/**");
+                .excludePathPatterns("/users/**", "/api/users/**");
+//                .excludePathPatterns("/api/openbanking/**", "/api/users/**", "/api/menu/**", "/api/main/**");
+
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(userInfoFromSessionResolver);
-        resolvers.add(tokenInfoFromHeaderArgumentResolver);
+        resolvers.add(tokenInfoFromHeaderResolver);
 
     }
 

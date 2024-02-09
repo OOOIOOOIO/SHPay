@@ -1,7 +1,7 @@
 package com.sh.shpay.global.session.interceptor.sessionCheckInterceptor;
 
 import com.sh.shpay.global.common.SessionConst;
-import com.sh.shpay.global.session.resolver.usersession.UserInfoFromSessionDto;
+import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -17,6 +17,10 @@ public class UserSessionCheckInterceptor implements HandlerInterceptor {
         try {
             HttpSession session = request.getSession(false);
             UserInfoFromSessionDto userInfo = (UserInfoFromSessionDto)session.getAttribute(SessionConst.COMMON_USER.getRule());
+
+            log.info(" ====== Interceptor ======");
+            log.info("userId : " + userInfo.getUserId());
+            log.info("email : " + userInfo.getEmail());
 
         } catch (Exception e) {
             throw new RuntimeException("interceptor : 유저 없음");

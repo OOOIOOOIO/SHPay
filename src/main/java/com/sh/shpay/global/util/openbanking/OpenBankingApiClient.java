@@ -1,7 +1,7 @@
 package com.sh.shpay.global.util.openbanking;
 
-import com.sh.shpay.domain.openbanking.api.dto.req.*;
-import com.sh.shpay.domain.openbanking.api.dto.res.*;
+import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.*;
+import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -19,6 +19,36 @@ public class OpenBankingApiClient {
     private final RestTemplate restTemplate;
     private static final String BASE_URL = "https://testapi.openbanking.or.kr";
     private static final String SUCCESS_CODE = "AOO0O"; // 나중에 수정?
+
+
+    /**
+     * 사용자 AuthCode 발급 요청 -> 사용자 토큰 발급 요청으로 넘어감(callback url)
+     */
+    public void requestAuthorization(OpenBankingCodeAuthorizationRequestDto openBankingCodeAuthorizationRequestDto) {
+
+        String url = BASE_URL + "/oauth/v2.0/authorize";
+
+//        HttpEntity httpEntity = generateHttpEntity(generateHeader("Authorization", openBankingAccountRequestDto.getAccessToken()));
+
+        UriComponents builder = UriComponentsBuilder.fromHttpUrl(url)
+                .queryParam("response_type", openBankingCodeAuthorizationRequestDto.getResponse_type())
+                .queryParam("client_id", openBankingCodeAuthorizationRequestDto.getClient_id())
+                .queryParam("redirect_uri", openBankingCodeAuthorizationRequestDto.getRedirect_uri())
+                .queryParam("scope", openBankingCodeAuthorizationRequestDto.getScope())
+                .queryParam("state", openBankingCodeAuthorizationRequestDto.getState())
+                .queryParam("auth_type", openBankingCodeAuthorizationRequestDto.getAuth_type())
+                .build();
+
+//        OpenBankingSearchAccountResponseDto openBankingSearchAccountResponseDto = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, OpenBankingSearchAccountResponseDto.class).getBody();
+
+        String result = restTemplate.getForObject(builder.toUriString(), String.class);
+
+//        if(!isCodeValid(openBankingSearchAccountResponseDto.getRsp_code())){
+//            log.error("error code : {}, error msg : {}", openBankingSearchAccountResponseDto.getRsp_code(), openBankingSearchAccountResponseDto.getRsp_message());
+//            throw new RuntimeException(openBankingSearchAccountResponseDto.getRsp_message());
+//        }
+
+    }
 
 
     /**
@@ -63,7 +93,9 @@ public class OpenBankingApiClient {
 
 
     /**
-     * 계좌조회
+     * 계좌 정보 조회
+     * AccountService
+     * - 계좌 저장에서 쓰임
      */
     public OpenBankingSearchAccountResponseDto requestAccountList(OpenBankingSearchAccountRequestDto openBankingAccountRequestDto){
         String url = BASE_URL + "/v2.0/account/list";
@@ -130,6 +162,8 @@ public class OpenBankingApiClient {
 
     /**
      * 사용자 정보 가져오기 - ci값
+     * 계좌 정보도 다 나오는데 흠흠
+     *
      */
     public OpenBankingUserInfoResponseDto requestUserInfo(OpenBankingUserInfoRequestDto openBankingUserInfoRequestDto) {
         String url = BASE_URL + "/v2.0/user/me";

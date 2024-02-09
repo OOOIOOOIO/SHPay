@@ -1,16 +1,13 @@
 package com.sh.shpay.api.openbanking;
 
-import com.sh.shpay.domain.openbanking.api.dto.req.OpenBankingUserCodeRequestDto;
-import com.sh.shpay.domain.openbanking.application.OpenBankingService;
-import com.sh.shpay.global.session.resolver.usersession.UserInfoFromSession;
-import com.sh.shpay.global.session.resolver.usersession.UserInfoFromSessionDto;
+import com.sh.shpay.domain.openbanking.openbanking.application.OpenBankingService;
+import com.sh.shpay.global.resolver.session.UserInfoFromSession;
+import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 
 @Slf4j
 @Controller
@@ -25,7 +22,7 @@ public class OpenbankingViewController {
      * auth-page
      * client-id 넘겨줘야
      * <p>
-     * cod = 처음에 blank여야 첫 화면으로 갈텐데
+     * code = "code"
      */
     @GetMapping("/auth")
     public String authPage(@UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto) {

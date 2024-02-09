@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -16,6 +17,8 @@ import com.querydsl.core.types.Path;
 public class QAccount extends EntityPathBase<Account> {
 
     private static final long serialVersionUID = 556147669L;
+
+    private static final PathInits INITS = PathInits.DIRECT2;
 
     public static final QAccount account = new QAccount("account");
 
@@ -43,18 +46,27 @@ public class QAccount extends EntityPathBase<Account> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
-    public final NumberPath<Long> userId = createNumber("userId", Long.class);
+    public final com.sh.shpay.domain.users.domain.QUsers users;
 
     public QAccount(String variable) {
-        super(Account.class, forVariable(variable));
+        this(Account.class, forVariable(variable), INITS);
     }
 
     public QAccount(Path<? extends Account> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QAccount(PathMetadata metadata) {
-        super(Account.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QAccount(PathMetadata metadata, PathInits inits) {
+        this(Account.class, metadata, inits);
+    }
+
+    public QAccount(Class<? extends Account> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.users = inits.isInitialized("users") ? new com.sh.shpay.domain.users.domain.QUsers(forProperty("users"), inits.get("users")) : null;
     }
 
 }

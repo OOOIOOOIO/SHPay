@@ -11,13 +11,13 @@ public class BalanceRequestDto {
     private String accessToken;
     private Long userId;
     private String fintechUseNum;
-    private String code; // 추가함
+    private String bankTranId; // 추가함 -> tranId
 
     @Builder
-    public BalanceRequestDto(String accessToken, Long userId, String fintechUseNum, String code) {
+    public BalanceRequestDto(String accessToken, Long userId, String fintechUseNum, String bankTranId) {
         this.accessToken = accessToken;
         this.userId = userId;
         this.fintechUseNum = fintechUseNum;
-        this.code = code;
+        this.bankTranId = bankTranId;
     }
 }

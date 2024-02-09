@@ -1,6 +1,7 @@
 package com.sh.shpay.domain.acconut.domain;
 
 import com.sh.shpay.domain.common.BaseTimeEntity;
+import com.sh.shpay.domain.users.domain.Users;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -26,11 +27,12 @@ public class Account extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
     private String holderName;
-    @Column(name = "user_id")
-    private Long userId; // ManyToOne 생각
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    private Users users; // ManyToOne 생각
 
     @Builder
-    private Account(String fintechUseNum, String bankName, String accountNum, String bankCode, String accountSeq, AccountType accountType, String holderName, Long userId) {
+    private Account(String fintechUseNum, String bankName, String accountNum, String bankCode, String accountSeq, AccountType accountType, String holderName, Users users) {
         this.fintechUseNum = fintechUseNum;
         this.bankName = bankName;
         this.accountNum = accountNum;
@@ -38,10 +40,10 @@ public class Account extends BaseTimeEntity {
         this.accountSeq = accountSeq;
         this.accountType = accountType;
         this.holderName = holderName;
-        this.userId = userId;
+        this.users = users;
     }
 
-    public static Account createAccount(String fintechUseNum, String bankName, String accountNum, String bankCode, String accountSeq, AccountType accountType, String holderName, Long userId){
+    public static Account createAccount(String fintechUseNum, String bankName, String accountNum, String bankCode, String accountSeq, AccountType accountType, String holderName, Users users){
         return Account.builder()
                 .fintechUseNum(fintechUseNum)
                 .bankName(bankName)
@@ -50,7 +52,7 @@ public class Account extends BaseTimeEntity {
                 .accountSeq(accountSeq)
                 .accountType(accountType)
                 .holderName(holderName)
-                .userId(userId)
+                .users(users)
                 .build();
     }
 
@@ -61,6 +63,10 @@ public class Account extends BaseTimeEntity {
 
     public void updateAccountType(AccountType accountType) {
         this.accountType = accountType;
+    }
+
+    public void setUsers(Users users) {
+        this.users = users;
     }
 
 

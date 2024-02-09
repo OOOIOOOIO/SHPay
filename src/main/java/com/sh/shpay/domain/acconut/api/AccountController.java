@@ -2,6 +2,8 @@ package com.sh.shpay.domain.acconut.api;
 
 import com.sh.shpay.domain.acconut.api.dto.UserAccountDto;
 import com.sh.shpay.domain.acconut.application.AccountService;
+import com.sh.shpay.global.resolver.token.TokenInfoFromHeader;
+import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -12,44 +14,58 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/account")
+@RequestMapping("/api/openbanking/account")
 @CrossOrigin // CORS 설정. 모든 도메인, 모든 요청방식 허용
 public class AccountController {
 
     private final AccountService accountService;
 
     /**
-     * 계좌 조회
-     * @param userId
-     * @return
+     * 계좌 조회(DB에서 조회)
+     *
+     * userId는 user_seq_no로 db에서 꺼내기. 아래 다 마찬가지
      */
-    @GetMapping("/members/{userid}/account")
-    public ResponseEntity<List<UserAccountDto>> requestAccount(@PathVariable(name = "userId") Long userId){
-        List<UserAccountDto> accounts = accountService.requestAccountByUserId(userId);
+    @GetMapping("/account")
+    public ResponseEntity<List<UserAccountDto>> requestAccount(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto){
+        List<UserAccountDto> accounts = accountService.requestAccountByUserId(tokenInfoFromHeaderDto);
+
         return ResponseEntity.ok().body(accounts);
     }
 
     /**
-     * 계좌 저장
-     * @param userId
-     * @return
+     * 계좌 저장(계좌 조회 후 DB 저장)
+     *
+     * openAPI에서 계좌 리스트 가져옴
      */
-    @PostMapping("/users/{userId}/account")
-    public ResponseEntity<Long> saveAccounts(@PathVariable(name = "userId") Long userId){
-        Long size = accountService.saveAccountList(userId);
+    @PostMapping("/account")
+    public ResponseEntity<Long> saveAccounts(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto){
+        Long size = accountService.saveAccountList(tokenInfoFromHeaderDto);
+
         return ResponseEntity.ok().body(size);
     }
 
     /**
      * 계좌 수정(주계좌 설정)
-     * @param userId
-     * @param accountId
-     * @return
      */
-    @PutMapping("/users/{userId}/account/{accountId}")
-    public ResponseEntity updateAccountType(@PathVariable(name = "userId") Long userId, @PathVariable("accountId") Long accountId) {
-        accountService.updateAccountType(userId, accountId);
+    @PutMapping("/account/{accountId}")
+    public ResponseEntity updateAccountType(@PathVariable("accountId") Long accountId,
+                                            @TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto) {
+        accountService.updateAccountType(tokenInfoFromHeaderDto, accountId);
+
         return ResponseEntity.status(200).build();
     }
+
+    /**
+     * 계좌 정보(잔액 등등) 조회
+     */
+
+
+    /**
+     * 출금이제
+     */
+
+    /**
+     * 사용자 정보(ci, 계좌 리스트) 조회
+     */
 
 }

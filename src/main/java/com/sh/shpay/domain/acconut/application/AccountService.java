@@ -6,12 +6,15 @@ import com.sh.shpay.domain.acconut.api.dto.req.BalanceRequestDto;
 import com.sh.shpay.domain.acconut.domain.Account;
 import com.sh.shpay.domain.acconut.domain.AccountType;
 import com.sh.shpay.domain.acconut.domain.repository.AccountRepository;
-import com.sh.shpay.domain.openbanking.api.dto.res.OpenBankingBalanceResponseDto;
-import com.sh.shpay.domain.openbanking.api.dto.res.OpenBankingSearchAccountResponseDto;
-import com.sh.shpay.domain.openbanking.application.OpenBankingService;
-import com.sh.shpay.domain.openbanking.domain.OpenBankingToken;
-import com.sh.shpay.domain.openbanking.domain.repository.OpenBankingTokenRepository;
-import com.sh.shpay.domain.user.domain.repository.UserRepository;
+import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingBalanceResponseDto;
+import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingSearchAccountResponseDto;
+import com.sh.shpay.domain.openbanking.openbanking.application.OpenBankingService;
+import com.sh.shpay.domain.openbanking.token.domain.OpenBankingToken;
+import com.sh.shpay.domain.openbanking.token.domain.repository.OpenBankingTokenQueryRepositoryImpl;
+import com.sh.shpay.domain.openbanking.token.domain.repository.OpenBankingTokenRepository;
+import com.sh.shpay.domain.users.domain.Users;
+import com.sh.shpay.domain.users.domain.repository.UsersRepository;
+import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,24 +34,31 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 public class AccountService {
-    private final UserRepository userRepository;
+    private final UsersRepository userRepository;
     private final AccountRepository accountRepository;
-    private final OpenBankingTokenRepository tokenRepository; //token, openbanking 합치기
+    private final OpenBankingTokenRepository openBankingTokenRepository; //token, openbanking 합치기
+    private final OpenBankingTokenQueryRepositoryImpl openBankingTokenQueryRepository;
     private final OpenBankingService openBankService;
 
 
     /**
-     * 계좌 조회
+     *  DB에서 계좌 조회 --> 안쓰이는데 왜 안쓰이지
      */
-    public List<UserAccountDto> requestAccountByUserId(Long userId){
+    public List<UserAccountDto> requestAccountByUserId(TokenInfoFromHeaderDto tokenInfoFromHeaderDto){
 
-        if(!userRepository.existsById(userId)){
+        Users users = openBankingTokenQueryRepository.findUsersByAccessToken(tokenInfoFromHeaderDto.getAccessToken()).orElseThrow(() -> new RuntimeException("access_token이 존재하지 않습니다."));
+
+//        if(!userRepository.existsById(userId)){
+//            throw new RuntimeException("유저가 존재하지 않습니다.");
+//        }
+        if(users == null){
             throw new RuntimeException("유저가 존재하지 않습니다.");
         }
 
-        OpenBankingToken openBankingToken = tokenRepository.findByUserId(userId).orElseThrow(() ->new RuntimeException("해당 유저의 토큰이 없습니다."));
+        // 여기서 accessToken을 가져오네 흠...REST 방식으로 헤더에서 안가져오고 DB에서 가져오나보다
+        OpenBankingToken openBankingToken = openBankingTokenRepository.findByUsers(users).orElseThrow(() ->new RuntimeException("해당 유저의 토큰이 없습니다."));
 
-        List<Account> accountList = accountRepository.findByUserId(userId);
+        List<Account> accountList = accountRepository.findByUsers(users);
 
         if(accountList.isEmpty()){
             throw new RuntimeException("유저의 계좌가 존재하지 않습니다.");
@@ -59,7 +69,7 @@ public class AccountService {
                 .map(account -> CompletableFuture.supplyAsync(() -> {
                             String balanceAmt = getBalanceAmt(account.getFintechUseNum(),
                                     openBankingToken.getAccessToken(),
-                                    userId);
+                                    users.getUserId());
 
                             UserAccountDto userAccountDto = UserAccountDto.builder()
                                     .userAccountId(account.getAccountId())
@@ -69,7 +79,7 @@ public class AccountService {
                                     .bankCode(account.getBankCode())
                                     .fintechUseNum(account.getFintechUseNum())
                                     .bankName(account.getBankName())
-                                    .userId(userId)
+                                    .userId(users.getUserId())
                                     .build();
                             return userAccountDto;
 
@@ -88,13 +98,20 @@ public class AccountService {
     /**
      * 계좌 저장
      */
-    public Long saveAccountList(Long userId){
+    public Long saveAccountList(TokenInfoFromHeaderDto tokenInfoFromHeaderDto){
 
-        if(!userRepository.existsById(userId)){
+
+        Users users = openBankingTokenQueryRepository.findUsersByAccessToken(tokenInfoFromHeaderDto.getAccessToken()).orElseThrow(() -> new RuntimeException("access_token이 존재하지 않습니다."));
+
+//        if(!userRepository.existsById(userId)){
+//            throw new RuntimeException("유저가 존재하지 않습니다.");
+//        }
+        if(users == null){
             throw new RuntimeException("유저가 존재하지 않습니다.");
         }
 
-        OpenBankingToken openBankingToken = tokenRepository.findByUserId(userId).orElseThrow(() ->new RuntimeException("해당 유저의 토큰이 없습니다."));
+
+        OpenBankingToken openBankingToken = openBankingTokenRepository.findByUsers(users).orElseThrow(() ->new RuntimeException("해당 유저의 토큰이 없습니다."));
 
         AccountRequestDto accountRequestDto = AccountRequestDto.builder()
                 .accessToken(openBankingToken.getAccessToken())
@@ -103,7 +120,7 @@ public class AccountService {
 
         OpenBankingSearchAccountResponseDto openBankingSearchAccountResponseDto = openBankService.requestAccountList(accountRequestDto);
 
-        List<Account> userAllAccountList = accountRepository.findByUserId(userId);
+        List<Account> userAllAccountList = accountRepository.findByUsers(users);
 
         // fintechUseNum Map 보다 Set이 낫지 않을까 어차피 중복도 없는데
         HashMap<String, String> fintechUseNumMap= getFintechUseNum(userAllAccountList);
@@ -120,12 +137,21 @@ public class AccountService {
                                 resultAccount.getAccount_seq(),
                                 AccountType.SUB, // 우선 SUB으로
                                 resultAccount.getAccount_holder_name(),
-                                userId
+                                users
                         )
                 )
                 .collect(Collectors.toList());
 
         if(filterAccountList.isEmpty()) return 0L;
+
+        // == cascade ==
+
+//        for(Account account : filterAccountList){
+//            users.addAccountList(account);
+//        }
+//        userRepository.save(users);
+
+        // == cascade ==
 
         accountRepository.saveAll(filterAccountList); // 새로운 계좌들 전부 저장
 
@@ -137,14 +163,23 @@ public class AccountService {
     /**
      * 주계좌 설정
      */
-    public void updateAccountType(Long userId, Long accountId){
+    public void updateAccountType(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, Long accountId){
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new RuntimeException("해당 계좌가 존재하지 않습니다."));
 
         if(account.isMainAccount()){
             throw new RuntimeException("이미 주계좌로 설정되어 있습니다.");
         }
 
-        Optional<Account> lastMainAccount = accountRepository.findMainAccountByUserId(userId);
+        Users users = openBankingTokenQueryRepository.findUsersByAccessToken(tokenInfoFromHeaderDto.getAccessToken()).orElseThrow(() -> new RuntimeException("access_token이 존재하지 않습니다."));
+
+//        if(!userRepository.existsById(userId)){
+//            throw new RuntimeException("유저가 존재하지 않습니다.");
+//        }
+        if(users == null){
+            throw new RuntimeException("유저가 존재하지 않습니다.");
+        }
+
+        Optional<Account> lastMainAccount = accountRepository.findMainAccountByUsers(users);
 
         if(lastMainAccount.isEmpty()){ // 주계좌가 없다면 조회한 계좌를 주계좌로 변경
             account.updateAccountType(AccountType.MAIN);
@@ -155,7 +190,6 @@ public class AccountService {
         }
 
     }
-
 
 
     /**
