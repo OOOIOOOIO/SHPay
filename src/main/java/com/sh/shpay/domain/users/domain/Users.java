@@ -72,6 +72,7 @@ public class Users extends BaseTimeEntity {
         this.accountList.add(account);
     }
 
+
     public void updateUserSeqNo(String userSeqNo){
         this.userSeqNo = userSeqNo;
     }

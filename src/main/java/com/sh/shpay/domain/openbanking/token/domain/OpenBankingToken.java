@@ -1,6 +1,7 @@
 package com.sh.shpay.domain.openbanking.token.domain;
 
 import com.sh.shpay.domain.common.BaseTimeEntity;
+import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingUserRefreshTokenResponseDto;
 import com.sh.shpay.domain.users.domain.Users;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -59,4 +60,10 @@ public class OpenBankingToken extends BaseTimeEntity {
     }
 
 
+    public void updateOpenBankingToken(OpenBankingUserRefreshTokenResponseDto openBankingUserRefreshTokenResponseDto) {
+        this.accessToken = openBankingUserRefreshTokenResponseDto.getAccess_token();
+        this.expireMin = openBankingUserRefreshTokenResponseDto.getExpires_in();
+        this.refreshToken = openBankingUserRefreshTokenResponseDto.getRefresh_token();
+
+    }
 }

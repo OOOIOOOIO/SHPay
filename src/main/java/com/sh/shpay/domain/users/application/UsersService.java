@@ -7,7 +7,6 @@ import com.sh.shpay.domain.users.api.dto.req.UserSignUpRequestDto;
 import com.sh.shpay.domain.users.api.dto.res.UserResponseDto;
 import com.sh.shpay.domain.users.domain.Users;
 import com.sh.shpay.domain.users.domain.repository.UsersRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class UserService {
+public class UsersService {
 
     private final UsersRepository userRepository;
     private final OpenBankingTokenRepository openBankingTokenRepository;
@@ -61,7 +60,7 @@ public class UserService {
     /**
      * 유저 찾기
      */
-    public void findUser(){
+    public void updateUser(Long userId){
 
     }
 

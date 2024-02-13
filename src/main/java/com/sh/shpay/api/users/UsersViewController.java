@@ -1,15 +1,10 @@
 package com.sh.shpay.api.users;
 
-import com.sh.shpay.domain.users.api.dto.req.UserSignUpRequestDto;
-import com.sh.shpay.domain.users.application.UserService;
+import com.sh.shpay.domain.users.application.UsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
@@ -29,7 +24,7 @@ public class UsersViewController {
         return "sign-in-page";
     }
 
-    private final UserService userService;
+    private final UsersService usersService;
 
 
     /**

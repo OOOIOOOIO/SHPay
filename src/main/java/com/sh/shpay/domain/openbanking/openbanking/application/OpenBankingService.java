@@ -103,7 +103,6 @@ public class OpenBankingService {
 
         OpenBankingUserRefreshTokenResponseDto openBankingUserRefreshTokenResponseDto = openBankingApiClient.refreshUserToken(openBankingUserRefreshTokenRequestDto);
 
-
         return openBankingUserRefreshTokenResponseDto;
     }
 

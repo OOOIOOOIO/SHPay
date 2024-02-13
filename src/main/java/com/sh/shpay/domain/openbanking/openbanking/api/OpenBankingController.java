@@ -4,6 +4,8 @@ import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.OpenBankingUserCo
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingUserRefreshTokenResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingUserTokenResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.application.OpenBankingService;
+import com.sh.shpay.domain.openbanking.token.application.OpenBankingTokenService;
+import com.sh.shpay.domain.users.application.UsersService;
 import com.sh.shpay.global.resolver.session.UserInfoFromSession;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
 import com.sh.shpay.global.resolver.token.TokenInfoFromHeader;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class OpenBankingController {
 
     private final OpenBankingService openBankingService;
+    private final OpenBankingTokenService openBankingTokenService;
 
 
     /**
@@ -41,7 +44,7 @@ public class OpenBankingController {
     /**
      * 사용자 토큰 발급 요청, 3-legged
      *
-     * response : code, scope, client_info, state
+     * response param : code, scope, client_info, state
      *
      * 3000113 : code가 만료 되었을 때
      * 3000114 : 콜백url이 다를떄
@@ -50,21 +53,20 @@ public class OpenBankingController {
     @GetMapping("/token/request")
     public ResponseEntity<OpenBankingUserTokenResponseDto> requestUserToken(@RequestParam(name = "code") String code,
                                                                             @RequestParam(name = "scope") String scope,
-                                                                            @RequestParam(name = "state") String state) {
+                                                                            @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto) {
         log.info("================= OpenBankingController | api/openbanking/token/request =================");
         log.info("code : " + code);
         log.info("scope : " + scope);
 
-        /**
-         * userId 수정
-         */
-        OpenBankingUserCodeRequestDto openBankingUserCodeRequestDto = new OpenBankingUserCodeRequestDto(code, 1L);
+        OpenBankingUserCodeRequestDto openBankingUserCodeRequestDto = new OpenBankingUserCodeRequestDto(code, userInfoFromSessionDto.getUserId());
 
         OpenBankingUserTokenResponseDto openBankingUserTokenResponseDto = openBankingService.requestUserToken(openBankingUserCodeRequestDto);
 
         /**
-         * 여기서 user 정보 저장
+         * 여기서 token 정보 저장
          */
+        openBankingTokenService.saveOpenBankingUserToken(openBankingUserTokenResponseDto, userInfoFromSessionDto.getUserId());
+
         log.info("access_token : " + openBankingUserTokenResponseDto.getAccess_token());
         log.info("user_seq_no : " + openBankingUserTokenResponseDto.getUser_seq_no());
         log.info("refresh_token : " + openBankingUserTokenResponseDto.getRefresh_token());
@@ -84,11 +86,15 @@ public class OpenBankingController {
      * GET/POST 둘 다 가능
      */
     @PostMapping("/token/refresh")
-    public ResponseEntity<OpenBankingUserRefreshTokenResponseDto> refreshUserToken(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto){
+    public ResponseEntity<OpenBankingUserRefreshTokenResponseDto> refreshUserToken(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
+                                                                                   @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
 
         log.info("================= OpenBankingController | api/openbanking/token/request =================");
 
         OpenBankingUserRefreshTokenResponseDto openBankingUserRefreshTokenResponseDto = openBankingService.refreshUserToken(tokenInfoFromHeaderDto);
+
+        // token 저장
+        openBankingTokenService.updateTokenInfo(openBankingUserRefreshTokenResponseDto, userInfoFromSessionDto.getUserId());
 
         log.info("access_token : " + openBankingUserRefreshTokenResponseDto.getAccess_token());
         log.info("user_seq_no : " + openBankingUserRefreshTokenResponseDto.getUser_seq_no());
