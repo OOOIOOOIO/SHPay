@@ -108,7 +108,7 @@ public class OpenBankingService {
 
 
     /**
-     * 계좌조회
+     * 등록계좌조회
      */
     public OpenBankingSearchAccountResponseDto requestAccountList(AccountRequestDto accountRequestDto){
 
@@ -145,6 +145,18 @@ public class OpenBankingService {
     }
 
     /**
+     * 거래내역조회
+     */
+
+
+    /**
+     * 출금이제
+     */
+
+
+
+
+    /**
      * 출금이체
      */
     public OpenBankingTransferResponseDto requestTransfer(String accessToken, OpenBankingTransferRequestDto openBankingTransferRequestDto){
@@ -153,6 +165,12 @@ public class OpenBankingService {
 
         return openBankingTransferResponseDto;
     }
+
+
+    /**
+     * 입금이체
+     */
+
 
     /**
      * 사용자 정보 가져오기 - ci값

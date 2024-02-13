@@ -65,7 +65,6 @@ public class OpenBankingTokenService {
 
         openBankingToken.updateOpenBankingToken(openBankingUserRefreshTokenResponseDto);
 
-
     }
 
     /**

@@ -93,7 +93,7 @@ public class OpenBankingApiClient {
 
 
     /**
-     * 계좌 정보 조회
+     * 등록계좌조회
      * AccountService
      * - 계좌 저장에서 쓰임
      */
@@ -144,6 +144,11 @@ public class OpenBankingApiClient {
     }
 
     /**
+     * 거래내역조회
+     *
+     */
+
+    /**
      * 계좌이체(출금이체)
      */
     public OpenBankingTransferResponseDto requestTransfer(String access_token, OpenBankingTransferRequestDto openBankingTransferRequestDto){
@@ -158,6 +163,11 @@ public class OpenBankingApiClient {
         return transferResponseDto;
 
     }
+
+    /**
+     * 입금이체
+     */
+
 
 
     /**
