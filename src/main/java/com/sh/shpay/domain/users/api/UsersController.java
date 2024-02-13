@@ -3,9 +3,8 @@ package com.sh.shpay.domain.users.api;
 import com.sh.shpay.domain.users.api.dto.req.UserSignInRequestDto;
 import com.sh.shpay.domain.users.api.dto.req.UserSignUpRequestDto;
 import com.sh.shpay.domain.users.api.dto.res.UserResponseDto;
-import com.sh.shpay.domain.users.application.UserService;
+import com.sh.shpay.domain.users.application.UsersService;
 import com.sh.shpay.global.common.SessionConst;
-import com.sh.shpay.global.resolver.session.UserInfoFromSession;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -21,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/users")
 public class UsersController {
 
-    private final UserService userService;
+    private final UsersService usersService;
 
 
     /**
@@ -32,7 +31,7 @@ public class UsersController {
 
         log.info("================= UsersController | api/users/signup =================");
 
-        userService.signUp(userSignUpRequestDto);
+        usersService.signUp(userSignUpRequestDto);
 
         return new ResponseEntity<>("success", HttpStatus.OK);
     }
@@ -46,7 +45,7 @@ public class UsersController {
                                                   HttpServletRequest request){
         log.info("================= UsersController | api/users/signin =================");
 
-        UserResponseDto userResponseDto = userService.signIn(signInRequestDto);
+        UserResponseDto userResponseDto = usersService.signIn(signInRequestDto);
 
         // session 저장
         HttpSession session = request.getSession(false);

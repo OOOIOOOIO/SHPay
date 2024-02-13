@@ -2,6 +2,8 @@ package com.sh.shpay.domain.acconut.api;
 
 import com.sh.shpay.domain.acconut.api.dto.UserAccountDto;
 import com.sh.shpay.domain.acconut.application.AccountService;
+import com.sh.shpay.global.resolver.session.UserInfoFromSession;
+import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
 import com.sh.shpay.global.resolver.token.TokenInfoFromHeader;
 import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderDto;
 import lombok.RequiredArgsConstructor;
@@ -26,14 +28,15 @@ public class AccountController {
      * userId는 user_seq_no로 db에서 꺼내기. 아래 다 마찬가지
      */
     @GetMapping("/account")
-    public ResponseEntity<List<UserAccountDto>> requestAccount(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto){
-        List<UserAccountDto> accounts = accountService.requestAccountByUserId(tokenInfoFromHeaderDto);
+    public ResponseEntity<List<UserAccountDto>> requestAccount(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
+                                                               @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
+        List<UserAccountDto> accounts = accountService.requestAccountList(tokenInfoFromHeaderDto);
 
         return ResponseEntity.ok().body(accounts);
     }
 
     /**
-     * 계좌 저장(계좌 조회 후 DB 저장)
+     * 등록계좌조회 후 DB 저장(계좌 조회 API 조회 후 DB 저장)
      *
      * openAPI에서 계좌 리스트 가져옴
      */
@@ -52,11 +55,18 @@ public class AccountController {
                                             @TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto) {
         accountService.updateAccountType(tokenInfoFromHeaderDto, accountId);
 
-        return ResponseEntity.status(200).build();
+        return ResponseEntity.ok().build();
     }
 
+
     /**
+     * 잔액조회
      * 계좌 정보(잔액 등등) 조회
+     */
+
+
+    /**
+     * 거래내역조회
      */
 
 
@@ -64,8 +74,15 @@ public class AccountController {
      * 출금이제
      */
 
+
+    /**
+     * 입금이체
+     */
+
+
     /**
      * 사용자 정보(ci, 계좌 리스트) 조회
      */
+
 
 }

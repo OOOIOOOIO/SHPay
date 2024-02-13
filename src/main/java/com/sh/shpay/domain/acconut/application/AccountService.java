@@ -44,7 +44,7 @@ public class AccountService {
     /**
      *  DB에서 계좌 조회 --> 안쓰이는데 왜 안쓰이지
      */
-    public List<UserAccountDto> requestAccountByUserId(TokenInfoFromHeaderDto tokenInfoFromHeaderDto){
+    public List<UserAccountDto> requestAccountList(TokenInfoFromHeaderDto tokenInfoFromHeaderDto){
 
         Users users = openBankingTokenQueryRepository.findUsersByAccessToken(tokenInfoFromHeaderDto.getAccessToken()).orElseThrow(() -> new RuntimeException("access_token이 존재하지 않습니다."));
 
@@ -103,9 +103,6 @@ public class AccountService {
 
         Users users = openBankingTokenQueryRepository.findUsersByAccessToken(tokenInfoFromHeaderDto.getAccessToken()).orElseThrow(() -> new RuntimeException("access_token이 존재하지 않습니다."));
 
-//        if(!userRepository.existsById(userId)){
-//            throw new RuntimeException("유저가 존재하지 않습니다.");
-//        }
         if(users == null){
             throw new RuntimeException("유저가 존재하지 않습니다.");
         }
@@ -172,9 +169,6 @@ public class AccountService {
 
         Users users = openBankingTokenQueryRepository.findUsersByAccessToken(tokenInfoFromHeaderDto.getAccessToken()).orElseThrow(() -> new RuntimeException("access_token이 존재하지 않습니다."));
 
-//        if(!userRepository.existsById(userId)){
-//            throw new RuntimeException("유저가 존재하지 않습니다.");
-//        }
         if(users == null){
             throw new RuntimeException("유저가 존재하지 않습니다.");
         }
@@ -193,7 +187,9 @@ public class AccountService {
 
 
     /**
-     * 계좌 잔액조회
+     * 잔액조회
+     *
+     * 그냥 balance_amt만 하넹 view 생각해보기
      */
     private String getBalanceAmt(String fintechUseNum, String accessToken, Long userId){
         String balanceAmt = "";
@@ -215,6 +211,27 @@ public class AccountService {
 
         return balanceAmt;
     }
+
+    /**
+     * 거래내역조회
+     */
+
+
+    /**
+     * 출금이제
+     */
+
+
+    /**
+     * 입금이체
+     */
+
+
+    /**
+     * 사용자 정보(ci, 계좌 리스트) 조회
+     */
+
+    // =================
 
     /**
      * 비동기 쓰레드 개수 설정
