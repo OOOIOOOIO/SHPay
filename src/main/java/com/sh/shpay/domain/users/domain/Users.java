@@ -23,6 +23,7 @@ public class Users extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
+    private String name;
     @NotNull
     @Column(unique = true)
     private String email;
@@ -43,15 +44,17 @@ public class Users extends BaseTimeEntity {
     private OpenBankingToken openBankingToken;
 
     @Builder
-    private Users(String email, String password, String openBankCi, String userSeqNo) {
+    private Users(String name, String email, String password, String openBankCi, String userSeqNo) {
+        this.name = name;
         this.email = email;
         this.password = password;
         this.openBankCi = openBankCi;
         this.userSeqNo = userSeqNo;
     }
 
-    public static Users createUser(String email, String password, String openBankCi, String userSeqNo){
+    public static Users createUser(String name, String email, String password, String openBankCi, String userSeqNo){
         return Users.builder()
+                .name(name)
                 .email(email)
                 .password(password)
                 .openBankCi(openBankCi)

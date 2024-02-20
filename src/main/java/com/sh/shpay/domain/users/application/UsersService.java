@@ -26,7 +26,9 @@ public class UsersService {
      * 회원가입
      */
     public void signUp(UserSignUpRequestDto userSignUpRequestDto){
-        Users user = Users.createUser(userSignUpRequestDto.getEmail(),
+        Users user = Users.createUser(
+                userSignUpRequestDto.getName(),
+                userSignUpRequestDto.getEmail(),
                 userSignUpRequestDto.getPassword(),
                 null,
                 null);

@@ -1,7 +1,11 @@
 package com.sh.shpay.global.util.openbanking;
 
+import com.sh.shpay.domain.acconut.api.dto.req.TransactionListRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.res.TransactionListResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.*;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.*;
+import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
+import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -147,26 +151,46 @@ public class OpenBankingApiClient {
      * 거래내역조회
      *
      */
+    public TransactionListResponseDto requestTransactionList(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, TransactionListRequestDto transactionListRequestDto){
+        String url = BASE_URL + "/v2.0/account/transaction_list/fin_num";
+
+        HttpEntity httpEntity = generateHttpEntity(generateHeader("Authorization", tokenInfoFromHeaderDto.getAccessToken()));
+        transactionListRequestDto.setTran_dtime(OpenBankingUtil.transTime());
+
+        UriComponents builder = UriComponentsBuilder.fromHttpUrl(url)
+                .queryParam("bank_tran_id", transactionListRequestDto.getBank_tran_id())
+                .queryParam("fintech_use_num", transactionListRequestDto.getFintech_use_num())
+                .queryParam("inquiry_type", transactionListRequestDto.getInquiry_type())
+                .queryParam("inquiry_base", transactionListRequestDto.getInquiry_base())
+                .queryParam("from_date", transactionListRequestDto.getFrom_date())
+                .queryParam("to_date", transactionListRequestDto.getTo_date())
+                .queryParam("sort_order", transactionListRequestDto.getSort_order())
+                .build();
+
+        TransactionListResponseDto transactionListResponseDto = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, TransactionListResponseDto.class).getBody();
+
+        return transactionListResponseDto;
+
+
+    }
+
 
     /**
-     * 계좌이체(출금이체)
+     * 출금이체
      */
-    public OpenBankingTransferResponseDto requestTransfer(String access_token, OpenBankingTransferRequestDto openBankingTransferRequestDto){
+    public OpenBankingTransferResponseDto requestWithdraw(String access_token, OpenBankingTransferRequestDto openBankingTransferRequestDto){
         String url = BASE_URL + "/v2.0/transfer/withdraw/fin_num";
 
         openBankingTransferRequestDto.setTran_dtime(OpenBankingUtil.transTime());
 
-        ResponseEntity<OpenBankingTransferRequestDto> param = new ResponseEntity<>(openBankingTransferRequestDto, generateHeader("Authorization", access_token), HttpStatus.OK);
+        ResponseEntity<OpenBankingTransferRequestDto> body = new ResponseEntity<>(openBankingTransferRequestDto, generateHeader("Authorization", access_token), HttpStatus.OK);
 
-        OpenBankingTransferResponseDto transferResponseDto = restTemplate.exchange(url, HttpMethod.POST, param, OpenBankingTransferResponseDto.class).getBody();
+        OpenBankingTransferResponseDto transferResponseDto = restTemplate.exchange(url, HttpMethod.POST, body, OpenBankingTransferResponseDto.class).getBody();
 
         return transferResponseDto;
 
     }
 
-    /**
-     * 입금이체
-     */
 
 
 
@@ -175,13 +199,13 @@ public class OpenBankingApiClient {
      * 계좌 정보도 다 나오는데 흠흠
      *
      */
-    public OpenBankingUserInfoResponseDto requestUserInfo(OpenBankingUserInfoRequestDto openBankingUserInfoRequestDto) {
+    public OpenBankingUserInfoResponseDto requestUserInfo(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, String userSeqNo) {
         String url = BASE_URL + "/v2.0/user/me";
 
-        HttpEntity httpEntity = generateHttpEntity(generateHeader("Authorization", openBankingUserInfoRequestDto.getAccessToken()));
+        HttpEntity httpEntity = generateHttpEntity(generateHeader("Authorization", tokenInfoFromHeaderDto.getAccessToken()));
 
         UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(url)
-                .queryParam("user_seq_no", openBankingUserInfoRequestDto.getUser_seq_no())
+                .queryParam("user_seq_no", userSeqNo)
                 .build();
 
         OpenBankingUserInfoResponseDto openBankingUserInfoResponseDto = restTemplate.exchange(uriComponents.toUriString(), HttpMethod.GET, httpEntity, OpenBankingUserInfoResponseDto.class).getBody();

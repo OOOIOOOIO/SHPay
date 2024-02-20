@@ -1,10 +1,18 @@
 package com.sh.shpay.domain.openbanking.openbanking.application;
 
 
+import com.sh.shpay.domain.acconut.api.dto.WithdrawAccountInfoDto;
 import com.sh.shpay.domain.acconut.api.dto.req.AccountRequestDto;
 import com.sh.shpay.domain.acconut.api.dto.req.BalanceRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.req.TransactionListRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.req.WithdrawRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.res.TransactionListResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.*;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.*;
+import com.sh.shpay.domain.openbanking.token.domain.OpenBankingToken;
+import com.sh.shpay.domain.users.domain.Users;
+import com.sh.shpay.domain.users.domain.repository.UsersRepository;
+import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
 import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderDto;
 import com.sh.shpay.global.util.openbanking.OpenBankingApiClient;
 import com.sh.shpay.global.util.openbanking.OpenBankingUtil;
@@ -32,6 +40,7 @@ public class OpenBankingService {
     @Value("${openbanking.redirect-uri}")
     private String redirectUri;
     private final OpenBankingApiClient openBankingApiClient;
+    private final UsersRepository usersRepository;
 
 
     /**
@@ -147,36 +156,71 @@ public class OpenBankingService {
     /**
      * 거래내역조회
      */
+    public TransactionListResponseDto requestTransactionList(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, String fintechUseNum){
 
+        TransactionListRequestDto transactionListRequestDto = TransactionListRequestDto.builder()
+                .bank_tran_id(OpenBankingUtil.generateBankTranId(bankTranId + "U"))
+                .fintech_use_num(fintechUseNum)
+                .inquiry_base("A")
+                .inquiry_base("D")
+                .from_date(OpenBankingUtil.transTime().substring(0, 6))
+                .to_date(OpenBankingUtil.transTime().substring(0, 6))
+                .sort_order("D")
+                .build();
 
-    /**
-     * 출금이제
-     */
+        TransactionListResponseDto transactionListResponseDto = openBankingApiClient.requestTransactionList(tokenInfoFromHeaderDto, transactionListRequestDto);
 
+        return transactionListResponseDto;
+
+    }
 
 
 
     /**
      * 출금이체
      */
-    public OpenBankingTransferResponseDto requestTransfer(String accessToken, OpenBankingTransferRequestDto openBankingTransferRequestDto){
+    public OpenBankingTransferResponseDto requestWithdraw(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, WithdrawAccountInfoDto withdrawAccountInfoDto, WithdrawRequestDto withdrawRequestDto){
 
-        OpenBankingTransferResponseDto openBankingTransferResponseDto = openBankingApiClient.requestTransfer(accessToken, openBankingTransferRequestDto);
+        OpenBankingTransferRequestDto openBankingTransferRequestDto = OpenBankingTransferRequestDto.builder()
+                .bank_tran_id(OpenBankingUtil.generateBankTranId(bankTranId + "U"))
+                .cntr_account_type("N") // N : 계좌, C : 계정
+                .cntr_account_num(withdrawAccountInfoDto.getAccount_num())
+                .dps_print_content(withdrawRequestDto.getDps_print_content())
+                .fintech_use_num(withdrawAccountInfoDto.getFintech_use_num())
+                .wd_print_content(withdrawRequestDto.getWd_print_content())
+                .tran_amt(withdrawRequestDto.getTran_amt())
+                .req_client_name(userInfoFromSessionDto.getName())
+                .req_client_fintech_use_num(withdrawAccountInfoDto.getFintech_use_num())
+                .req_client_num(userInfoFromSessionDto.getName())
+                .transfer_purpose("ST")
+                .recv_client_name(withdrawRequestDto.getRecv_client_name())
+                .recv_client_bank_code("097") // test : 097
+                .recv_client_account_num(withdrawRequestDto.getRecv_client_account_num())
+                .build();
+
+        openBankingTransferRequestDto.setTran_dtime(OpenBankingUtil.transTime());
+
+        OpenBankingTransferResponseDto openBankingTransferResponseDto = openBankingApiClient.requestWithdraw(tokenInfoFromHeaderDto.getAccessToken(), openBankingTransferRequestDto);
 
         return openBankingTransferResponseDto;
     }
 
 
-    /**
-     * 입금이체
-     */
+
 
 
     /**
      * 사용자 정보 가져오기 - ci값
      */
-    public OpenBankingUserInfoResponseDto requestUserInfo(OpenBankingUserInfoRequestDto openBankingUserInfoRequestDto){
-        OpenBankingUserInfoResponseDto openBankingUserInfoResponseDto = openBankingApiClient.requestUserInfo(openBankingUserInfoRequestDto);
+    public OpenBankingUserInfoResponseDto requestUserInfo(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto){
+
+        Users users = usersRepository.findById(userInfoFromSessionDto.getUserId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다"));
+
+        if(users == null){
+            throw new RuntimeException("유저가 존재하지 않습니다.");
+        }
+
+        OpenBankingUserInfoResponseDto openBankingUserInfoResponseDto = openBankingApiClient.requestUserInfo(tokenInfoFromHeaderDto, users.getUserSeqNo());
 
         return openBankingUserInfoResponseDto;
     }

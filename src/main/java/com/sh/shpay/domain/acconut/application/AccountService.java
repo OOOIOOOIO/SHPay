@@ -1,20 +1,27 @@
 package com.sh.shpay.domain.acconut.application;
 
 import com.sh.shpay.domain.acconut.api.dto.UserAccountDto;
+import com.sh.shpay.domain.acconut.api.dto.WithdrawAccountInfoDto;
 import com.sh.shpay.domain.acconut.api.dto.req.AccountRequestDto;
 import com.sh.shpay.domain.acconut.api.dto.req.BalanceRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.req.WithdrawRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.res.TransactionListResponseDto;
 import com.sh.shpay.domain.acconut.domain.Account;
 import com.sh.shpay.domain.acconut.domain.AccountType;
 import com.sh.shpay.domain.acconut.domain.repository.AccountRepository;
+import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.OpenBankingTransferRequestDto;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingBalanceResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingSearchAccountResponseDto;
+import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingTransferResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.application.OpenBankingService;
 import com.sh.shpay.domain.openbanking.token.domain.OpenBankingToken;
 import com.sh.shpay.domain.openbanking.token.domain.repository.OpenBankingTokenQueryRepositoryImpl;
 import com.sh.shpay.domain.openbanking.token.domain.repository.OpenBankingTokenRepository;
 import com.sh.shpay.domain.users.domain.Users;
 import com.sh.shpay.domain.users.domain.repository.UsersRepository;
+import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
 import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderDto;
+import com.sh.shpay.global.util.openbanking.OpenBankingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -42,7 +49,7 @@ public class AccountService {
 
 
     /**
-     *  DB에서 계좌 조회 --> 안쓰이는데 왜 안쓰이지
+     *  DB에서 계좌 조회 --> 오픈뱅킹 API로 잔액조회
      */
     public List<UserAccountDto> requestAccountList(TokenInfoFromHeaderDto tokenInfoFromHeaderDto){
 
@@ -67,7 +74,7 @@ public class AccountService {
         //계좌 수 만큼 비동기 요청
         List<UserAccountDto> userAccountDtoList = accountList.stream()
                 .map(account -> CompletableFuture.supplyAsync(() -> {
-                            String balanceAmt = getBalanceAmt(account.getFintechUseNum(),
+                            String balanceAmt = getBalanceAmt(account.getFintechUseNum(), // 잔액조회
                                     openBankingToken.getAccessToken(),
                                     users.getUserId());
 
@@ -189,7 +196,6 @@ public class AccountService {
     /**
      * 잔액조회
      *
-     * 그냥 balance_amt만 하넹 view 생각해보기
      */
     private String getBalanceAmt(String fintechUseNum, String accessToken, Long userId){
         String balanceAmt = "";
@@ -201,7 +207,7 @@ public class AccountService {
                     .userId(userId)
                     .build();
 
-            OpenBankingBalanceResponseDto openBankingBalanceResponseDto = openBankService.requestBalance(balanceRequestDto); // 여기서 비동기 통신
+            OpenBankingBalanceResponseDto openBankingBalanceResponseDto = openBankService.requestBalance(balanceRequestDto); // 잔액조회 여기서 비동기 통신
 
             return openBankingBalanceResponseDto.getBalance_amt();
         } catch (Exception e) {
@@ -215,16 +221,34 @@ public class AccountService {
     /**
      * 거래내역조회
      */
+    public TransactionListResponseDto requestTransactionList(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, Long accountId){
+
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new RuntimeException("계좌가 존재하지 않습니다."));
+
+        TransactionListResponseDto transactionListResponseDto = openBankService.requestTransactionList(tokenInfoFromHeaderDto, account.getFintechUseNum());
+
+        return transactionListResponseDto;
+
+    }
 
 
     /**
      * 출금이제
      */
+    public OpenBankingTransferResponseDto requestWithdraw(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, Long accountId, WithdrawRequestDto withdrawRequestDto){
 
 
-    /**
-     * 입금이체
-     */
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new RuntimeException("계좌가 존재하지 않습니다."));
+
+        WithdrawAccountInfoDto withdrawAccountInfoDto = new WithdrawAccountInfoDto(account.getAccountNum(), account.getFintechUseNum());
+
+
+        OpenBankingTransferResponseDto openBankingTransferResponseDto = openBankService.requestWithdraw(tokenInfoFromHeaderDto, userInfoFromSessionDto, withdrawAccountInfoDto, withdrawRequestDto);
+
+        return openBankingTransferResponseDto;
+
+    }
+
 
 
     /**

@@ -49,7 +49,7 @@ public class UsersController {
 
         // session 저장
         HttpSession session = request.getSession(false);
-        session.setAttribute(SessionConst.COMMON_USER.name(), new UserInfoFromSessionDto(userResponseDto.getUserId(), userResponseDto.getEmail()));
+        session.setAttribute(SessionConst.COMMON_USER.name(), new UserInfoFromSessionDto(userResponseDto.getUserId(), userResponseDto.getName(), userResponseDto.getEmail()));
 
         UserInfoFromSessionDto userInfoFromSessionDto = (UserInfoFromSessionDto) session.getAttribute(SessionConst.COMMON_USER.name());
         log.info("==== session 저장 성공 ====");

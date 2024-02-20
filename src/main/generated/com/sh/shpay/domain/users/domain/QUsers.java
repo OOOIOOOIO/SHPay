@@ -31,6 +31,8 @@ public class QUsers extends EntityPathBase<Users> {
 
     public final StringPath email = createString("email");
 
+    public final StringPath name = createString("name");
+
     public final StringPath openBankCi = createString("openBankCi");
 
     public final com.sh.shpay.domain.openbanking.token.domain.QOpenBankingToken openBankingToken;

@@ -1,6 +1,7 @@
 package com.sh.shpay.domain.openbanking.openbanking.api;
 
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.OpenBankingUserCodeRequestDto;
+import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingUserInfoResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingUserRefreshTokenResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingUserTokenResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.application.OpenBankingService;
@@ -106,5 +107,15 @@ public class OpenBankingController {
         return new ResponseEntity<>(openBankingUserRefreshTokenResponseDto, HttpStatus.OK);
     }
 
+    /**
+     * 사용자 정보 가져오기 - ci값, 계좌 리스트 등등
+     */
+    public OpenBankingUserInfoResponseDto requestUserInfo(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
+                                                          @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto) {
+
+        openBankingService.requestUserInfo(tokenInfoFromHeaderDto, userInfoFromSessionDto);
+
+        return null;
+    }
 
 }

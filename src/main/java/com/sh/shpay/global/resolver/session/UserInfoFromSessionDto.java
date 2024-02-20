@@ -8,10 +8,12 @@ import lombok.NoArgsConstructor;
 public class UserInfoFromSessionDto {
 
     private Long userId;
+    private String name;
     private String email;
 
-    public UserInfoFromSessionDto(Long userId, String email) {
+    public UserInfoFromSessionDto(Long userId, String name, String email) {
         this.userId = userId;
+        this.name = name;
         this.email = email;
     }
 }

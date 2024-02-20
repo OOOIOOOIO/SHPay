@@ -1,13 +1,17 @@
 package com.sh.shpay.domain.acconut.api;
 
 import com.sh.shpay.domain.acconut.api.dto.UserAccountDto;
+import com.sh.shpay.domain.acconut.api.dto.req.WithdrawRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.res.TransactionListResponseDto;
 import com.sh.shpay.domain.acconut.application.AccountService;
+import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingTransferResponseDto;
 import com.sh.shpay.global.resolver.session.UserInfoFromSession;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
 import com.sh.shpay.global.resolver.token.TokenInfoFromHeader;
 import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,9 +27,9 @@ public class AccountController {
     private final AccountService accountService;
 
     /**
-     * 계좌 조회(DB에서 조회)
+     * 계좌 조회(DB에서 계좌 조회 --> 오픈뱅킹 API로 잔액조회)
      *
-     * userId는 user_seq_no로 db에서 꺼내기. 아래 다 마찬가지
+     *
      */
     @GetMapping("/account")
     public ResponseEntity<List<UserAccountDto>> requestAccount(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
@@ -59,30 +63,35 @@ public class AccountController {
     }
 
 
-    /**
-     * 잔액조회
-     * 계좌 정보(잔액 등등) 조회
-     */
-
 
     /**
      * 거래내역조회
      */
+    public ResponseEntity<TransactionListResponseDto> transactionList(@PathVariable("accountId") Long accountId,
+                                                                      @TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto){
+
+        TransactionListResponseDto transactionListResponseDto = accountService.requestTransactionList(tokenInfoFromHeaderDto, accountId);
+
+        return new ResponseEntity<>(transactionListResponseDto, HttpStatus.OK);
+    }
+
 
 
     /**
      * 출금이제
      */
+    public OpenBankingTransferResponseDto requestWithdraw(@PathVariable("accountId") Long accountId,
+                                                          @TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
+                                                          @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto,
+                                                          @RequestBody WithdrawRequestDto withdrawRequestDto){
+
+        OpenBankingTransferResponseDto openBankingTransferResponseDto = accountService.requestWithdraw(tokenInfoFromHeaderDto, userInfoFromSessionDto, accountId, withdrawRequestDto);
+
+        return openBankingTransferResponseDto;
+
+    }
 
 
-    /**
-     * 입금이체
-     */
-
-
-    /**
-     * 사용자 정보(ci, 계좌 리스트) 조회
-     */
 
 
 }
