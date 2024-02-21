@@ -191,7 +191,7 @@ public class OpenBankingService {
                 .tran_amt(withdrawRequestDto.getTran_amt())
                 .req_client_name(userInfoFromSessionDto.getName())
                 .req_client_fintech_use_num(withdrawAccountInfoDto.getFintech_use_num())
-                .req_client_num(userInfoFromSessionDto.getName())
+                .req_client_num(userInfoFromSessionDto.getName()) //영어로해야하는데
                 .transfer_purpose("ST")
                 .recv_client_name(withdrawRequestDto.getRecv_client_name())
                 .recv_client_bank_code("097") // test : 097

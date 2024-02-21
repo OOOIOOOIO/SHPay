@@ -16,7 +16,6 @@ public class UsersViewController {
     /**
      * 로그인 페이지
      *
-     * @return
      */
     @GetMapping("/signin")
     public String signInPage() {
@@ -30,7 +29,6 @@ public class UsersViewController {
     /**
      * 회원가입 페이지
      *
-     * @return
      */
     @GetMapping("/signup")
     public String signUpPage() {

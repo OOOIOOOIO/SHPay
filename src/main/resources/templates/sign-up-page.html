@@ -6,17 +6,21 @@
 </head>
 <body>
 
-  <div class="container-fluid">
+  <div class="container-fluid" style="width: 300px">
     <form name="signUpForm" action="" th:action="@{/api/users/signup}" method="post" >
       <div>
         <table class="table table-hover" style="margin : 0 auto;" >
+          <tr>
+            <th><label class="col-sm-2 col-form-label">이름</label></th>
+            <td><input type="name" class="form-control" name="name" placeholder="김성호"></td>
+          </tr>
           <tr>
             <th><label class="col-sm-2 col-form-label">이메일</label></th>
             <td><input type="email" class="form-control" name="email" placeholder="sample@sample.com"></td>
           </tr>
           <tr>
             <th><label class="col-sm-2 col-form-label" >비밀번호</label></th>
-            <td><input type="text" class="form-control" name="password" placeholder="8자 이상, 숫자, 대문자, 소문자, 특수문자를 모두 포함해야 합니다."></td>
+            <td><input type="password" class="form-control" name="password" placeholder="8자 이상, 숫자, 대문자, 소문자, 특수문자를 모두 포함해야 합니다."></td>
 <!--            <td><input  type="text" class="form-control" name="user_pw" th:field="*{password}"  placeholder="8자 이상, 숫자, 대문자, 소문자, 특수문자를 모두 포함해야 합니다."></td>-->
           </tr>
         </table>
