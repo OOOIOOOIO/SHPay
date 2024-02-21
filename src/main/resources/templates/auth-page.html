@@ -7,7 +7,7 @@
 <body>
 
 <div>
-    <button onclick="location.href='/api/openbanking/authorize'">인증하기</button>
+    <button onclick=authorization()>인증하기</button>
 
 
     <!--
@@ -21,32 +21,29 @@
 <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
 <script type="text/javascript" th:inline="javascript">
 
+
     function authorization(){
 
+        window.open("https://testapi.openbanking.or.kr/oauth/2.0/authorize?response_type="+[[${requestInfo.response_type}]]+"&client_id="+[[${requestInfo.client_id}]]+"&redirect_uri="+[[${requestInfo.redirect_uri}]]+"&scope="+[[${requestInfo.scope}]]+"&state="+[[${requestInfo.state}]]+"&auth_type="+[[${requestInfo.auth_type}]]);
 
 
-
-        `https://testapi.openbanking.or.kr/oauth/2.0/authorize?response_type=code&client_id=${clientId}&redirect_uri=http://localhost:8888/authResult&scope=login inquiry transfer&state=12345678901234567890123456789012&auth_type=0`;
-
-        $.ajax(
-            {
-                type:"POST",
-                url:"/charityOrg/search",
-                data:JSON.stringify(searchInfo),
-                contentType:"application/json; charset=utf-8",
-                success:function(result, status, xhr){
-                    console.log("success ajax");
-                    console.log(result);
-
-
-                },
-                error:function(e, status, xhr){
-                    console.log("fail ajax" + e);
-                }
-
-            }
-
-        )
+        // $.ajax(
+        //     {
+        //         type:"GET",
+        //         url:"https://testapi.openbanking.or.kr/oauth/2.0/authorize?response_type="+[[${requestInfo.response_type}]]+"&client_id="+[[${requestInfo.client_id}]]+"&redirect_uri="+[[${requestInfo.redirect_uri}]]+"&scope="+[[${requestInfo.scope}]]+"&state="+[[${requestInfo.state}]]+"&auth_type="+[[${requestInfo.auth_type}]],
+        //         dataType:"jsonp", // CORS 해결
+        //         // contentType:"application/json; charset=utf-8",
+        //         success:function(result, status, xhr){
+        //             console.log("success ajax");
+        //
+        //         },
+        //         error:function(e, status, xhr){
+        //             console.log("fail ajax" + e);
+        //         }
+        //
+        //     }
+        //
+        // )
 
     }
 </script>

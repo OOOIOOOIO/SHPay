@@ -22,37 +22,34 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class OpenBankingApiClient {
     private final RestTemplate restTemplate;
     private static final String BASE_URL = "https://testapi.openbanking.or.kr";
-    private static final String SUCCESS_CODE = "AOO0O"; // 나중에 수정?
+    private static final String SUCCESS_CODE = "A0000"; // 나중에 수정?
 
 
-    /**
-     * 사용자 AuthCode 발급 요청 -> 사용자 토큰 발급 요청으로 넘어감(callback url)
-     */
-    public void requestAuthorization(OpenBankingCodeAuthorizationRequestDto openBankingCodeAuthorizationRequestDto) {
-
-        String url = BASE_URL + "/oauth/v2.0/authorize";
-
-//        HttpEntity httpEntity = generateHttpEntity(generateHeader("Authorization", openBankingAccountRequestDto.getAccessToken()));
-
-        UriComponents builder = UriComponentsBuilder.fromHttpUrl(url)
-                .queryParam("response_type", openBankingCodeAuthorizationRequestDto.getResponse_type())
-                .queryParam("client_id", openBankingCodeAuthorizationRequestDto.getClient_id())
-                .queryParam("redirect_uri", openBankingCodeAuthorizationRequestDto.getRedirect_uri())
-                .queryParam("scope", openBankingCodeAuthorizationRequestDto.getScope())
-                .queryParam("state", openBankingCodeAuthorizationRequestDto.getState())
-                .queryParam("auth_type", openBankingCodeAuthorizationRequestDto.getAuth_type())
-                .build();
-
-//        OpenBankingSearchAccountResponseDto openBankingSearchAccountResponseDto = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, OpenBankingSearchAccountResponseDto.class).getBody();
-
-        String result = restTemplate.getForObject(builder.toUriString(), String.class);
-
-//        if(!isCodeValid(openBankingSearchAccountResponseDto.getRsp_code())){
-//            log.error("error code : {}, error msg : {}", openBankingSearchAccountResponseDto.getRsp_code(), openBankingSearchAccountResponseDto.getRsp_message());
-//            throw new RuntimeException(openBankingSearchAccountResponseDto.getRsp_message());
-//        }
-
-    }
+//    /**
+//     * 사용자 AuthCode 발급 요청 -> 사용자 토큰 발급 요청으로 넘어감(callback url)
+//     */
+//    public void requestAuthorization(OpenBankingCodeAuthorizationRequestDto openBankingCodeAuthorizationRequestDto) {
+//
+//        String url = BASE_URL + "/oauth/2.0/authorize";
+//
+//        HttpEntity httpEntity = generateHttpEntity(generateHeader("Authorization", null));
+//
+//        UriComponents builder = UriComponentsBuilder.fromHttpUrl(url)
+//                .queryParam("response_type", openBankingCodeAuthorizationRequestDto.getResponse_type())
+//                .queryParam("client_id", openBankingCodeAuthorizationRequestDto.getClient_id())
+//                .queryParam("redirect_uri", openBankingCodeAuthorizationRequestDto.getRedirect_uri())
+//                .queryParam("scope", openBankingCodeAuthorizationRequestDto.getScope())
+//                .queryParam("state", openBankingCodeAuthorizationRequestDto.getState())
+//                .queryParam("auth_type", openBankingCodeAuthorizationRequestDto.getAuth_type())
+//                .build();
+//
+////        restTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, OpenBankingSearchAccountResponseDto.class);
+//
+//
+//        String result = restTemplate.getForObject(builder.toUriString(), String.class);
+//        log.info("result : " + result);
+//
+//    }
 
 
     /**
@@ -249,7 +246,7 @@ public class OpenBankingApiClient {
     }
 
     private boolean isCodeValid(String code){
-        if(code == null || code.equals(SUCCESS_CODE)) return true;
+        if(code == null || code.equals(SUCCESS_CODE) || code.equals("A0002")) return true; // A0002는 거래내역이 없어서 발생하는 것
 
         return false;
     }

@@ -37,7 +37,7 @@ public class TokenInfoFromHeaderResolver implements HandlerMethodArgumentResolve
 
 
         TokenInfoFromHeaderDto tokenInfoFromHeaderDto = TokenInfoFromHeaderDto.builder()
-                .accessToken(accessToken)
+                .accessToken(accessToken.substring(7))
                 .refreshToken(refreshToken)
                 .build();
 

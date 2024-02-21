@@ -12,13 +12,11 @@ public class UserResponseDto {
     private String name;
     private String email;
 
-    private String userSeqNo;
 
     public UserResponseDto(Users users) {
         this.userId = users.getUserId();
         this.name = users.getName();
         this.email = users.getEmail();
-        this.userSeqNo = users.getUserSeqNo();
     }
 
 }

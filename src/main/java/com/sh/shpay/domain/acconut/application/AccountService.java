@@ -55,15 +55,10 @@ public class AccountService {
 
         Users users = openBankingTokenQueryRepository.findUsersByAccessToken(tokenInfoFromHeaderDto.getAccessToken()).orElseThrow(() -> new RuntimeException("access_token이 존재하지 않습니다."));
 
-//        if(!userRepository.existsById(userId)){
-//            throw new RuntimeException("유저가 존재하지 않습니다.");
-//        }
         if(users == null){
             throw new RuntimeException("유저가 존재하지 않습니다.");
         }
 
-        // 여기서 accessToken을 가져오네 흠...REST 방식으로 헤더에서 안가져오고 DB에서 가져오나보다
-        OpenBankingToken openBankingToken = openBankingTokenRepository.findByUsers(users).orElseThrow(() ->new RuntimeException("해당 유저의 토큰이 없습니다."));
 
         List<Account> accountList = accountRepository.findByUsers(users);
 
@@ -75,7 +70,7 @@ public class AccountService {
         List<UserAccountDto> userAccountDtoList = accountList.stream()
                 .map(account -> CompletableFuture.supplyAsync(() -> {
                             String balanceAmt = getBalanceAmt(account.getFintechUseNum(), // 잔액조회
-                                    openBankingToken.getAccessToken(),
+                                    tokenInfoFromHeaderDto.getAccessToken(),
                                     users.getUserId());
 
                             UserAccountDto userAccountDto = UserAccountDto.builder()
@@ -110,24 +105,32 @@ public class AccountService {
 
         Users users = openBankingTokenQueryRepository.findUsersByAccessToken(tokenInfoFromHeaderDto.getAccessToken()).orElseThrow(() -> new RuntimeException("access_token이 존재하지 않습니다."));
 
+        log.info("++ : " + users.getUserId());
+        log.info("++ : " + users.getUserSeqNo());
+
         if(users == null){
             throw new RuntimeException("유저가 존재하지 않습니다.");
         }
 
 
-        OpenBankingToken openBankingToken = openBankingTokenRepository.findByUsers(users).orElseThrow(() ->new RuntimeException("해당 유저의 토큰이 없습니다."));
-
         AccountRequestDto accountRequestDto = AccountRequestDto.builder()
-                .accessToken(openBankingToken.getAccessToken())
-                .userSeqNo(openBankingToken.getUserSeqNo())
+                .accessToken(tokenInfoFromHeaderDto.getAccessToken())
+                .userSeqNo(users.getUserSeqNo())
                 .build();
 
         OpenBankingSearchAccountResponseDto openBankingSearchAccountResponseDto = openBankService.requestAccountList(accountRequestDto);
 
+        log.info("==== : " + openBankingSearchAccountResponseDto.getUser_name());
+        log.info("==== : " + openBankingSearchAccountResponseDto.getRes_list().get(0).getFintech_use_num());
+        log.info("==== : " + openBankingSearchAccountResponseDto.getRes_cnt());
+        log.info("==== : " + openBankingSearchAccountResponseDto.getRes_list().size());
+
+        // DB 조회
         List<Account> userAllAccountList = accountRepository.findByUsers(users);
 
-        // fintechUseNum Map 보다 Set이 낫지 않을까 어차피 중복도 없는데
-        HashMap<String, String> fintechUseNumMap= getFintechUseNum(userAllAccountList);
+        // key : fintechUseNum, value : fintechUseNum
+        HashMap<String, String> fintechUseNumMap = getFintechUseNum(userAllAccountList);
+
 
         // 사용자 계좌 리스트(res_list)에서 이미 db에 있는 계좌들 빼고 새로운 계좌 필터링
 //        openBankingSearchAccountResponseDto.getRes_list().parallelStream()
@@ -136,8 +139,8 @@ public class AccountService {
                 .map(resultAccount -> Account.createAccount(
                                 resultAccount.getFintech_use_num(),
                                 resultAccount.getBank_name(),
-                                resultAccount.getAccount_num(),
-                                resultAccount.getBank_code_std(), // 카드사 대표 코드(금융기관 공동코드)
+                                resultAccount.getAccount_num(), // 마스킹 되서 나옴 -> 계좌번호는 특정 자격요건을 갖춘 이용기관에 선별적 제공
+                                resultAccount.getBank_code_std(), // 카드사 대표 코드(금공기관 공동코드)
                                 resultAccount.getAccount_seq(),
                                 AccountType.SUB, // 우선 SUB으로
                                 resultAccount.getAccount_holder_name(),
@@ -148,14 +151,6 @@ public class AccountService {
 
         if(filterAccountList.isEmpty()) return 0L;
 
-        // == cascade ==
-
-//        for(Account account : filterAccountList){
-//            users.addAccountList(account);
-//        }
-//        userRepository.save(users);
-
-        // == cascade ==
 
         accountRepository.saveAll(filterAccountList); // 새로운 계좌들 전부 저장
 
@@ -209,6 +204,8 @@ public class AccountService {
 
             OpenBankingBalanceResponseDto openBankingBalanceResponseDto = openBankService.requestBalance(balanceRequestDto); // 잔액조회 여기서 비동기 통신
 
+            log.info("----- : " + openBankingBalanceResponseDto.getFintech_use_num());
+            log.info("----- : " + openBankingBalanceResponseDto.getBalance_amt());
             return openBankingBalanceResponseDto.getBalance_amt();
         } catch (Exception e) {
 //            throw new RuntimeException(e);
@@ -277,7 +274,7 @@ public class AccountService {
     private HashMap<String, String> getFintechUseNum(List<Account> accountList){
         if(accountList.size() == 0) return new HashMap<>();
 
-//        accountList.parallelStream() // 계좌 수가 그리 많지 않기 때문에 병철처리는 오히려 오버헤드 불러 옴
+//        accountList.parallelStream() // 병철처리는 오히려 오버헤드 불러올 수 있음
         return accountList.stream()
                 .collect(Collectors.toMap(
                         account -> account.getFintechUseNum(), account -> account.getFintechUseNum(),
@@ -286,11 +283,11 @@ public class AccountService {
     }
 
     /**
-     * fintechUseNum 존재하는지 확인
+     * 기존 계좌를 통해 fintechUseNum 존재하는지 확인
      */
     private boolean existFintechUseNum(HashMap<String, String> fintechUseNumMap, String fintechUseNum){
 
-        return fintechUseNumMap.containsKey(fintechUseNumMap);
+        return !fintechUseNumMap.containsKey(fintechUseNum);
     }
 
 }

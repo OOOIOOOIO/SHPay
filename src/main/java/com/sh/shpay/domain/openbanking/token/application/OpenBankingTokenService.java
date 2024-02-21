@@ -51,6 +51,7 @@ public class OpenBankingTokenService {
         // user_seq_no 저장
         if(!users.hasUserSeqNo()){
             users.updateUserSeqNo(openBankingUserTokenResponseDto.getUser_seq_no());
+
         }
 
     }

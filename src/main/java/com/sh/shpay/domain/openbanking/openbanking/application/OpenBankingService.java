@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 public class OpenBankingService {
 
     private static final String INIT_CODE = "code";
-    private static final Float STATE = 12345678901234567890123456789012F;
+    private static final String STATE = "12345678901234567890123456789012";
     private static final String ACCESS_TOKEN_GRANT_TYPE = "authorization_code";
     private static final String REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
     private static final String SCOPE = "login inquiry transfer"; // 우선 code 받을 때 3가지로 설정 | cardinfo fintechinfo
@@ -46,7 +46,24 @@ public class OpenBankingService {
     /**
      * 사용자 AuthCode 발급 요청 -> 사용자 토큰 발급 요청으로 넘어감(callback url)
      */
-    public void requestAuthorization(){
+//    public void requestAuthorization(){
+//
+//        log.info("========== OpenBankingService | requestAuthorization ============");
+//
+//        OpenBankingCodeAuthorizationRequestDto openBankingCodeAuthorizationRequestDto = OpenBankingCodeAuthorizationRequestDto.builder()
+//                .response_type(INIT_CODE)
+//                .client_id(clientId)
+//                .redirect_uri(redirectUri)
+//                .scope(SCOPE)
+//                .state(STATE)
+//                .auth_type(AuthType.INIT.getAuthCode())
+//                .build();
+//
+//        openBankingApiClient.requestAuthorization(openBankingCodeAuthorizationRequestDto);
+//
+//    }
+
+    public OpenBankingCodeAuthorizationRequestDto requestAuthorization(){
 
         log.info("========== OpenBankingService | requestAuthorization ============");
 
@@ -59,8 +76,7 @@ public class OpenBankingService {
                 .auth_type(AuthType.INIT.getAuthCode())
                 .build();
 
-        openBankingApiClient.requestAuthorization(openBankingCodeAuthorizationRequestDto);
-
+        return openBankingCodeAuthorizationRequestDto;
     }
 
 
@@ -124,8 +140,8 @@ public class OpenBankingService {
         OpenBankingSearchAccountRequestDto openBankingSearchAccountRequestDto = OpenBankingSearchAccountRequestDto.builder()
                 .user_seq_no(accountRequestDto.getUserSeqNo())
                 .accessToken(accountRequestDto.getAccessToken())
-                .include_cancel_yn("N")
-                .sort_order("Y")
+                .include_cancel_yn("Y")
+                .sort_order("D")
                 .build();
 
         OpenBankingSearchAccountResponseDto openBankingSearchAccountResponseDto = openBankingApiClient.requestAccountList(openBankingSearchAccountRequestDto);

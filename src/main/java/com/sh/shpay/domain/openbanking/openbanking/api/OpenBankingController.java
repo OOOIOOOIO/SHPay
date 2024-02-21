@@ -27,20 +27,6 @@ public class OpenBankingController {
     private final OpenBankingTokenService openBankingTokenService;
 
 
-    /**
-     * 사용자 AuthCode 발급 요청 -> 사용자 토큰 발급 요청으로 넘어감(callback url)
-     *
-     */
-    @GetMapping("/authorize")
-    public ResponseEntity<String> requestAuthorization(@UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
-
-        log.info("================= OpenBankingController | api/openbanking/authorize =================");
-
-        openBankingService.requestAuthorization();
-
-        return null;
-    }
-
 
     /**
      * 사용자 토큰 발급 요청, 3-legged
@@ -109,6 +95,8 @@ public class OpenBankingController {
 
     /**
      * 사용자 정보 가져오기 - ci값, 계좌 리스트 등등
+     *
+     * 보류
      */
     public OpenBankingUserInfoResponseDto requestUserInfo(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
                                                           @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto) {

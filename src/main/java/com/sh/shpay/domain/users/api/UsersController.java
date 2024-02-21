@@ -48,7 +48,7 @@ public class UsersController {
         UserResponseDto userResponseDto = usersService.signIn(signInRequestDto);
 
         // session 저장
-        HttpSession session = request.getSession(false);
+        HttpSession session = request.getSession(true);
         session.setAttribute(SessionConst.COMMON_USER.name(), new UserInfoFromSessionDto(userResponseDto.getUserId(), userResponseDto.getName(), userResponseDto.getEmail()));
 
         UserInfoFromSessionDto userInfoFromSessionDto = (UserInfoFromSessionDto) session.getAttribute(SessionConst.COMMON_USER.name());

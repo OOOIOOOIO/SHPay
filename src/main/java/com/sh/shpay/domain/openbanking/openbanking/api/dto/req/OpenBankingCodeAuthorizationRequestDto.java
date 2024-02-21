@@ -13,11 +13,11 @@ public class OpenBankingCodeAuthorizationRequestDto {
     private String client_id;
     private String redirect_uri;
     private String scope;
-    private Float state;
+    private String state;
     private int auth_type;
 
     @Builder
-    public OpenBankingCodeAuthorizationRequestDto(String response_type, String client_id, String redirect_uri, String scope, Float state, int auth_type) {
+    public OpenBankingCodeAuthorizationRequestDto(String response_type, String client_id, String redirect_uri, String scope, String state, int auth_type) {
         this.response_type = response_type;
         this.client_id = client_id;
         this.redirect_uri = redirect_uri;

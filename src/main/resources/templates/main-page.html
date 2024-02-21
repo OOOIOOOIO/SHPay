@@ -6,7 +6,34 @@
 </head>
 <body>
 
+    <button onclick=balanceList()>내 계좌 확인하기</button>
 
 
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:inline="javascript">
+
+
+        function balanceList(){
+
+            $.ajax(
+                {
+                    type:"GET",
+                    url:"https://testapi.openbanking.or.kr/oauth/2.0/authorize?response_type="+[[${requestInfo.response_type}]]+"&client_id="+[[${requestInfo.client_id}]]+"&redirect_uri="+[[${requestInfo.redirect_uri}]]+"&scope="+[[${requestInfo.scope}]]+"&state="+[[${requestInfo.state}]]+"&auth_type="+[[${requestInfo.auth_type}]],
+                    dataType:"jsonp", // CORS 해결
+                    // contentType:"application/json; charset=utf-8",
+                    success:function(result, status, xhr){
+                        console.log("success ajax");
+
+                    },
+                    error:function(e, status, xhr){
+                        console.log("fail ajax" + e);
+                    }
+
+                }
+
+            )
+        }
+
+    </script>
 </body>
 </html>

@@ -16,9 +16,9 @@ public class UserSessionCheckInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         try {
             HttpSession session = request.getSession(false);
-            UserInfoFromSessionDto userInfo = (UserInfoFromSessionDto)session.getAttribute(SessionConst.COMMON_USER.getRule());
+            UserInfoFromSessionDto userInfo = (UserInfoFromSessionDto)session.getAttribute(SessionConst.COMMON_USER.name());
 
-            log.info(" ====== Interceptor ======");
+            log.info(" ====== UserSessionCheck Interceptor ======");
             log.info("userId : " + userInfo.getUserId());
             log.info("email : " + userInfo.getEmail());
 

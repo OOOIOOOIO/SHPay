@@ -31,7 +31,7 @@ public class AccountController {
      *
      *
      */
-    @GetMapping("/account")
+    @GetMapping("/list")
     public ResponseEntity<List<UserAccountDto>> requestAccount(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
                                                                @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
         List<UserAccountDto> accounts = accountService.requestAccountList(tokenInfoFromHeaderDto);
@@ -44,7 +44,7 @@ public class AccountController {
      *
      * openAPI에서 계좌 리스트 가져옴
      */
-    @PostMapping("/account")
+    @PostMapping("/list")
     public ResponseEntity<Long> saveAccounts(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto){
         Long size = accountService.saveAccountList(tokenInfoFromHeaderDto);
 
@@ -54,7 +54,7 @@ public class AccountController {
     /**
      * 계좌 수정(주계좌 설정)
      */
-    @PutMapping("/account/{accountId}")
+    @PutMapping("/{accountId}")
     public ResponseEntity updateAccountType(@PathVariable("accountId") Long accountId,
                                             @TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto) {
         accountService.updateAccountType(tokenInfoFromHeaderDto, accountId);
@@ -67,6 +67,7 @@ public class AccountController {
     /**
      * 거래내역조회
      */
+    @GetMapping("/trnasaction/{accountId}")
     public ResponseEntity<TransactionListResponseDto> transactionList(@PathVariable("accountId") Long accountId,
                                                                       @TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto){
 
@@ -80,6 +81,7 @@ public class AccountController {
     /**
      * 출금이제
      */
+    @PostMapping("/withdraw/{accountId}")
     public OpenBankingTransferResponseDto requestWithdraw(@PathVariable("accountId") Long accountId,
                                                           @TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
                                                           @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto,
