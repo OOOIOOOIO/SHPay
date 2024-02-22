@@ -162,6 +162,7 @@ public class OpenBankingApiClient {
                 .queryParam("from_date", transactionListRequestDto.getFrom_date())
                 .queryParam("to_date", transactionListRequestDto.getTo_date())
                 .queryParam("sort_order", transactionListRequestDto.getSort_order())
+                .queryParam("tran_dtime", transactionListRequestDto.getTran_dtime())
                 .build();
 
         TransactionListResponseDto transactionListResponseDto = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, TransactionListResponseDto.class).getBody();

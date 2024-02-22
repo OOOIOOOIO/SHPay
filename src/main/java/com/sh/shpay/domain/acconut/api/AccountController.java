@@ -67,7 +67,7 @@ public class AccountController {
     /**
      * 거래내역조회
      */
-    @GetMapping("/trnasaction/{accountId}")
+    @GetMapping("/transaction/{accountId}")
     public ResponseEntity<TransactionListResponseDto> transactionList(@PathVariable("accountId") Long accountId,
                                                                       @TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto){
 

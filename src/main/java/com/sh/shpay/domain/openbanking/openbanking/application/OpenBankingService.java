@@ -174,13 +174,15 @@ public class OpenBankingService {
      */
     public TransactionListResponseDto requestTransactionList(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, String fintechUseNum){
 
+        log.info("===== : " + OpenBankingUtil.transTime().substring(0, 8));
+
         TransactionListRequestDto transactionListRequestDto = TransactionListRequestDto.builder()
                 .bank_tran_id(OpenBankingUtil.generateBankTranId(bankTranId + "U"))
                 .fintech_use_num(fintechUseNum)
-                .inquiry_base("A")
+                .inquiry_type("A")
                 .inquiry_base("D")
-                .from_date(OpenBankingUtil.transTime().substring(0, 6))
-                .to_date(OpenBankingUtil.transTime().substring(0, 6))
+                .from_date(OpenBankingUtil.transTime().substring(0, 8))
+                .to_date(OpenBankingUtil.transTime().substring(0, 8))
                 .sort_order("D")
                 .build();
 
