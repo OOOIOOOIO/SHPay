@@ -25,10 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -42,7 +39,6 @@ public class AccountService {
     private final UsersRepository userRepository;
     private final AccountRepository accountRepository;
     private final AccountQueryRepositoryImpl accountQueryRepository;
-    private final OpenBankingTokenQueryRepositoryImpl openBankingTokenQueryRepository;
     private final OpenBankingService openBankService;
 
 
@@ -99,10 +95,6 @@ public class AccountService {
 
         Users users = userRepository.findById(userInfoFromSessionDto.getUserId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
 
-        log.info("++ : " + users.getUserId());
-        log.info("++ : " + users.getUserSeqNo());
-
-
         AccountRequestDto accountRequestDto = AccountRequestDto.builder()
                 .accessToken(tokenInfoFromHeaderDto.getAccessToken())
                 .userSeqNo(users.getUserSeqNo())
@@ -110,10 +102,6 @@ public class AccountService {
 
         OpenBankingSearchAccountResponseDto openBankingSearchAccountResponseDto = openBankService.requestAccountList(accountRequestDto);
 
-        log.info("==== : " + openBankingSearchAccountResponseDto.getUser_name());
-        log.info("==== : " + openBankingSearchAccountResponseDto.getRes_list().get(0).getFintech_use_num());
-        log.info("==== : " + openBankingSearchAccountResponseDto.getRes_cnt());
-        log.info("==== : " + openBankingSearchAccountResponseDto.getRes_list().size());
 
         // DB 조회
         List<Account> userAllAccountList = accountRepository.findByUsers(users);
@@ -129,7 +117,7 @@ public class AccountService {
                 .map(resultAccount -> Account.createAccount(
                                 resultAccount.getFintech_use_num(),
                                 resultAccount.getBank_name(),
-                                resultAccount.getAccount_num(), // 마스킹 되서 나옴 -> 계좌번호는 특정 자격요건을 갖춘 이용기관에 선별적 제공
+                                resultAccount.getAccount_num_masked(), // 마스킹 되서 나옴 -> 계좌번호는 특정 자격요건을 갖춘 이용기관에 선별적 제공 따라서 우선  마스킹된 계좌번호 제공
                                 resultAccount.getBank_code_std(), // 카드사 대표 코드(금공기관 공동코드)
                                 resultAccount.getAccount_seq(),
                                 AccountType.SUB, // 우선 SUB으로
@@ -193,9 +181,6 @@ public class AccountService {
 
             OpenBankingBalanceResponseDto openBankingBalanceResponseDto = openBankService.requestBalance(balanceRequestDto); // 잔액조회 여기서 비동기 통신
 
-            log.info("----- : " + openBankingBalanceResponseDto.getFintech_use_num());
-            log.info("----- : " + openBankingBalanceResponseDto.getBalance_amt());
-
             return openBankingBalanceResponseDto.getBalance_amt();
 
         } catch (Exception e) {
@@ -238,10 +223,6 @@ public class AccountService {
     }
 
 
-
-    /**
-     * 사용자 정보(ci, 계좌 리스트) 조회
-     */
 
     // =================
 

@@ -7,10 +7,14 @@
 <body>
 
     <h1>계쫘현황</h1>
-<!--
 
-    여기는 보유한 계좌 보여주는 곳
+    <li th:each="car: ${accountList}">
+        <div class="account_cap">
+            <span class="account_name" th:text="${car.carName}">PALISADE</span><br>
+            <span class="acount_num" th:text="${car.price}">50,000 USD</span>
+            <spant th:text="${carStat.index}"></spant>
+        </div>
+    </li>
 
--->
 </body>
 </html>
