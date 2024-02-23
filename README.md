@@ -10,4 +10,4 @@
   - 유저 정보
 - Client 클래스를 만들어 모듈화
   - resttemplate으로 외부 api와 통신
-  - 
+

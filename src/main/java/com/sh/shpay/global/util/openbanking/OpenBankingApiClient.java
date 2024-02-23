@@ -78,10 +78,11 @@ public class OpenBankingApiClient {
      */
     public OpenBankingUserRefreshTokenResponseDto refreshUserToken(OpenBankingUserRefreshTokenRequestDto openBankingUserRefreshTokenRequestDto) {
 
+        String url = BASE_URL + "/oauth/2.0/token";
         HttpHeaders httpHeaders = generateHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
         HttpEntity httpEntity = generateHttpEntityWithBody(httpHeaders, openBankingUserRefreshTokenRequestDto.toMultiValueMap());
 
-        OpenBankingUserRefreshTokenResponseDto openBankingUserRefreshTokenResponseDto = restTemplate.exchange(BASE_URL + "/oauth/2.0/token", HttpMethod.POST, httpEntity, OpenBankingUserRefreshTokenResponseDto.class).getBody();
+        OpenBankingUserRefreshTokenResponseDto openBankingUserRefreshTokenResponseDto = restTemplate.exchange(url, HttpMethod.POST, httpEntity, OpenBankingUserRefreshTokenResponseDto.class).getBody();
 
         if(openBankingUserRefreshTokenResponseDto == null){
             log.error("token 갱신 실패");
@@ -91,6 +92,33 @@ public class OpenBankingApiClient {
         return openBankingUserRefreshTokenResponseDto;
 
     }
+
+
+    /**
+     * 사용자 정보 가져오기 - ci값
+     * 계좌 정보도 다 나오는데 흠흠
+     *
+     */
+    public OpenBankingUserInfoResponseDto requestUserInfo(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, String userSeqNo) {
+        String url = BASE_URL + "/v2.0/user/me";
+
+        HttpEntity httpEntity = generateHttpEntity(generateHeader("Authorization", tokenInfoFromHeaderDto.getAccessToken()));
+
+        UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(url)
+                .queryParam("user_seq_no", userSeqNo)
+                .build();
+
+        OpenBankingUserInfoResponseDto openBankingUserInfoResponseDto = restTemplate.exchange(uriComponents.toUriString(), HttpMethod.GET, httpEntity, OpenBankingUserInfoResponseDto.class).getBody();
+
+        if(!isCodeValid(openBankingUserInfoResponseDto.getRsp_code())){
+            log.error("error code : {}, error msg : {}", openBankingUserInfoResponseDto.getRsp_code(), openBankingUserInfoResponseDto.getRsp_message());
+            throw new RuntimeException(openBankingUserInfoResponseDto.getRsp_message());
+        }
+
+        return openBankingUserInfoResponseDto;
+
+    }
+
 
 
     /**
@@ -190,32 +218,6 @@ public class OpenBankingApiClient {
     }
 
 
-
-
-    /**
-     * 사용자 정보 가져오기 - ci값
-     * 계좌 정보도 다 나오는데 흠흠
-     *
-     */
-    public OpenBankingUserInfoResponseDto requestUserInfo(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, String userSeqNo) {
-        String url = BASE_URL + "/v2.0/user/me";
-
-        HttpEntity httpEntity = generateHttpEntity(generateHeader("Authorization", tokenInfoFromHeaderDto.getAccessToken()));
-
-        UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(url)
-                .queryParam("user_seq_no", userSeqNo)
-                .build();
-
-        OpenBankingUserInfoResponseDto openBankingUserInfoResponseDto = restTemplate.exchange(uriComponents.toUriString(), HttpMethod.GET, httpEntity, OpenBankingUserInfoResponseDto.class).getBody();
-
-        if(!isCodeValid(openBankingUserInfoResponseDto.getRsp_code())){
-            log.error("error code : {}, error msg : {}", openBankingUserInfoResponseDto.getRsp_code(), openBankingUserInfoResponseDto.getRsp_message());
-            throw new RuntimeException(openBankingUserInfoResponseDto.getRsp_message());
-        }
-
-        return openBankingUserInfoResponseDto;
-
-    }
 
 
     /**

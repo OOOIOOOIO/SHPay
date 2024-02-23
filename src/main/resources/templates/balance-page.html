@@ -8,11 +8,14 @@
 
     <h1>계쫘현황</h1>
 
-    <li th:each="car: ${accountList}">
+    <li th:each="account: ${accountList.userAccountDtoList}">
         <div class="account_cap">
-            <span class="account_name" th:text="${car.carName}">PALISADE</span><br>
-            <span class="acount_num" th:text="${car.price}">50,000 USD</span>
-            <spant th:text="${carStat.index}"></spant>
+            <span class="account_name" th:text="${account.bankName}"></span><br>
+            <span class="account_num_masked" th:text="${account.accountNum}"></span>
+            <span class="account_num_balance_amt" th:text="${account.balanceAmt}"></span>
+        </div>
+        <div>
+            <button onclick="">주계좌 설정</button>
         </div>
     </li>
 

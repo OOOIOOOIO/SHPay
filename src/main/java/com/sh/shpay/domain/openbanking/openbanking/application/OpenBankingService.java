@@ -42,6 +42,8 @@ public class OpenBankingService {
     private final OpenBankingApiClient openBankingApiClient;
     private final UsersRepository usersRepository;
 
+    private final OpenBankingUtil openBankingUtil;
+
 
     /**
      * 사용자 AuthCode 발급 요청 -> 사용자 토큰 발급 요청으로 넘어감(callback url)
@@ -133,6 +135,28 @@ public class OpenBankingService {
 
 
     /**
+     * 사용자 정보 가져오기 - ci값
+     */
+    public OpenBankingUserInfoResponseDto requestUserInfo(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto){
+
+        Users users = usersRepository.findById(userInfoFromSessionDto.getUserId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다"));
+
+        if(users == null){
+            throw new RuntimeException("유저가 존재하지 않습니다.");
+        }
+
+        OpenBankingUserInfoResponseDto openBankingUserInfoResponseDto = openBankingApiClient.requestUserInfo(tokenInfoFromHeaderDto, users.getUserSeqNo());
+
+        if(!users.hasOpenBankCi()){
+            users.updateOpenBankCi(openBankingUserInfoResponseDto.getUser_ci());
+
+        }
+
+        return openBankingUserInfoResponseDto;
+    }
+
+
+    /**
      * 등록계좌조회
      */
     public OpenBankingSearchAccountResponseDto requestAccountList(AccountRequestDto accountRequestDto){
@@ -156,9 +180,14 @@ public class OpenBankingService {
      */
     public OpenBankingBalanceResponseDto requestBalance(BalanceRequestDto balanceRequestDto){
 
+        String bank_tran_id = openBankingUtil.generateBankTranId(bankTranId + "U");
+
+
+
+
         OpenBankingBalanceRequestDto openBankingBalanceRequestDto = OpenBankingBalanceRequestDto.builder()
                 .accessToken(balanceRequestDto.getAccessToken())
-                .bank_tran_id(OpenBankingUtil.generateBankTranId(bankTranId + "U")) // tranId 생성하는데 -> 이거 redis에서 넣고 한번씩 쏴봐야할 것 같은데
+                .bank_tran_id(openBankingUtil.generateBankTranId(bankTranId + "U")) // tranId 생성하는데 -> 이거 redis에서 넣고 한번씩 쏴봐야할 것 같은데
                 .fintech_use_num(balanceRequestDto.getFintechUseNum())
                 .tran_dtime(OpenBankingUtil.transTime())
                 .build();
@@ -177,7 +206,7 @@ public class OpenBankingService {
         log.info("===== : " + OpenBankingUtil.transTime().substring(0, 8));
 
         TransactionListRequestDto transactionListRequestDto = TransactionListRequestDto.builder()
-                .bank_tran_id(OpenBankingUtil.generateBankTranId(bankTranId + "U"))
+                .bank_tran_id(openBankingUtil.generateBankTranId(bankTranId + "U"))
                 .fintech_use_num(fintechUseNum)
                 .inquiry_type("A")
                 .inquiry_base("D")
@@ -200,7 +229,7 @@ public class OpenBankingService {
     public OpenBankingTransferResponseDto requestWithdraw(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, WithdrawAccountInfoDto withdrawAccountInfoDto, WithdrawRequestDto withdrawRequestDto){
 
         OpenBankingTransferRequestDto openBankingTransferRequestDto = OpenBankingTransferRequestDto.builder()
-                .bank_tran_id(OpenBankingUtil.generateBankTranId(bankTranId + "U"))
+                .bank_tran_id(openBankingUtil.generateBankTranId(bankTranId + "U"))
                 .cntr_account_type("N") // N : 계좌, C : 계정
                 .cntr_account_num(withdrawAccountInfoDto.getAccount_num())
                 .dps_print_content(withdrawRequestDto.getDps_print_content())
@@ -226,27 +255,6 @@ public class OpenBankingService {
 
 
 
-
-    /**
-     * 사용자 정보 가져오기 - ci값
-     */
-    public OpenBankingUserInfoResponseDto requestUserInfo(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto){
-
-        Users users = usersRepository.findById(userInfoFromSessionDto.getUserId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다"));
-
-        if(users == null){
-            throw new RuntimeException("유저가 존재하지 않습니다.");
-        }
-
-        OpenBankingUserInfoResponseDto openBankingUserInfoResponseDto = openBankingApiClient.requestUserInfo(tokenInfoFromHeaderDto, users.getUserSeqNo());
-
-        if(!users.hasOpenBankCi()){
-            users.updateOpenBankCi(openBankingUserInfoResponseDto.getUser_ci());
-
-        }
-
-        return openBankingUserInfoResponseDto;
-    }
 
 
 

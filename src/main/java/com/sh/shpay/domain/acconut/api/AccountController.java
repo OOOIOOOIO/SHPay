@@ -56,7 +56,7 @@ public class AccountController {
     }
 
     /**
-     * 계좌 수정(주계좌 설정)
+     * 주계좌 설정
      */
     @PutMapping("/{accountId}")
     public ResponseEntity<String> updateAccountType(@PathVariable("accountId") Long accountId,
@@ -65,7 +65,6 @@ public class AccountController {
 
         accountService.updateAccountType(tokenInfoFromHeaderDto, userInfoFromSessionDto, accountId);
 
-        log.info("왜안나오지");
         return new ResponseEntity("success", OK);
     }
 

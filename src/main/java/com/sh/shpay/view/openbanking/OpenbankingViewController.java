@@ -1,9 +1,13 @@
-package com.sh.shpay.api.openbanking;
+package com.sh.shpay.view.openbanking;
 
+import com.sh.shpay.domain.acconut.api.dto.res.AccountListResponseDto;
+import com.sh.shpay.domain.acconut.application.AccountService;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.OpenBankingCodeAuthorizationRequestDto;
 import com.sh.shpay.domain.openbanking.openbanking.application.OpenBankingService;
 import com.sh.shpay.global.resolver.session.UserInfoFromSession;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
+import com.sh.shpay.global.resolver.token.TokenInfoFromHeader;
+import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class OpenbankingViewController {
 
     private final OpenBankingService openBankingService;
+    private final AccountService accountService;
 
     /**
      * 토큰 신청 페이지
@@ -40,7 +45,12 @@ public class OpenbankingViewController {
      * balance-page
      */
     @GetMapping("/balance")
-    public String balancePage(){
+    public String balancePage(Model model,
+                              @TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
+                              @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
+
+        AccountListResponseDto accountListResponseDto = accountService.requestAccountList(tokenInfoFromHeaderDto, userInfoFromSessionDto);
+        model.addAttribute("accountList", accountListResponseDto);
 
         return "balance-page";
     }

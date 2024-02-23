@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Getter
 @NoArgsConstructor
-public class UserInfoFromSessionDto implements Serializable {
+public class UserInfoFromSessionDto implements Serializable { // redis 직렬화
 
     private Long userId;
     private String name;

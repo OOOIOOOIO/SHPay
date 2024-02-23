@@ -90,36 +90,30 @@ public class RedisUtil {
 
     }
 
-    /**
-     * Delete key from redis
-     * @param key
-     * @return
-     */
-    public boolean deleteKey(String key){
-        return redisTemplate.delete(key);
-    }
+
+
     public Long removeSetValue(String key, Object value){
         SetOperations<String, Object> set = redisTemplate.opsForSet();
 
         return set.remove(key, value);
     }
 
-    /**
-     * Get total size who like chicken menu
-     * @param key
-     * @return
-     */
-    public Long getLikeTotalSize(String key) {
-        SetOperations<String, Object> set = redisTemplate.opsForSet();
 
-        return set.size(key);
+    public boolean deleteKey(String key){
+        return redisTemplate.delete(key);
     }
 
     public boolean isExists(String key){
-        return redisTemplate.hasKey(key);
+        try {
+            return redisTemplate.hasKey(key);
+        }
+        catch (NullPointerException e){ // key가 존재하지 않으면 null
+            return false;
+        }
+
     }
 
-    public void setExpireTime(String key, long expirationTime){
+    public void setKeyWithExpireTime(String key, long expirationTime){
         redisTemplate.expire(key, expirationTime, TimeUnit.SECONDS);
     }
 
@@ -127,45 +121,7 @@ public class RedisUtil {
         return redisTemplate.getExpire(key, TimeUnit.SECONDS);
     }
 
-    /**
-     * Bulk insert menu info separately from list to redis
-     * @param key
-     * @param allMenus
-     */
-//    public void bulkInsertForMenuInfo(String key, List<ChickenMenuInfoResDto> allMenus){
-//        RedisSerializer<String> stringSerializer = redisTemplate.getStringSerializer();
-//        RedisSerializer<String> valueSerializer = (RedisSerializer<String>) redisTemplate.getValueSerializer();
-//
-//        redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
-//            for (Long i = 1L; i <= allMenus.size(); i++) {
-//                    byte[] serializeKey = stringSerializer.serialize(key + i);
-//                    String value = parseObjectToString(allMenus.get(Long.valueOf(i - 1).intValue()));
-//                    byte[] serializeValue = valueSerializer.serialize(value);
-//                    connection.set(serializeKey, serializeValue);
-//            }
-//
-//            return null;
-//        });
-//    }
 
-    /**
-     * Bulk insert menu list to redis
-     * @param key
-     * @param menuList
-     */
-//    public void bulkInsertForMenuList(String key, List<ChickenMenuInfoResDto> menuList){
-//        RedisSerializer<String> stringSerializer = redisTemplate.getStringSerializer();
-//        RedisSerializer<String> valueSerializer = (RedisSerializer<String>) redisTemplate.getValueSerializer();
-//
-//        redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
-//            byte[] serializeKey = stringSerializer.serialize(key);
-//            String value = parseObjectToString(menuList);
-//            byte[] serializeValue = valueSerializer.serialize(value);
-//            connection.set(serializeKey, serializeValue);
-//
-//            return null;
-//        });
-//    }
 
     /**
      * Bulk insert userId separately to redis

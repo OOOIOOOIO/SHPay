@@ -1,4 +1,4 @@
-package com.sh.shpay.api.users;
+package com.sh.shpay.view.users;
 
 import com.sh.shpay.domain.users.application.UsersService;
 import lombok.RequiredArgsConstructor;
