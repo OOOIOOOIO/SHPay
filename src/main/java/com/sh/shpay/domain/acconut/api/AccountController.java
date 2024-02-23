@@ -2,6 +2,7 @@ package com.sh.shpay.domain.acconut.api;
 
 import com.sh.shpay.domain.acconut.api.dto.UserAccountDto;
 import com.sh.shpay.domain.acconut.api.dto.req.WithdrawRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.res.AccountListResponseDto;
 import com.sh.shpay.domain.acconut.api.dto.res.TransactionListResponseDto;
 import com.sh.shpay.domain.acconut.application.AccountService;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingTransferResponseDto;
@@ -16,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @RestController
@@ -32,11 +35,11 @@ public class AccountController {
      *
      */
     @GetMapping("/list")
-    public ResponseEntity<List<UserAccountDto>> requestAccount(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
-                                                               @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
-        List<UserAccountDto> accounts = accountService.requestAccountList(tokenInfoFromHeaderDto);
+    public ResponseEntity<AccountListResponseDto> requestAccount(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
+                                                                 @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
+        AccountListResponseDto accountListResponseDto = accountService.requestAccountList(tokenInfoFromHeaderDto, userInfoFromSessionDto);
 
-        return ResponseEntity.ok().body(accounts);
+        return new ResponseEntity(accountListResponseDto, OK);
     }
 
     /**
@@ -45,21 +48,25 @@ public class AccountController {
      * openAPI에서 계좌 리스트 가져옴
      */
     @PostMapping("/list")
-    public ResponseEntity<Long> saveAccounts(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto){
-        Long size = accountService.saveAccountList(tokenInfoFromHeaderDto);
+    public ResponseEntity<Long> saveAccounts(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
+                                             @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
+        Long size = accountService.saveAccountList(tokenInfoFromHeaderDto, userInfoFromSessionDto);
 
-        return ResponseEntity.ok().body(size);
+        return new ResponseEntity(size, OK);
     }
 
     /**
      * 계좌 수정(주계좌 설정)
      */
     @PutMapping("/{accountId}")
-    public ResponseEntity updateAccountType(@PathVariable("accountId") Long accountId,
+    public ResponseEntity<String> updateAccountType(@PathVariable("accountId") Long accountId,
+                                                    @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto,
                                             @TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto) {
-        accountService.updateAccountType(tokenInfoFromHeaderDto, accountId);
 
-        return ResponseEntity.ok().build();
+        accountService.updateAccountType(tokenInfoFromHeaderDto, userInfoFromSessionDto, accountId);
+
+        log.info("왜안나오지");
+        return new ResponseEntity("success", OK);
     }
 
 
@@ -73,7 +80,7 @@ public class AccountController {
 
         TransactionListResponseDto transactionListResponseDto = accountService.requestTransactionList(tokenInfoFromHeaderDto, accountId);
 
-        return new ResponseEntity<>(transactionListResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(transactionListResponseDto, OK);
     }
 
 

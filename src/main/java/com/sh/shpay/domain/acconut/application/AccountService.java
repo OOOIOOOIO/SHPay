@@ -5,23 +5,21 @@ import com.sh.shpay.domain.acconut.api.dto.WithdrawAccountInfoDto;
 import com.sh.shpay.domain.acconut.api.dto.req.AccountRequestDto;
 import com.sh.shpay.domain.acconut.api.dto.req.BalanceRequestDto;
 import com.sh.shpay.domain.acconut.api.dto.req.WithdrawRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.res.AccountListResponseDto;
 import com.sh.shpay.domain.acconut.api.dto.res.TransactionListResponseDto;
 import com.sh.shpay.domain.acconut.domain.Account;
 import com.sh.shpay.domain.acconut.domain.AccountType;
+import com.sh.shpay.domain.acconut.domain.repository.AccountQueryRepositoryImpl;
 import com.sh.shpay.domain.acconut.domain.repository.AccountRepository;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.OpenBankingTransferRequestDto;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingBalanceResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingSearchAccountResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingTransferResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.application.OpenBankingService;
-import com.sh.shpay.domain.openbanking.token.domain.OpenBankingToken;
 import com.sh.shpay.domain.openbanking.token.domain.repository.OpenBankingTokenQueryRepositoryImpl;
-import com.sh.shpay.domain.openbanking.token.domain.repository.OpenBankingTokenRepository;
 import com.sh.shpay.domain.users.domain.Users;
 import com.sh.shpay.domain.users.domain.repository.UsersRepository;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
 import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderDto;
-import com.sh.shpay.global.util.openbanking.OpenBankingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,7 +41,7 @@ import java.util.stream.Collectors;
 public class AccountService {
     private final UsersRepository userRepository;
     private final AccountRepository accountRepository;
-    private final OpenBankingTokenRepository openBankingTokenRepository; //token, openbanking 합치기
+    private final AccountQueryRepositoryImpl accountQueryRepository;
     private final OpenBankingTokenQueryRepositoryImpl openBankingTokenQueryRepository;
     private final OpenBankingService openBankService;
 
@@ -51,14 +49,9 @@ public class AccountService {
     /**
      *  DB에서 계좌 조회 --> 오픈뱅킹 API로 잔액조회
      */
-    public List<UserAccountDto> requestAccountList(TokenInfoFromHeaderDto tokenInfoFromHeaderDto){
+    public AccountListResponseDto requestAccountList(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto){
 
-        Users users = openBankingTokenQueryRepository.findUsersByAccessToken(tokenInfoFromHeaderDto.getAccessToken()).orElseThrow(() -> new RuntimeException("access_token이 존재하지 않습니다."));
-
-        if(users == null){
-            throw new RuntimeException("유저가 존재하지 않습니다.");
-        }
-
+        Users users = userRepository.findById(userInfoFromSessionDto.getUserId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
 
         List<Account> accountList = accountRepository.findByUsers(users);
 
@@ -94,23 +87,20 @@ public class AccountService {
                 .collect(Collectors.toList());
 
 
-        return userAccountDtoList;
+
+        return new AccountListResponseDto(userAccountDtoList);
     }
 
     /**
      * 계좌 저장
      */
-    public Long saveAccountList(TokenInfoFromHeaderDto tokenInfoFromHeaderDto){
+    public Long saveAccountList(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto){
 
 
-        Users users = openBankingTokenQueryRepository.findUsersByAccessToken(tokenInfoFromHeaderDto.getAccessToken()).orElseThrow(() -> new RuntimeException("access_token이 존재하지 않습니다."));
+        Users users = userRepository.findById(userInfoFromSessionDto.getUserId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
 
         log.info("++ : " + users.getUserId());
         log.info("++ : " + users.getUserSeqNo());
-
-        if(users == null){
-            throw new RuntimeException("유저가 존재하지 않습니다.");
-        }
 
 
         AccountRequestDto accountRequestDto = AccountRequestDto.builder()
@@ -162,20 +152,19 @@ public class AccountService {
     /**
      * 주계좌 설정
      */
-    public void updateAccountType(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, Long accountId){
+    public void updateAccountType(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, Long accountId){
+
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new RuntimeException("해당 계좌가 존재하지 않습니다."));
 
         if(account.isMainAccount()){
             throw new RuntimeException("이미 주계좌로 설정되어 있습니다.");
         }
 
-        Users users = openBankingTokenQueryRepository.findUsersByAccessToken(tokenInfoFromHeaderDto.getAccessToken()).orElseThrow(() -> new RuntimeException("access_token이 존재하지 않습니다."));
+        Users users = userRepository.findById(userInfoFromSessionDto.getUserId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
 
-        if(users == null){
-            throw new RuntimeException("유저가 존재하지 않습니다.");
-        }
 
-        Optional<Account> lastMainAccount = accountRepository.findMainAccountByUsers(users);
+
+        Optional<Account> lastMainAccount = accountQueryRepository.findMainAccountByUsers(users.getUserId(), AccountType.MAIN);
 
         if(lastMainAccount.isEmpty()){ // 주계좌가 없다면 조회한 계좌를 주계좌로 변경
             account.updateAccountType(AccountType.MAIN);
@@ -206,7 +195,9 @@ public class AccountService {
 
             log.info("----- : " + openBankingBalanceResponseDto.getFintech_use_num());
             log.info("----- : " + openBankingBalanceResponseDto.getBalance_amt());
+
             return openBankingBalanceResponseDto.getBalance_amt();
+
         } catch (Exception e) {
 //            throw new RuntimeException(e);
             log.error("error message : " + e.getMessage());

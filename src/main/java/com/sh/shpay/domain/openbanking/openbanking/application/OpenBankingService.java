@@ -240,6 +240,11 @@ public class OpenBankingService {
 
         OpenBankingUserInfoResponseDto openBankingUserInfoResponseDto = openBankingApiClient.requestUserInfo(tokenInfoFromHeaderDto, users.getUserSeqNo());
 
+        if(!users.hasOpenBankCi()){
+            users.updateOpenBankCi(openBankingUserInfoResponseDto.getUser_ci());
+
+        }
+
         return openBankingUserInfoResponseDto;
     }
 

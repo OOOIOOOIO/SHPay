@@ -13,6 +13,4 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     List<Account> findByUsers(Users users);
 
-    @Query("select ac from Account as ac where ac.users = :users and ac.accountType = 'MAIN'")
-    Optional<Account> findMainAccountByUsers(@Param("users") Users users);
 }

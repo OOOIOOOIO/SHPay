@@ -17,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.http.HttpStatus.OK;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -36,10 +38,12 @@ public class OpenBankingController {
      * 3000113 : code가 만료 되었을 때
      * 3000114 : 콜백url이 다를떄
      *
+     * state 비고해야함
      */
     @GetMapping("/token/request")
     public ResponseEntity<OpenBankingUserTokenResponseDto> requestUserToken(@RequestParam(name = "code") String code,
                                                                             @RequestParam(name = "scope") String scope,
+                                                                            @RequestParam(name = "state") String state,
                                                                             @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto) {
         log.info("================= OpenBankingController | api/openbanking/token/request =================");
         log.info("code : " + code);
@@ -62,7 +66,7 @@ public class OpenBankingController {
         log.info("scope : " + openBankingUserTokenResponseDto.getScope());
 
 
-        return new ResponseEntity<>(openBankingUserTokenResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(openBankingUserTokenResponseDto, OK);
     }
 
     /**
@@ -90,20 +94,23 @@ public class OpenBankingController {
         log.info("token_type : " + openBankingUserRefreshTokenResponseDto.getToken_type());
         log.info("scope : " + openBankingUserRefreshTokenResponseDto.getScope());
 
-        return new ResponseEntity<>(openBankingUserRefreshTokenResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(openBankingUserRefreshTokenResponseDto, OK);
     }
 
     /**
      * 사용자 정보 가져오기 - ci값, 계좌 리스트 등등
      *
-     * 보류
+     * ci값 저장
+     * 보류 -> 계좌 등록 후 바로 부르게 하기, DB
      */
-    public OpenBankingUserInfoResponseDto requestUserInfo(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
+    @GetMapping("/user/me")
+    public ResponseEntity<OpenBankingUserInfoResponseDto> requestUserInfo(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
                                                           @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto) {
 
-        openBankingService.requestUserInfo(tokenInfoFromHeaderDto, userInfoFromSessionDto);
+        OpenBankingUserInfoResponseDto openBankingUserInfoResponseDto = openBankingService.requestUserInfo(tokenInfoFromHeaderDto, userInfoFromSessionDto);
 
-        return null;
+
+        return new ResponseEntity<>(openBankingUserInfoResponseDto, OK);
     }
 
 }

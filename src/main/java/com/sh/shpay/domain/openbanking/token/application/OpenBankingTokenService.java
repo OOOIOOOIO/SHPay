@@ -27,6 +27,8 @@ public class OpenBankingTokenService {
     /**
      * 사용자 토큰 발급 요청, 3-legged
      * open banking token 저장
+     *
+     * 만료시간 생각해야함
      */
     public void saveOpenBankingUserToken(OpenBankingUserTokenResponseDto openBankingUserTokenResponseDto, Long userId){
 
@@ -61,22 +63,15 @@ public class OpenBankingTokenService {
      * @param openBankingUserRefreshTokenResponseDto
      */
     public void updateTokenInfo(OpenBankingUserRefreshTokenResponseDto openBankingUserRefreshTokenResponseDto, Long userId) {
+
         Users users = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다"));
+
         OpenBankingToken openBankingToken = openBankingTokenRepository.findByUsers(users).orElseThrow(() -> new RuntimeException("토큰 정보가 존재하지 않습니다."));
 
         openBankingToken.updateOpenBankingToken(openBankingUserRefreshTokenResponseDto);
 
     }
 
-    /**
-     * open banking token 조회
-     */
-    public OpenBankingTokenDto getOpenBankingTokenByUserId(Long userId){
-//        OpenBankingToken openBankingToken = openBankingTokenRepository.findByUserId(userId).orElseThrow(() -> new RuntimeException("토큰이 존재하지 않습니다."));
-//
-//        return new OpenBankingTokenDto(openBankingToken);
-        return null;
-    }
 
 
 }
