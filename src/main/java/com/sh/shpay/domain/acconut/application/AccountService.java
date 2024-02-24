@@ -12,10 +12,9 @@ import com.sh.shpay.domain.acconut.domain.AccountType;
 import com.sh.shpay.domain.acconut.domain.repository.AccountQueryRepositoryImpl;
 import com.sh.shpay.domain.acconut.domain.repository.AccountRepository;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingBalanceResponseDto;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingSearchAccountResponseDto;
+import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingAccountListResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingTransferResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.application.OpenBankingService;
-import com.sh.shpay.domain.openbanking.token.domain.repository.OpenBankingTokenQueryRepositoryImpl;
 import com.sh.shpay.domain.users.domain.Users;
 import com.sh.shpay.domain.users.domain.repository.UsersRepository;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
@@ -100,7 +99,7 @@ public class AccountService {
                 .userSeqNo(users.getUserSeqNo())
                 .build();
 
-        OpenBankingSearchAccountResponseDto openBankingSearchAccountResponseDto = openBankService.requestAccountList(accountRequestDto);
+        OpenBankingAccountListResponseDto openBankingAccountListResponseDto = openBankService.requestAccountList(accountRequestDto);
 
 
         // DB 조회
@@ -112,7 +111,7 @@ public class AccountService {
 
         // 사용자 계좌 리스트(res_list)에서 이미 db에 있는 계좌들 빼고 새로운 계좌 필터링
 //        openBankingSearchAccountResponseDto.getRes_list().parallelStream()
-        List<Account> filterAccountList = openBankingSearchAccountResponseDto.getRes_list().stream()
+        List<Account> filterAccountList = openBankingAccountListResponseDto.getRes_list().stream()
                 .filter(openBankingAccountDto -> existFintechUseNum(fintechUseNumMap, openBankingAccountDto.getFintech_use_num())) // 알아서 순회함
                 .map(resultAccount -> Account.createAccount(
                                 resultAccount.getFintech_use_num(),

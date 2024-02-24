@@ -4,7 +4,10 @@ import com.sh.shpay.domain.acconut.api.dto.req.TransactionListRequestDto;
 import com.sh.shpay.domain.acconut.api.dto.res.TransactionListResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.*;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.*;
-import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.req.OpenBankingUserRefreshTokenRequestDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.req.OpenBankingUserTokenRequestDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUserRefreshTokenResponseDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUserTokenResponseDto;
 import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -126,7 +129,7 @@ public class OpenBankingApiClient {
      * AccountService
      * - 계좌 저장에서 쓰임
      */
-    public OpenBankingSearchAccountResponseDto requestAccountList(OpenBankingSearchAccountRequestDto openBankingAccountRequestDto){
+    public OpenBankingAccountListResponseDto requestAccountList(OpenBankingSearchAccountRequestDto openBankingAccountRequestDto){
         String url = BASE_URL + "/v2.0/account/list";
 
         HttpEntity httpEntity = generateHttpEntity(generateHeader("Authorization", openBankingAccountRequestDto.getAccessToken()));
@@ -137,14 +140,14 @@ public class OpenBankingApiClient {
                 .queryParam("sort_order", openBankingAccountRequestDto.getSort_order())
                 .build();
 
-        OpenBankingSearchAccountResponseDto openBankingSearchAccountResponseDto = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, OpenBankingSearchAccountResponseDto.class).getBody();
+        OpenBankingAccountListResponseDto openBankingAccountListResponseDto = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, OpenBankingAccountListResponseDto.class).getBody();
 
-        if(!isCodeValid(openBankingSearchAccountResponseDto.getRsp_code())){
-            log.error("error code : {}, error msg : {}", openBankingSearchAccountResponseDto.getRsp_code(), openBankingSearchAccountResponseDto.getRsp_message());
-            throw new RuntimeException(openBankingSearchAccountResponseDto.getRsp_message());
+        if(!isCodeValid(openBankingAccountListResponseDto.getRsp_code())){
+            log.error("error code : {}, error msg : {}", openBankingAccountListResponseDto.getRsp_code(), openBankingAccountListResponseDto.getRsp_message());
+            throw new RuntimeException(openBankingAccountListResponseDto.getRsp_message());
         }
 
-        return openBankingSearchAccountResponseDto;
+        return openBankingAccountListResponseDto;
 
     }
 

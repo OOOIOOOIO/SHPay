@@ -1,7 +1,7 @@
 package com.sh.shpay.domain.openbanking.token.domain;
 
 import com.sh.shpay.domain.common.BaseTimeEntity;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingUserRefreshTokenResponseDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUserRefreshTokenResponseDto;
 import com.sh.shpay.domain.users.domain.Users;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

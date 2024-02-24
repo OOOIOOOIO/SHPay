@@ -9,7 +9,11 @@ import com.sh.shpay.domain.acconut.api.dto.req.WithdrawRequestDto;
 import com.sh.shpay.domain.acconut.api.dto.res.TransactionListResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.*;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.*;
-import com.sh.shpay.domain.openbanking.token.domain.OpenBankingToken;
+import com.sh.shpay.domain.openbanking.token.api.dto.req.OpenBankingUserCodeRequestDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.req.OpenBankingUserRefreshTokenRequestDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.req.OpenBankingUserTokenRequestDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUserRefreshTokenResponseDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUserTokenResponseDto;
 import com.sh.shpay.domain.users.domain.Users;
 import com.sh.shpay.domain.users.domain.repository.UsersRepository;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
@@ -85,9 +89,13 @@ public class OpenBankingService {
     /**
      * 사용자 토큰 발급 요청, 3-legged
      */
-    public OpenBankingUserTokenResponseDto requestUserToken(OpenBankingUserCodeRequestDto openBankingUserCodeRequestDto){
+    public OpenBankingUserTokenResponseDto requestUserToken(OpenBankingUserCodeRequestDto openBankingUserCodeRequestDto, String state){
 
         log.info("========== OpenBankingService |  requestUserToken ============");
+
+        if (state.equals(STATE)) { // 주의1
+            throw new RuntimeException("State 값이 일치하지 않습니다.");
+        }
 
         if(openBankingUserCodeRequestDto.getCode().isBlank()){
             log.error("code가 존재하지 않습니다.");
@@ -159,7 +167,7 @@ public class OpenBankingService {
     /**
      * 등록계좌조회
      */
-    public OpenBankingSearchAccountResponseDto requestAccountList(AccountRequestDto accountRequestDto){
+    public OpenBankingAccountListResponseDto requestAccountList(AccountRequestDto accountRequestDto){
 
         OpenBankingSearchAccountRequestDto openBankingSearchAccountRequestDto = OpenBankingSearchAccountRequestDto.builder()
                 .user_seq_no(accountRequestDto.getUserSeqNo())
@@ -168,9 +176,9 @@ public class OpenBankingService {
                 .sort_order("D")
                 .build();
 
-        OpenBankingSearchAccountResponseDto openBankingSearchAccountResponseDto = openBankingApiClient.requestAccountList(openBankingSearchAccountRequestDto);
+        OpenBankingAccountListResponseDto openBankingAccountListResponseDto = openBankingApiClient.requestAccountList(openBankingSearchAccountRequestDto);
 
-        return openBankingSearchAccountResponseDto;
+        return openBankingAccountListResponseDto;
 
     }
 

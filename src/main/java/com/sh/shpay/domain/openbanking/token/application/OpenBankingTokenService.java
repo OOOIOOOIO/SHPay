@@ -1,9 +1,7 @@
 package com.sh.shpay.domain.openbanking.token.application;
 
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.OpenBankingTokenDto;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.OpenBankingUserCodeRequestDto;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingUserRefreshTokenResponseDto;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingUserTokenResponseDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUserRefreshTokenResponseDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUserTokenResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.application.OpenBankingService;
 import com.sh.shpay.domain.openbanking.token.domain.OpenBankingToken;
 import com.sh.shpay.domain.openbanking.token.domain.repository.OpenBankingTokenRepository;

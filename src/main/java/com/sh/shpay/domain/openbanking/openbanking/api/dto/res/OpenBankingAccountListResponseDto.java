@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OpenBankingSearchAccountResponseDto {
+public class OpenBankingAccountListResponseDto {
     private String api_tran_id;
     private String rsp_code;
     private String rsp_message;

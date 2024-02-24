@@ -1,19 +1,16 @@
-package com.sh.shpay.domain.openbanking.openbanking.api;
+package com.sh.shpay.domain.openbanking.token.api;
 
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.OpenBankingUserCodeRequestDto;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingUserInfoResponseDto;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingUserRefreshTokenResponseDto;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingUserTokenResponseDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.req.OpenBankingUserCodeRequestDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUserRefreshTokenResponseDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUserTokenResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.application.OpenBankingService;
 import com.sh.shpay.domain.openbanking.token.application.OpenBankingTokenService;
-import com.sh.shpay.domain.users.application.UsersService;
 import com.sh.shpay.global.resolver.session.UserInfoFromSession;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
 import com.sh.shpay.global.resolver.token.TokenInfoFromHeader;
 import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +20,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/openbanking")
-public class OpenBankingController {
+public class OpenBankingTokenController {
 
     private final OpenBankingService openBankingService;
     private final OpenBankingTokenService openBankingTokenService;
@@ -51,7 +48,7 @@ public class OpenBankingController {
 
         OpenBankingUserCodeRequestDto openBankingUserCodeRequestDto = new OpenBankingUserCodeRequestDto(code, userInfoFromSessionDto.getUserId());
 
-        OpenBankingUserTokenResponseDto openBankingUserTokenResponseDto = openBankingService.requestUserToken(openBankingUserCodeRequestDto);
+        OpenBankingUserTokenResponseDto openBankingUserTokenResponseDto = openBankingService.requestUserToken(openBankingUserCodeRequestDto, state);
 
         /**
          * 여기서 token 정보 저장
@@ -103,14 +100,14 @@ public class OpenBankingController {
      * ci값 저장
      * 보류 -> 계좌 등록 후 바로 부르게 하기, DB
      */
-    @GetMapping("/user/me")
-    public ResponseEntity<OpenBankingUserInfoResponseDto> requestUserInfo(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
-                                                          @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto) {
-
-        OpenBankingUserInfoResponseDto openBankingUserInfoResponseDto = openBankingService.requestUserInfo(tokenInfoFromHeaderDto, userInfoFromSessionDto);
-
-
-        return new ResponseEntity<>(openBankingUserInfoResponseDto, OK);
-    }
+//    @GetMapping("/user/me")
+//    public ResponseEntity<OpenBankingUserInfoResponseDto> requestUserInfo(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
+//                                                          @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto) {
+//
+//        OpenBankingUserInfoResponseDto openBankingUserInfoResponseDto = openBankingService.requestUserInfo(tokenInfoFromHeaderDto, userInfoFromSessionDto);
+//
+//
+//        return new ResponseEntity<>(openBankingUserInfoResponseDto, OK);
+//    }
 
 }
