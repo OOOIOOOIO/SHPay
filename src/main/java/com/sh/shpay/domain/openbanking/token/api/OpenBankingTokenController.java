@@ -1,14 +1,18 @@
 package com.sh.shpay.domain.openbanking.token.api;
 
+import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingUserInfoResponseDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.req.OpenBankingUser2leggedTokenRequestDto;
 import com.sh.shpay.domain.openbanking.token.api.dto.req.OpenBankingUserCodeRequestDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUser2leggedTokenResponseDto;
 import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUserRefreshTokenResponseDto;
-import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUserTokenResponseDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUser3leggedTokenResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.application.OpenBankingService;
 import com.sh.shpay.domain.openbanking.token.application.OpenBankingTokenService;
+import com.sh.shpay.global.log.LogTrace;
 import com.sh.shpay.global.resolver.session.UserInfoFromSession;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
-import com.sh.shpay.global.resolver.token.TokenInfoFromHeader;
-import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderDto;
+import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeader;
+import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeaderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +32,7 @@ public class OpenBankingTokenController {
 
 
     /**
+     * code 요청 후
      * 사용자 토큰 발급 요청, 3-legged
      *
      * response param : code, scope, client_info, state
@@ -35,35 +40,23 @@ public class OpenBankingTokenController {
      * 3000113 : code가 만료 되었을 때
      * 3000114 : 콜백url이 다를떄
      *
-     * state 비고해야함
+     * 주의1, state 비교
      */
+    @LogTrace
     @GetMapping("/token/request")
-    public ResponseEntity<OpenBankingUserTokenResponseDto> requestUserToken(@RequestParam(name = "code") String code,
-                                                                            @RequestParam(name = "scope") String scope,
-                                                                            @RequestParam(name = "state") String state,
-                                                                            @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto) {
-        log.info("================= OpenBankingController | api/openbanking/token/request =================");
-        log.info("code : " + code);
-        log.info("scope : " + scope);
+    public ResponseEntity<OpenBankingUser3leggedTokenResponseDto> requestUser3LeggedToken(@RequestParam(name = "code") String code,
+                                                                                   @RequestParam(name = "scope") String scope,
+                                                                                   @RequestParam(name = "state") String state,
+                                                                                   @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto) {
 
         OpenBankingUserCodeRequestDto openBankingUserCodeRequestDto = new OpenBankingUserCodeRequestDto(code, userInfoFromSessionDto.getUserId());
 
-        OpenBankingUserTokenResponseDto openBankingUserTokenResponseDto = openBankingService.requestUserToken(openBankingUserCodeRequestDto, state);
+        OpenBankingUser3leggedTokenResponseDto openBankingUser3leggedTokenResponseDto = openBankingService.requestUser3leggedToken(openBankingUserCodeRequestDto, state);
 
-        /**
-         * 여기서 token 정보 저장
-         */
-        openBankingTokenService.saveOpenBankingUserToken(openBankingUserTokenResponseDto, userInfoFromSessionDto.getUserId());
+        // 여기서 token 정보 저장
+        openBankingTokenService.saveOpenBankingUserToken(openBankingUser3leggedTokenResponseDto, userInfoFromSessionDto.getUserId());
 
-        log.info("access_token : " + openBankingUserTokenResponseDto.getAccess_token());
-        log.info("user_seq_no : " + openBankingUserTokenResponseDto.getUser_seq_no());
-        log.info("refresh_token : " + openBankingUserTokenResponseDto.getRefresh_token());
-        log.info("expires_in : " + openBankingUserTokenResponseDto.getExpires_in());
-        log.info("token_type : " + openBankingUserTokenResponseDto.getToken_type());
-        log.info("scope : " + openBankingUserTokenResponseDto.getScope());
-
-
-        return new ResponseEntity<>(openBankingUserTokenResponseDto, OK);
+        return new ResponseEntity<>(openBankingUser3leggedTokenResponseDto, OK);
     }
 
     /**
@@ -74,40 +67,45 @@ public class OpenBankingTokenController {
      * GET/POST 둘 다 가능
      */
     @PostMapping("/token/refresh")
-    public ResponseEntity<OpenBankingUserRefreshTokenResponseDto> refreshUserToken(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
+    public ResponseEntity<OpenBankingUserRefreshTokenResponseDto> refreshUser3LeggedToken(@OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
                                                                                    @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
 
-        log.info("================= OpenBankingController | api/openbanking/token/request =================");
-
-        OpenBankingUserRefreshTokenResponseDto openBankingUserRefreshTokenResponseDto = openBankingService.refreshUserToken(tokenInfoFromHeaderDto);
+        OpenBankingUserRefreshTokenResponseDto openBankingUserRefreshTokenResponseDto = openBankingService.refreshUserToken(openbankingTokenInfoFromHeaderDto);
 
         // token 저장
         openBankingTokenService.updateTokenInfo(openBankingUserRefreshTokenResponseDto, userInfoFromSessionDto.getUserId());
 
-        log.info("access_token : " + openBankingUserRefreshTokenResponseDto.getAccess_token());
-        log.info("user_seq_no : " + openBankingUserRefreshTokenResponseDto.getUser_seq_no());
-        log.info("refresh_token : " + openBankingUserRefreshTokenResponseDto.getRefresh_token());
-        log.info("expires_in : " + openBankingUserRefreshTokenResponseDto.getExpires_in());
-        log.info("token_type : " + openBankingUserRefreshTokenResponseDto.getToken_type());
-        log.info("scope : " + openBankingUserRefreshTokenResponseDto.getScope());
 
         return new ResponseEntity<>(openBankingUserRefreshTokenResponseDto, OK);
+    }
+
+    /**
+     * 사용자 토큰 발급 요청, 2-legged
+     *
+     */
+    @LogTrace
+    @PostMapping("/token/request")
+    public ResponseEntity<OpenBankingUser2leggedTokenResponseDto> requestUser2LeggedToken(@UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto) {
+
+        OpenBankingUser2leggedTokenResponseDto openBankingUser2leggedTokenResponseDto = openBankingService.requestUser2leggedToken();
+
+        return new ResponseEntity<>(openBankingUser2leggedTokenResponseDto, OK);
     }
 
     /**
      * 사용자 정보 가져오기 - ci값, 계좌 리스트 등등
      *
      * ci값 저장
-     * 보류 -> 계좌 등록 후 바로 부르게 하기, DB
      */
-//    @GetMapping("/user/me")
-//    public ResponseEntity<OpenBankingUserInfoResponseDto> requestUserInfo(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
-//                                                          @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto) {
-//
-//        OpenBankingUserInfoResponseDto openBankingUserInfoResponseDto = openBankingService.requestUserInfo(tokenInfoFromHeaderDto, userInfoFromSessionDto);
-//
-//
-//        return new ResponseEntity<>(openBankingUserInfoResponseDto, OK);
-//    }
+    @LogTrace
+    @GetMapping("/user/me")
+    public ResponseEntity<OpenBankingUserInfoResponseDto> requestUserInfo(@OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
+                                                                          @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto) {
+
+        OpenBankingUserInfoResponseDto openBankingUserInfoResponseDto = openBankingService.requestUserInfo(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto);
+
+
+        return new ResponseEntity<>(openBankingUserInfoResponseDto, OK);
+    }
 
 }

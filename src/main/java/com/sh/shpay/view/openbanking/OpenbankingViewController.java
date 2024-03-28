@@ -4,10 +4,11 @@ import com.sh.shpay.domain.acconut.api.dto.res.AccountListResponseDto;
 import com.sh.shpay.domain.acconut.application.AccountService;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.OpenBankingCodeAuthorizationRequestDto;
 import com.sh.shpay.domain.openbanking.openbanking.application.OpenBankingService;
+import com.sh.shpay.global.log.LogTrace;
 import com.sh.shpay.global.resolver.session.UserInfoFromSession;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
-import com.sh.shpay.global.resolver.token.TokenInfoFromHeader;
-import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderDto;
+import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeader;
+import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeaderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -28,6 +29,7 @@ public class OpenbankingViewController {
      * 토큰 신청 페이지
      * 사용자 AuthCode 발급 요청 -> 사용자 토큰 발급 요청으로 넘어감(callback url)
      */
+    @LogTrace
     @GetMapping("/auth")
     public String authPage(Model model) {
 
@@ -44,12 +46,13 @@ public class OpenbankingViewController {
      * 계좌내역 페이지
      * balance-page
      */
+    @LogTrace
     @GetMapping("/balance")
     public String balancePage(Model model,
-                              @TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
+                              @OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
                               @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
 
-        AccountListResponseDto accountListResponseDto = accountService.requestAccountList(tokenInfoFromHeaderDto, userInfoFromSessionDto);
+        AccountListResponseDto accountListResponseDto = accountService.requestAccountList(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto);
         model.addAttribute("accountList", accountListResponseDto);
 
         return "balance-page";

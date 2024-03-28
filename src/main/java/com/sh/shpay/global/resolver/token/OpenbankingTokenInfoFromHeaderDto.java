@@ -8,12 +8,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class TokenInfoFromHeaderDto {
+public class OpenbankingTokenInfoFromHeaderDto {
     private String accessToken;
     private String refreshToken;
 
     @Builder
-    public TokenInfoFromHeaderDto(String accessToken, String refreshToken) {
+    public OpenbankingTokenInfoFromHeaderDto(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }

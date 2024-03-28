@@ -35,7 +35,6 @@ public class OpenBankingToken extends BaseTimeEntity {
     @Column(unique = true)
     private String userSeqNo; // user_seq_no --> users에 있는데
     @OneToOne(fetch = FetchType.LAZY)
-
     @JoinColumn(name = "userId")
     private Users users; // oneToOne 고려
 
