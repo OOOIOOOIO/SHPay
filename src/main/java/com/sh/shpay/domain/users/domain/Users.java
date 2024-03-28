@@ -80,6 +80,7 @@ public class Users extends BaseTimeEntity {
     public void updateUserSeqNo(String userSeqNo){
         this.userSeqNo = userSeqNo;
     }
+
     public void updateOpenBankCi(String openBankCi){
         this.openBankCi = openBankCi;
     }

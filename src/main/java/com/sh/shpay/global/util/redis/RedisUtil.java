@@ -57,46 +57,7 @@ public class RedisUtil {
         }
     }
 
-    /**
-     * Push Set type to redis
-     * @param key
-     * @param value
-     * @param expirationTime
-     * @return
-     */
-    public Long putSet(String key, Object value, Long expirationTime) {
-        SetOperations<String, Object> set = redisTemplate.opsForSet();
-        if(expirationTime != null){
-            String obj = parseObjectToString(value);
-            return redisTemplate.opsForSet().add(key, obj, expirationTime, TimeUnit.SECONDS);
 
-        }else{
-            String obj = parseObjectToString(value);
-            return  redisTemplate.opsForSet().add(key, obj);
-        }
-    }
-
-    public Set<Long> getSetMembers(String key){
-
-        SetOperations<String, Object> set = redisTemplate.opsForSet();
-        Set<Object> members = set.members(key);
-
-        Set<Long> redis = new HashSet<>(); //추가
-        for (Object member : members) {
-            redis.add(Long.parseLong((String)member));
-        }
-
-        return redis;
-
-    }
-
-
-
-    public Long removeSetValue(String key, Object value){
-        SetOperations<String, Object> set = redisTemplate.opsForSet();
-
-        return set.remove(key, value);
-    }
 
 
     public boolean deleteKey(String key){
@@ -122,27 +83,6 @@ public class RedisUtil {
     }
 
 
-
-    /**
-     * Bulk insert userId separately to redis
-     * @param key
-     * @param userIdList
-     */
-    public void bulkInsertForLikes(String key, List<Long> userIdList){
-        RedisSerializer<String> stringSerializer = redisTemplate.getStringSerializer();
-        RedisSerializer<String> valueSerializer = (RedisSerializer<String>) redisTemplate.getValueSerializer();
-
-        redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
-            for (Long userId : userIdList) {
-                byte[] serializeKey = stringSerializer.serialize(key);
-                String value = parseObjectToString(userId);
-                byte[] serializeValue = valueSerializer.serialize(value);
-                connection.sAdd(serializeKey, serializeValue);
-            }
-
-            return null;
-        });
-    }
 
     /**
      * Parse Object type to String type

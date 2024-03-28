@@ -15,37 +15,37 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @RequiredArgsConstructor
 @Component
 //public class TokenInfoFromHeaderArgumentResolver implements HandlerMethodArgumentResolver {
-public class TokenInfoFromHeaderResolver implements HandlerMethodArgumentResolver {
+public class OpenbankingTokenInfoFromHeaderResolver implements HandlerMethodArgumentResolver {
 
 
 
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(TokenInfoFromHeaderDto.class);
+        return parameter.getParameterType().equals(OpenbankingTokenInfoFromHeaderDto.class);
     }
 
     /**
      * Header에서 accessToken, refreshToken 추출
      */
     @Override
-    public TokenInfoFromHeaderDto resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+    public OpenbankingTokenInfoFromHeaderDto resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest(); // jakarta로 변경 후 getNativeRequest 붙여줘야 함
 
         String accessToken = request.getHeader("Authorization");
         String refreshToken = request.getHeader("refresh_token");
 
 
-        TokenInfoFromHeaderDto tokenInfoFromHeaderDto = TokenInfoFromHeaderDto.builder()
+        OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto = OpenbankingTokenInfoFromHeaderDto.builder()
                 .accessToken(accessToken.substring(7))
                 .refreshToken(refreshToken)
                 .build();
 
 
-        log.info("========== TokenInfo From Header by ArgumentResolver ==========");
-        log.info("========== accessToken : " + tokenInfoFromHeaderDto.getAccessToken() + " ==========");
-        log.info("========== refreshToken : " + tokenInfoFromHeaderDto.getRefreshToken() + " ==========");
+        log.info("========== Openbanking Token Info From Header by ArgumentResolver ==========");
+        log.info("========== accessToken : " + openbankingTokenInfoFromHeaderDto.getAccessToken() + " ==========");
+        log.info("========== refreshToken : " + openbankingTokenInfoFromHeaderDto.getRefreshToken() + " ==========");
 
-        return tokenInfoFromHeaderDto;
+        return openbankingTokenInfoFromHeaderDto;
     }
 }

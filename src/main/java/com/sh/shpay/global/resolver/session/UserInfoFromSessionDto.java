@@ -2,6 +2,7 @@ package com.sh.shpay.global.resolver.session;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
 

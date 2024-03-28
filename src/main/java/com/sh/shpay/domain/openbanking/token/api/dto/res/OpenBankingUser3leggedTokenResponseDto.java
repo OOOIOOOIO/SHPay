@@ -1,4 +1,4 @@
-package com.sh.shpay.domain.openbanking.openbanking.api.dto.res;
+package com.sh.shpay.domain.openbanking.token.api.dto.res;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OpenBankingUserTokenResponseDto {
+public class OpenBankingUser3leggedTokenResponseDto {
     private String rsp_code;
     private String rsp_message;
     private String access_token;

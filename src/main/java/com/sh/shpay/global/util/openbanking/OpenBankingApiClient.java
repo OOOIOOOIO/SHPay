@@ -4,8 +4,13 @@ import com.sh.shpay.domain.acconut.api.dto.req.TransactionListRequestDto;
 import com.sh.shpay.domain.acconut.api.dto.res.TransactionListResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.*;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.*;
-import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
-import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.req.OpenBankingUser2leggedTokenRequestDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.req.OpenBankingUserRefreshTokenRequestDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.req.OpenBankingUser3leggedTokenRequestDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUser2leggedTokenResponseDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUserRefreshTokenResponseDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUser3leggedTokenResponseDto;
+import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeaderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -55,12 +60,12 @@ public class OpenBankingApiClient {
     /**
      * 사용자 토큰 발급 요청, 3-legged
      */
-    public OpenBankingUserTokenResponseDto requestUserToken(OpenBankingUserTokenRequestDto openBankingUserRequestToken){
+    public OpenBankingUser3leggedTokenResponseDto requestUser3leggedToken(OpenBankingUser3leggedTokenRequestDto openBankingUserRequestToken){
 
         HttpHeaders httpHeaders = generateHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
         HttpEntity httpEntity = generateHttpEntityWithBody(httpHeaders, openBankingUserRequestToken.toMultiValueMap());
 
-        OpenBankingUserTokenResponseDto openBankingUserResponseToken = restTemplate.exchange(BASE_URL + "/oauth/2.0/token", HttpMethod.POST, httpEntity, OpenBankingUserTokenResponseDto.class).getBody();
+        OpenBankingUser3leggedTokenResponseDto openBankingUserResponseToken = restTemplate.exchange(BASE_URL + "/oauth/2.0/token", HttpMethod.POST, httpEntity, OpenBankingUser3leggedTokenResponseDto.class).getBody();
 
 
         if(!isCodeValid(openBankingUserResponseToken.getRsp_code())){
@@ -93,16 +98,30 @@ public class OpenBankingApiClient {
 
     }
 
+    /**
+     * 사용자 토큰 발급 요청, 2-legged
+     */
+    public OpenBankingUser2leggedTokenResponseDto requestUser2leggedToken(OpenBankingUser2leggedTokenRequestDto openBankingUserRequestToken){
+
+        HttpHeaders httpHeaders = generateHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+        HttpEntity httpEntity = generateHttpEntityWithBody(httpHeaders, openBankingUserRequestToken.toMultiValueMap());
+
+        OpenBankingUser2leggedTokenResponseDto openBankingUser2leggedTokenResponseDto = restTemplate.exchange(BASE_URL + "/oauth/2.0/token", HttpMethod.POST, httpEntity, OpenBankingUser2leggedTokenResponseDto.class).getBody();
+
+        return openBankingUser2leggedTokenResponseDto;
+
+    }
+
 
     /**
      * 사용자 정보 가져오기 - ci값
      * 계좌 정보도 다 나오는데 흠흠
      *
      */
-    public OpenBankingUserInfoResponseDto requestUserInfo(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, String userSeqNo) {
+    public OpenBankingUserInfoResponseDto requestUserInfo(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, String userSeqNo) {
         String url = BASE_URL + "/v2.0/user/me";
 
-        HttpEntity httpEntity = generateHttpEntity(generateHeader("Authorization", tokenInfoFromHeaderDto.getAccessToken()));
+        HttpEntity httpEntity = generateHttpEntity(generateHeader("Authorization", openbankingTokenInfoFromHeaderDto.getAccessToken()));
 
         UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(url)
                 .queryParam("user_seq_no", userSeqNo)
@@ -126,7 +145,7 @@ public class OpenBankingApiClient {
      * AccountService
      * - 계좌 저장에서 쓰임
      */
-    public OpenBankingSearchAccountResponseDto requestAccountList(OpenBankingSearchAccountRequestDto openBankingAccountRequestDto){
+    public OpenBankingAccountListResponseDto requestAccountList(OpenBankingSearchAccountRequestDto openBankingAccountRequestDto){
         String url = BASE_URL + "/v2.0/account/list";
 
         HttpEntity httpEntity = generateHttpEntity(generateHeader("Authorization", openBankingAccountRequestDto.getAccessToken()));
@@ -137,14 +156,14 @@ public class OpenBankingApiClient {
                 .queryParam("sort_order", openBankingAccountRequestDto.getSort_order())
                 .build();
 
-        OpenBankingSearchAccountResponseDto openBankingSearchAccountResponseDto = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, OpenBankingSearchAccountResponseDto.class).getBody();
+        OpenBankingAccountListResponseDto openBankingAccountListResponseDto = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, httpEntity, OpenBankingAccountListResponseDto.class).getBody();
 
-        if(!isCodeValid(openBankingSearchAccountResponseDto.getRsp_code())){
-            log.error("error code : {}, error msg : {}", openBankingSearchAccountResponseDto.getRsp_code(), openBankingSearchAccountResponseDto.getRsp_message());
-            throw new RuntimeException(openBankingSearchAccountResponseDto.getRsp_message());
+        if(!isCodeValid(openBankingAccountListResponseDto.getRsp_code())){
+            log.error("error code : {}, error msg : {}", openBankingAccountListResponseDto.getRsp_code(), openBankingAccountListResponseDto.getRsp_message());
+            throw new RuntimeException(openBankingAccountListResponseDto.getRsp_message());
         }
 
-        return openBankingSearchAccountResponseDto;
+        return openBankingAccountListResponseDto;
 
     }
 
@@ -176,10 +195,10 @@ public class OpenBankingApiClient {
      * 거래내역조회
      *
      */
-    public TransactionListResponseDto requestTransactionList(TokenInfoFromHeaderDto tokenInfoFromHeaderDto, TransactionListRequestDto transactionListRequestDto){
+    public TransactionListResponseDto requestTransactionList(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, TransactionListRequestDto transactionListRequestDto){
         String url = BASE_URL + "/v2.0/account/transaction_list/fin_num";
 
-        HttpEntity httpEntity = generateHttpEntity(generateHeader("Authorization", tokenInfoFromHeaderDto.getAccessToken()));
+        HttpEntity httpEntity = generateHttpEntity(generateHeader("Authorization", openbankingTokenInfoFromHeaderDto.getAccessToken()));
         transactionListRequestDto.setTran_dtime(OpenBankingUtil.transTime());
 
         UriComponents builder = UriComponentsBuilder.fromHttpUrl(url)

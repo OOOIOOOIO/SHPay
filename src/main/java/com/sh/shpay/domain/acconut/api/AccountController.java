@@ -1,22 +1,19 @@
 package com.sh.shpay.domain.acconut.api;
 
-import com.sh.shpay.domain.acconut.api.dto.UserAccountDto;
 import com.sh.shpay.domain.acconut.api.dto.req.WithdrawRequestDto;
 import com.sh.shpay.domain.acconut.api.dto.res.AccountListResponseDto;
 import com.sh.shpay.domain.acconut.api.dto.res.TransactionListResponseDto;
 import com.sh.shpay.domain.acconut.application.AccountService;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingTransferResponseDto;
+import com.sh.shpay.global.log.LogTrace;
 import com.sh.shpay.global.resolver.session.UserInfoFromSession;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
-import com.sh.shpay.global.resolver.token.TokenInfoFromHeader;
-import com.sh.shpay.global.resolver.token.TokenInfoFromHeaderDto;
+import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeader;
+import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeaderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -32,12 +29,12 @@ public class AccountController {
     /**
      * 계좌 조회(DB에서 계좌 조회 --> 오픈뱅킹 API로 잔액조회)
      *
-     *
      */
+    @LogTrace
     @GetMapping("/list")
-    public ResponseEntity<AccountListResponseDto> requestAccount(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
+    public ResponseEntity<AccountListResponseDto> requestAccountInfo(@OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
                                                                  @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
-        AccountListResponseDto accountListResponseDto = accountService.requestAccountList(tokenInfoFromHeaderDto, userInfoFromSessionDto);
+        AccountListResponseDto accountListResponseDto = accountService.requestAccountList(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto);
 
         return new ResponseEntity(accountListResponseDto, OK);
     }
@@ -47,10 +44,11 @@ public class AccountController {
      *
      * openAPI에서 계좌 리스트 가져옴
      */
+    @LogTrace
     @PostMapping("/list")
-    public ResponseEntity<Long> saveAccounts(@TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
+    public ResponseEntity<Long> saveAccountList(@OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
                                              @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
-        Long size = accountService.saveAccountList(tokenInfoFromHeaderDto, userInfoFromSessionDto);
+        Long size = accountService.saveAccountList(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto);
 
         return new ResponseEntity(size, OK);
     }
@@ -58,12 +56,11 @@ public class AccountController {
     /**
      * 주계좌 설정
      */
+    @LogTrace
     @PutMapping("/{accountId}")
     public ResponseEntity<String> updateAccountType(@PathVariable("accountId") Long accountId,
-                                                    @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto,
-                                            @TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto) {
-
-        accountService.updateAccountType(tokenInfoFromHeaderDto, userInfoFromSessionDto, accountId);
+                                                    @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
+        accountService.updateAccountType(userInfoFromSessionDto, accountId);
 
         return new ResponseEntity("success", OK);
     }
@@ -73,11 +70,12 @@ public class AccountController {
     /**
      * 거래내역조회
      */
+    @LogTrace
     @GetMapping("/transaction/{accountId}")
-    public ResponseEntity<TransactionListResponseDto> transactionList(@PathVariable("accountId") Long accountId,
-                                                                      @TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto){
+    public ResponseEntity<TransactionListResponseDto> getTransactionList(@PathVariable("accountId") Long accountId,
+                                                                      @OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto){
 
-        TransactionListResponseDto transactionListResponseDto = accountService.requestTransactionList(tokenInfoFromHeaderDto, accountId);
+        TransactionListResponseDto transactionListResponseDto = accountService.requestTransactionList(openbankingTokenInfoFromHeaderDto, accountId);
 
         return new ResponseEntity<>(transactionListResponseDto, OK);
     }
@@ -87,13 +85,16 @@ public class AccountController {
     /**
      * 출금이제
      */
+    @LogTrace
     @PostMapping("/withdraw/{accountId}")
     public OpenBankingTransferResponseDto requestWithdraw(@PathVariable("accountId") Long accountId,
-                                                          @TokenInfoFromHeader TokenInfoFromHeaderDto tokenInfoFromHeaderDto,
+                                                          @OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
                                                           @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto,
                                                           @RequestBody WithdrawRequestDto withdrawRequestDto){
 
-        OpenBankingTransferResponseDto openBankingTransferResponseDto = accountService.requestWithdraw(tokenInfoFromHeaderDto, userInfoFromSessionDto, accountId, withdrawRequestDto);
+        log.info("================= AccountController | api/openbanking/token/request - 2-legged =================");
+
+        OpenBankingTransferResponseDto openBankingTransferResponseDto = accountService.requestWithdraw(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto, accountId, withdrawRequestDto);
 
         return openBankingTransferResponseDto;
 

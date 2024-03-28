@@ -1,9 +1,7 @@
 package com.sh.shpay.domain.openbanking.token.application;
 
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.OpenBankingTokenDto;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.OpenBankingUserCodeRequestDto;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingUserRefreshTokenResponseDto;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingUserTokenResponseDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUserRefreshTokenResponseDto;
+import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUser3leggedTokenResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.application.OpenBankingService;
 import com.sh.shpay.domain.openbanking.token.domain.OpenBankingToken;
 import com.sh.shpay.domain.openbanking.token.domain.repository.OpenBankingTokenRepository;
@@ -30,7 +28,7 @@ public class OpenBankingTokenService {
      *
      * 만료시간 생각해야함
      */
-    public void saveOpenBankingUserToken(OpenBankingUserTokenResponseDto openBankingUserTokenResponseDto, Long userId){
+    public void saveOpenBankingUserToken(OpenBankingUser3leggedTokenResponseDto openBankingUser3leggedTokenResponseDto, Long userId){
 
         Users users = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다"));
 
@@ -41,10 +39,10 @@ public class OpenBankingTokenService {
 
         OpenBankingToken openBankingToken = OpenBankingToken.createOpenBankingToken(
                 users,
-                openBankingUserTokenResponseDto.getAccess_token(),
-                openBankingUserTokenResponseDto.getRefresh_token(),
-                (long) openBankingUserTokenResponseDto.getExpires_in(),
-                openBankingUserTokenResponseDto.getUser_seq_no()
+                openBankingUser3leggedTokenResponseDto.getAccess_token(),
+                openBankingUser3leggedTokenResponseDto.getRefresh_token(),
+                (long) openBankingUser3leggedTokenResponseDto.getExpires_in(),
+                openBankingUser3leggedTokenResponseDto.getUser_seq_no()
 
         );
 
@@ -52,7 +50,7 @@ public class OpenBankingTokenService {
 
         // user_seq_no 저장
         if(!users.hasUserSeqNo()){
-            users.updateUserSeqNo(openBankingUserTokenResponseDto.getUser_seq_no());
+            users.updateUserSeqNo(openBankingUser3leggedTokenResponseDto.getUser_seq_no());
 
         }
 

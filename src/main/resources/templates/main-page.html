@@ -18,9 +18,12 @@
             $.ajax(
                 {
                     type:"GET",
-                    url:"https://testapi.openbanking.or.kr/oauth/2.0/authorize?response_type="+[[${requestInfo.response_type}]]+"&client_id="+[[${requestInfo.client_id}]]+"&redirect_uri="+[[${requestInfo.redirect_uri}]]+"&scope="+[[${requestInfo.scope}]]+"&state="+[[${requestInfo.state}]]+"&auth_type="+[[${requestInfo.auth_type}]],
-                    dataType:"jsonp", // CORS 해결
+                    url:"/openbanking/balance",
+                    // dataType:"jsonp", // CORS 해결
                     // contentType:"application/json; charset=utf-8",
+                    beforeSend: function (xhr){
+                        xhr.setRequestHeader("Authori")
+                    }
                     success:function(result, status, xhr){
                         console.log("success ajax");
 

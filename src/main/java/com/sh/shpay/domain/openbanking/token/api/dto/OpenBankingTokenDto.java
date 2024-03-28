@@ -1,4 +1,4 @@
-package com.sh.shpay.domain.openbanking.openbanking.api.dto;
+package com.sh.shpay.domain.openbanking.token.api.dto;
 
 import com.sh.shpay.domain.openbanking.token.domain.OpenBankingToken;
 

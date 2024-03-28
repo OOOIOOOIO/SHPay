@@ -1,4 +1,4 @@
-package com.sh.shpay.domain.openbanking.openbanking.api.dto.req;
+package com.sh.shpay.domain.openbanking.token.api.dto.req;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.sh.shpay.domain.openbanking.openbanking.api.dto.req;
+package com.sh.shpay.domain.openbanking.token.api.dto.req;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -12,28 +12,27 @@ import org.springframework.util.MultiValueMap;
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OpenBankingUserTokenRequestDto {
-    private String code;
+public class OpenBankingUser2leggedTokenRequestDto {
     private String client_id;
     private String client_secret;
-    private String redirect_uri;
+    private String scope;
     private String grant_type; // authorization_code 고정
 
     @Builder
-    public OpenBankingUserTokenRequestDto(String code, String client_id, String client_secret, String redirect_uri, String grant_type) {
-        this.code = code;
+    public OpenBankingUser2leggedTokenRequestDto(String client_id, String client_secret, String scope, String grant_type) {
         this.client_id = client_id;
         this.client_secret = client_secret;
-        this.redirect_uri = redirect_uri;
+        this.scope = scope;
         this.grant_type = grant_type;
     }
 
+
+
     public MultiValueMap<String, String> toMultiValueMap(){
         MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
-        multiValueMap.add("code",this.code);
         multiValueMap.add("client_id",this.client_id);
         multiValueMap.add("client_secret",this.client_secret);
-        multiValueMap.add("redirect_uri", this.redirect_uri);
+        multiValueMap.add("scope", this.scope);
         multiValueMap.add("grant_type",this.grant_type);
 
         return multiValueMap;

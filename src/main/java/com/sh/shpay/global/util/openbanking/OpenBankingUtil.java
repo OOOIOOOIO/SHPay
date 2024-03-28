@@ -29,21 +29,18 @@ public class OpenBankingUtil {
         Random random = new Random();
 
         while(true){
-            result = "";
             String ranStr = "";
             for(int i = 0; i < 9; i++){
                 ranStr += Integer.toString(random.nextInt(10));
             }
-    //        int i = random.nextInt(10);
 
             result = bank_tran_id + ranStr;
 
-            // redis에 쏘고 확인하기
+            // redis에 쏘고 확인
             if(!redisUtil.isExists(result)){
                 redisUtil.putString(result, new String(result), getRestTime());
                 break;
             }
-
 
         }
 
@@ -55,6 +52,7 @@ public class OpenBankingUtil {
      */
     public static String transTime(){
         LocalDateTime localDateTime = LocalDateTime.now();
+
 //        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.hh:mm:ss");
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddhhmmss");
 
