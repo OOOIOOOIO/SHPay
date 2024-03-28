@@ -9,6 +9,8 @@ build/
 **/src/main/resources/application-local.yml
 **/src/main/resources/application-real.yml
 
+src/main/java/http/**
+
 src/main/java/com/sh/chicken/domain/test/
 
 ### STS ###
