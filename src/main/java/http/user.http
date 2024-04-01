@@ -1,0 +1,33 @@
+### SignUp
+POST localhost:8888/api/users/signup
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="name";
+
+김성호
+--WebAppBoundary--
+Content-Disposition: form-data; name="email";
+
+test@test.com
+--WebAppBoundary--
+Content-Disposition: form-data; name="password";
+
+teset1234
+--WebAppBoundary--
+
+
+
+### SignIn
+POST localhost:8888/api/users/signin
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary--
+Content-Disposition: form-data; name="email";
+
+test@test.com
+--WebAppBoundary--
+Content-Disposition: form-data; name="password";
+
+teset1234
+--WebAppBoundary--
