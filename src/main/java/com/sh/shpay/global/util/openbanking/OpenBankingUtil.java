@@ -60,6 +60,10 @@ public class OpenBankingUtil {
     }
 
 
+    /**
+     * 현재시간부터 00:00시까지 남은 시간 계산
+     * @return
+     */
     private Long getRestTime(){
         long endOfDayTime = LocalDate.now().atTime(LocalTime.MAX).toEpochSecond(ZoneOffset.UTC);
         long currentTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).toEpochSecond(ZoneOffset.UTC);

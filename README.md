@@ -98,6 +98,7 @@
 
 ## Code
 
+### Redis를 이용한 bank_tran_id를
 - 문제상황
 - 해결방법 및 실행
 - 성과
