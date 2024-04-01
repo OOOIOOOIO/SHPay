@@ -1,0 +1,116 @@
+### 사용자 AuthCode 발급 후 -> 사용자 토큰 발급(3-legged)
+GET https://testapi.openbanking.or.kr/oauth/2.0/authorize?response_type=code&client_id=d7a84cca-d7de-4144-95a6-abbef4fec148&redirect_uri=http://localhost:8888/api/openbanking/token/request&scope=login inquiry transfer&state=12345678901234567890123456789012&auth_type=0
+Accept: */*
+
+
+
+### 사용자 토큰 갱신(3-legged)
+POST http://localhost:80/api/item
+Content-Type: application/x-www-form-urlencoded
+
+id=99&content=new-element
+
+###
+
+
+POST localhost:7777/api/goal
+Content-Type: application/x-www-form-urlencoded
+
+
+code={{code}}&client_id={{client_id}}&client_secret={{client_secret}}&redirect_uri={{redirect_uri}}&grant_type=authorization_code
+
+
+### 사용자 토큰 발급(2-legged)
+POST https://testapi.openbanking.or.kr/oauth/2.0/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id={{client_id}}&client_secret={{client_secret}}&scope=oob&grant_type=client_credentials
+
+
+### 사용자 정보 조회(user_ci)
+GET http://localhost:8888/api/openbanking/user/me
+Authorization: {{Authorization3Legged}}
+refresh_token: {{refresh_token}}
+
+
+### 사용자 잔액 조회
+GET https://testapi.openbanking.or.kr/v2.0/account/balance/fin_num?bank_tran_id={{bank_tran_id}}&fintech_use_num={{fintech_use_num}}&tran_dtime={{tran_dtime}}
+Authorization: {{Authorization3Legged}}
+refresh_token: {{refresh_token}}
+
+
+### 거래내역 조회
+GET http://localhost:8888/api/openbanking/account/transaction/{{accountId}}
+Authorization: {{Authorization3Legged}}
+refresh_token: {{refresh_token}}
+
+
+### 계좌 조회 후 저장
+POST http://localhost:8888/api/openbanking/account/list
+Authorization: {{Authorization3Legged}}
+refresh_token: {{refresh_token}}
+
+
+### 계좌 조회(DB)
+GET http://localhost:8888/api/openbanking/account/list
+Authorization: {{Authorization3Legged}}
+refresh_token: {{refresh_token}}
+
+
+### 출금이체
+POST https://testapi.openbanking.or.kr/v2.0/transfer/withdraw/fin_num
+Content-Type: application/json
+Authorization: {{Authorization2Legged}}
+
+{
+  "bank_tran_id": {{bank_tran_id}},
+  "cntr_account_type": "N",
+  "cntr_account_num": "~~~",
+  "dps_print_content": "오픈뱅킹출금",
+  "fintech_use_num": "~~~",
+  "wd_print_content": "오픈뱅킹출금",
+  "tran_amt": "9100",
+  "tran_dtime": "20230803140200",
+  "req_client_name": "김성호",
+  "req_client_fintech_use_num": "~~~",
+  "req_client_num": "KIMSEONGHO",
+  "transfer_purpose": "ST",
+  "recv_client_name": "김성호",
+  "recv_client_bank_code": "097",
+  "recv_client_account_num": "~~~"
+}
+
+### 입금이체
+POST https://testapi.openbanking.or.kr/v2.0/transfer/deposit/fin_num
+Content-Type: application/json
+Authorization: {{Authorization2Legged}}
+
+{
+  "cntr_account_type": "N",
+  "cntr_account_num": "~~~",
+  "wd_pass_phrase": "NONE",
+  "wd_print_content": "환불금액",
+  "name_check_option": "off",
+  "tran_dtime": "20240212130000",
+  "req_cnt": "1",
+  "req_list": [
+    {
+      "tran_no": "1",
+      "bank_tran_id": "~~~",
+      "fintech_use_num": "~~~",
+      "print_content": "오픈서비스캐시백",
+      "tran_amt": 100000,
+      "req_client_name": "김성호",
+      "req_client_fintech_use_num": "~~~",
+      "req_client_num": "KIMSEONGHO",
+      "transfer_purpose": "ST"
+    }
+  ]
+}
+
+
+### 주계좌 설정
+PUT http://localhost:8888/api/openbanking/account/{{accountId}}
+Authorization: {{Authorization3Legged}}
+refresh_token: {{refresh_token}}
+

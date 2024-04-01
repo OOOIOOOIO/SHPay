@@ -31,6 +31,14 @@
 - **RESTful API**
 
 
+
+
+
+## Architecture
+
+## ERD
+
+
 ## API 명세서
 
 
@@ -39,12 +47,7 @@
 - 사용한 이유
 - 성능, lighthouse
 
-
-## Architecture
-
-## ERD
-
-## Scree shot & Code
+## Screenshot & Code
 
 - 문제상황
 - 해결방법 및 실행
