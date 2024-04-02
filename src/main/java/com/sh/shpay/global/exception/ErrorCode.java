@@ -26,9 +26,10 @@ public enum ErrorCode {
     NotExistUserException(INTERNAL_SERVER_ERROR,"S002", "유저가 존재하지 않습니다."),
     NotExistAccountException(INTERNAL_SERVER_ERROR, "S003", "해당 계좌가 존재하지 않습니다"),
     NotMatchStateException(INTERNAL_SERVER_ERROR, "S004", "state 값이 일치하지 않습니다."),
-    NotExistAuthCodeException(INTERNAL_SERVER_ERROR, "S004", "code 값이 존재하지 않습니다."),
-    AlreadySaveAccountTypeException(INTERNAL_SERVER_ERROR, "S005", "해당 계좌가 이미 주계좌입니다."),
-    NotExistRefreshTokenException(INTERNAL_SERVER_ERROR, "S005", "refresh token이 존재하지 않습니다. 다시 발급해주세요."),
+    NotExistAuthCodeException(INTERNAL_SERVER_ERROR, "S005", "code 값이 존재하지 않습니다."),
+    AlreadySaveAccountTypeException(INTERNAL_SERVER_ERROR, "S006", "해당 계좌가 이미 주계좌입니다."),
+    FailToAccessBalanceAmount(INTERNAL_SERVER_ERROR, "S007", "계좌조회에 문제가 발생하였습니다. 다시 시도해주세요."),
+    NotExistRefreshTokenException(INTERNAL_SERVER_ERROR, "S008", "refresh_token이 존재하지 않습니다. 다시 발급해주세요."),
     InternalServerException(INTERNAL_SERVER_ERROR, "S100", "서버 에러! 다시 시도해주세요"),
 
 
