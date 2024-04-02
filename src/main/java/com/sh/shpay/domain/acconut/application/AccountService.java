@@ -31,6 +31,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -78,6 +79,15 @@ public class AccountService {
                             return userAccountDto;
 
                         }, getAppropriateThreadPool(accountList.size()))
+                        .orTimeout(10, TimeUnit.SECONDS) // 10초 지정
+                        .handle((result,ex) -> {
+                            if(ex == null){
+                                return result;
+                            }
+                            else{
+                                throw new CustomException(ErrorCode.FailToAccessBalanceAmount);
+                            }
+                        })
                 )
                 .collect(Collectors.toList())
                 .stream()
