@@ -47,9 +47,10 @@ public class AccountService {
     /**
      *  DB에서 계좌 조회 --> 오픈뱅킹 API로 잔액조회
      */
+    @LogTrace
     public AccountListResponseDto requestAccountList(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto){
 
-        Users users = userRepository.findById(userInfoFromSessionDto.getUserId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
+        Users users = userRepository.findById(userInfoFromSessionDto.getUserId()).orElseThrow(() -> new CustomException(ErrorCode.NotExistUserException));
 
         List<Account> accountList = accountRepository.findByUsers(users);
 
@@ -84,16 +85,14 @@ public class AccountService {
                 .sorted(Comparator.comparing(UserAccountDto::getUserAccountId).reversed()) //최근 계좌 순으로 정렬
                 .collect(Collectors.toList());
 
-
-
         return new AccountListResponseDto(userAccountDtoList);
     }
 
     /**
      * 계좌 저장
      */
+    @LogTrace
     public Long saveAccountList(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto){
-
 
         Users users = userRepository.findById(userInfoFromSessionDto.getUserId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
 
@@ -103,7 +102,6 @@ public class AccountService {
                 .build();
 
         OpenBankingAccountListResponseDto openBankingAccountListResponseDto = openBankService.requestAccountList(accountRequestDto);
-
 
         // DB 조회
         List<Account> userAllAccountList = accountRepository.findByUsers(users);
@@ -142,6 +140,7 @@ public class AccountService {
     /**
      * 주계좌 설정
      */
+    @LogTrace
     public void updateAccountType(UserInfoFromSessionDto userInfoFromSessionDto, Long accountId){
 
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new RuntimeException("해당 계좌가 존재하지 않습니다."));
@@ -171,6 +170,7 @@ public class AccountService {
      * 잔액조회
      *
      */
+    @LogTrace
     private String getBalanceAmt(String fintechUseNum, String accessToken, Long userId){
         String balanceAmt = "";
 
@@ -209,6 +209,7 @@ public class AccountService {
     /**
      * 출금이제
      */
+    @LogTrace
     public OpenBankingTransferResponseDto requestWithdraw(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, Long accountId, WithdrawRequestDto withdrawRequestDto){
 
 
