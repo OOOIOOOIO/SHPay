@@ -16,10 +16,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatbotService {
 
-    @Value("${openai.secret}")
-    private final String model;
-    @Value("${openai.secret}")
-    private final String user;
+    @Value("${openai.model}")
+    private String model;
+    @Value("${openai.user}")
+    private String user;
 
     private final OpenAiApiClient openAiApiClient;
 
@@ -28,7 +28,7 @@ public class ChatbotService {
      * Create chat completion
      * 질문 보내기
      */
-    public void chatCompletion(String question){
+    public String chatCompletion(String question){
 
         Message message = Message.builder()
                 .content(question)
@@ -42,7 +42,7 @@ public class ChatbotService {
                 .messages(messages)
                 .build();
 
-        openAiApiClient.chatCompletion(chatReqDto);
+        return openAiApiClient.chatCompletion(chatReqDto);
 
 
     }

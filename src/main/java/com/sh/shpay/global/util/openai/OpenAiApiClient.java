@@ -23,13 +23,13 @@ public class OpenAiApiClient {
     private static final String BASE_URL = "https://api.openai.com";
 
     @Value("${openai.secret}")
-    private final String secret;
+    private String secret;
 
     /**
      * Create chat completion
      * 질문 보내기
      */
-    public void chatCompletion(ChatReqDto chatReqDto){
+    public String chatCompletion(ChatReqDto chatReqDto){
         String url = BASE_URL + "/v1/chat/completions";
 
         HttpHeaders httpHeaders = generateHeader("Content-Type", "application/json; charset=UTF-8");
@@ -41,8 +41,12 @@ public class OpenAiApiClient {
 
         log.info("===============" + chatResDto.getId() + "==============");
         log.info("===============" + chatResDto.getModel() + "==============");
-        log.info("===============" + chatResDto.getChoices().get(0).getMessage() + "==============");
+        log.info("===============" + chatResDto.getChoices().size() + "==============");
+        log.info("===============" + chatResDto.getChoices().get(0).getMessage().getContent() + "==============");
+        log.info("===============" + chatResDto.getChoices().get(0).getMessage().getRole() + "==============");
         log.info("===============" + chatResDto.getUsage().getTotal_tokens() + "==============");
+
+        return chatResDto.getChoices().get(0).getMessage().getContent();
 
     }
 
