@@ -53,6 +53,8 @@ dependencies {
     // Querydsl 끝
 
 
+    implementation group: 'com.theokanning.openai-gpt3-java', name: 'client', version: '0.9.0'
+
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 //    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
