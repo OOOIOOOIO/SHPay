@@ -1,3 +1,4 @@
+
 # SH Pay
 
 ## 개요
@@ -6,23 +7,29 @@
 
 ### 역할 및 기간
 - **개인 프로젝트**
-- **기간 : 2024.01.15 ~** 
+- **기간 : 2024.01.15 ~**
 
 <br>
 <hr>
 
 ## 시작 가이드
 ```html
-1. git clone this repository
-2. write application-real.yml
-3. you need 금융결제원 OpenAPI Account
+1. Git clone this repository
+2. Write application-real.yml
+3. You need 금융결제원 OpenAPI account
     3-1. Sign up 금융결제원 사이트
-    3-2. add below list at application-real.yml
+    3-2. Add below list at application-real.yml file
           bank-tran-id: -
           client-id: -
           client-secret: -
           redirect-uri: -
-4. run this project
+4. you need OpenAI account
+    4-1. Sign up OpenAI website and get secret key
+    4-2. Add below list at application-real.yml file
+        secret: -
+        model: -
+        user: -
+4. Run this project!
 ```
 - [금융결제원 OpenAPI 개발자 사이트](https://developers.kftc.or.kr/dev)
 - [Check out application-real.yml file](https://github.com/OOOIOOOIO/SHPay/wiki/application%E2%80%90real.md)
@@ -42,7 +49,7 @@
 - **AWS EC2, RDS**
 - **Docker**
 - **금융결제원 OpenAPI**
-- **OpenAI ChatGPT API** 
+- **OpenAI ChatGPT API**
 - **Domain Driven Design**
 - **Layered Architecture**
 - **RESTful API**
@@ -73,7 +80,7 @@
   - **OpenBanking**
   - **Account**
 
-- **금융결제원 OpenAPI를 활용한 API 개발**
+- **금융결제원 OpenAPI를 활용한 금융서비스 개발**
   - **사용자 AuthCode 발급**
   - **사용자 토큰 발급(3-legged)**
     - **사용자 정보 조회용**
@@ -86,6 +93,11 @@
   - **거래내역 조회**
   - **출금이체**
   - **입금이체**
+
+- **OpenAI를 이용한 Custom Chatbot 서비스 개발**
+  - Q&A 기능
+
+
 
 <br>
 <hr>
@@ -102,7 +114,7 @@
 
 ![img_2.png](img_2.png)
 - **문제상황**
-  - **bank_tran_id는 은행 거래 고유번호로서 같은 번호일 경우 00시까지 중복을 허용하지 않습니다. 때문에 API 호출 시 고유번호가 유일한지 검사해야 했기에, 매번 DB IO를 타게 될 경우 성능 저하 이슈가 발생할 수 있었습니다.** 
+  - **bank_tran_id는 은행 거래 고유번호로서 같은 번호일 경우 00시까지 중복을 허용하지 않습니다. 때문에 API 호출 시 고유번호가 유일한지 검사해야 했기에, 매번 DB IO를 타게 될 경우 성능 저하 이슈가 발생할 수 있었습니다.**
 - **해결방법 및 실행**
   - **이를 해결하고자 Redis의 캐싱 사용해 빠르게 읽어와 고유번호가 유일한지 확인하였습니다. 또한 00시까지 expire time을 설정하여 초기화를 진행하였습니다.**
 - **성과**
@@ -123,6 +135,23 @@
     - handle() : 비동기 요청시 예외가 발생할 경우 CustomException을 던져 예외처리를 진행하였습니다.
 - **성과**
   - **비동기 처리를 통해 동시성에 대한 개념을 이해했고, 로직을 개발하며 어느 부분에서 문제가 발생할 수 있을지에 대해 생각해보고 이를 해결하기 위해 고민하는 능력을 길렀습니다.**
+
+
+<br>
+
+#### 일반 금융상식 및 개인 정보 조회 질문 구분 로직
+- **문제상황**
+  - **ChatGPT를 사용하여 일반 금융상식에 대해선 답변이 가능하나, 사용자 개인정보의 경우 **
+- **해결방법 및 실행**
+  - **비동기 방식을 이용하여 이전 작업의 완료를 기다리지 않고 동시에 실행하였습니다. Java8의 CompletableFuture 클래스를 활용하였습니다.**
+    - supplyAsync() : 비동기 요청을 실행하였으며 Dto를 반환값으로 받고 있습니다.
+    - orTimeout() : 계좌조회시 10초 정도 걸릴 경우 문제가 발생한 것으로 간주하고 제한시간을 두었습니다. TimeOutException이 발생하기 때문에 RestControllerAdvice로 예외처리 해주었습니다.
+    - handle() : 비동기 요청시 예외가 발생할 경우 CustomException을 던져 예외처리를 진행하였습니다.
+- **성과**
+  - **비동기 처리를 통해 동시성에 대한 개념을 이해했고, 로직을 개발하며 어느 부분에서 문제가 발생할 수 있을지에 대해 생각해보고 이를 해결하기 위해 고민하는 능력을 길렀습니다.**
+
+
+
 
 <br>
 <hr>

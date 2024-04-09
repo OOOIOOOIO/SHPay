@@ -26,7 +26,7 @@ public class ChatbotController {
     @PostMapping("")
     public ResponseEntity<String> requestChatCompletion(@RequestParam(value = "question") String question){
 
-        String answer = chatbotService.chatCompletion(question);
+        String answer = chatbotService.requestChatCompletion(question);
 
         return new ResponseEntity<>(answer, HttpStatus.OK);
     }
