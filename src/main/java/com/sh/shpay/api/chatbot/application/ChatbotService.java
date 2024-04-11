@@ -31,28 +31,20 @@ public class ChatbotService {
      * 질문 보내기
      */
     public String requestChatCompletion(String question){
+        String sentence = question.trim(); // komoran: 맨 뒤 공백이 있을 경우 토큰으로 못 자름
 
-        boolean result = isAboutAccount(question);
+        boolean result = isAboutAccount(sentence);
 
         if(result){ // 내 계좌 정보
             return null;
         }
 
-        return chatCompletion(question);
+        return chatCompletion(sentence);
 
     }
 
     private String chatCompletion(String question){
 
-        boolean result = isAboutAccount(question);
-
-
-        if(result){ // 내 계좌 정보
-
-        }
-        else{
-
-        }
 
         Message message = Message.builder()
                 .content(question)
@@ -73,13 +65,62 @@ public class ChatbotService {
 
     /**
      * 형태소 분석을 통해 본인계좌에 대한 질문인지 금융지식에 대한 질문인지 판별
+     *
      */
     private boolean isAboutAccount(String question){
-        komoranUtil.analyzeSentence(question);
+        return komoranUtil.analyzeSentence(question);
 
-        return true;
     }
 
 
 
 }
+/**
+ * 기능
+ * - 잔액조회
+ * - 거래내역 조회
+ * - 금융지식 물어보기
+ * 만약 특정 은행이 있을 경우 -> 잔고 및 거래 내역을 보여주기
+ *
+ * 특정 은행이 없을 경우 -> 은행을 정확히 입력해주세요
+ *
+ * ---
+ * 나의 정보에 대한 것 판별 기준
+ * 나(NP)
+ * 내(NP)
+ * 나(NP) + 의(JKG)
+ * 내(MM) + 것(NNB)
+ * 나(NP) + 의(JKG) + 껏(NNB)
+ * 내(NP) + 껏(XSN)
+ *
+ * 내(NP) + 끄(VV) + 어(EC)
+ *
+ *
+ * +++++++++++++
+ *
+ * 계좌정보 : 계좌(NNG) + 정보(NNG)
+ * 계좌내역 : 계좌(NNG) + 내역(NNG)
+ * 잔액정보 : 잔액(NNG) + 정보(NNG)
+ * 잔액내역 : 잔액(NNG) + 내역(NNG)
+ * 통장잔고 : 통장(NNG) + 잔고(NNG)
+ * 통장내역 : 통장(NNG) + 내역(NNG)
+ *
+ * 트리로 만들어놔야겠네, 이거 자료구조 찾아봐야겠다
+ *
+ *
+ *
+ * +++++++++++++
+ *
+ * 알려줘 : 알리(VV) + 어(EC) + 주(VX) + 어(EC)
+ * 보여줘 : 보이(VV) + 어(EC) + 주(VX) + 어(EC)
+ * 내놔 : 내놓(VV) + 아(EC)
+ *
+ *
+ * =====> 계좌, 통장 ... 이 있을 경우 "본인"에 대한 정보라고 간주(로그인 후 사용가능)
+ *      ===> 특정 은행 입력 -> 바로 조회
+ *      ===> 단순 요청 -> "은행 이름을 포함해 다시 요청해주세요" 문구 노출
+ *
+ * =====> 그 외는 ChatGPT에게 맡기기
+ *
+ *
+ */
