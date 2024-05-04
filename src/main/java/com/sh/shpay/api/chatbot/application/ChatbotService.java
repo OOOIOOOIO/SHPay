@@ -2,6 +2,7 @@ package com.sh.shpay.api.chatbot.application;
 
 import com.sh.shpay.api.chatbot.api.dto.req.ChatReqDto;
 import com.sh.shpay.api.chatbot.api.dto.req.Message;
+import com.sh.shpay.domain.acconut.application.AccountService;
 import com.sh.shpay.global.util.komoran.KomoranUtil;
 import com.sh.shpay.global.util.openai.OpenAiApiClient;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,9 @@ public class ChatbotService {
     private String user;
 
     private final OpenAiApiClient openAiApiClient;
+    private final AccountService accountService;
     private final KomoranUtil komoranUtil;
+
 
 
     /**
@@ -36,14 +39,35 @@ public class ChatbotService {
         boolean result = isAboutAccount(sentence);
 
         if(result){ // 내 계좌 정보
+
             return null;
         }
 
-        return chatCompletion(sentence);
+        return chatCompletionToChatGpt(sentence); // 일반금융정보
 
     }
 
-    private String chatCompletion(String question){
+
+    /**
+     * 형태소 분석을 통해 본인계좌에 대한 질문인지 금융지식에 대한 질문인지 판별
+     *
+     *
+     * 등록계좌조회 : 내가 등록한 계좌리스트 (잔액노출X)
+     * 특정계좌조회 : AccountService에 만들기
+     * 잔액조회 : 계좌내용(잔액노출)
+     * 거래내역조회 : 계좌내용 및 거래내역(거래내역은 입출금내역)
+     *
+     */
+    private boolean isAboutAccount(String question){
+        return komoranUtil.analyzeSentence(question);
+
+    }
+
+    /**
+     * chatgpt에게 질문하기
+     *
+     */
+    private String chatCompletionToChatGpt(String question){
 
 
         Message message = Message.builder()
@@ -64,14 +88,13 @@ public class ChatbotService {
 
 
     /**
-     * 형태소 분석을 통해 본인계좌에 대한 질문인지 금융지식에 대한 질문인지 판별
+     * 계좌내역 조회
      *
      */
-    private boolean isAboutAccount(String question){
-        return komoranUtil.analyzeSentence(question);
+    private void requestAccount(){
+
 
     }
-
 
 
 }
