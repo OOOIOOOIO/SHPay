@@ -26,6 +26,17 @@ public class KomoranUtil {
      *
      * 특정 은행이 없을 경우 -> 은행을 정확히 입력해주세요
      *
+     *
+     *
+     * ex)
+     * 내 계좌들을 보여줘
+     * 계좌들을 보여줘
+     * 내 신한은행 계좌잔액 좀 알려
+     *
+     *
+     *
+     *
+     *
      * ---
      * 나의 정보에 대한 것 판별 기준
      * 나(NP)
@@ -72,12 +83,21 @@ public class KomoranUtil {
 
     }
 
-    private List<Morpheme> morphemeList = new ArrayList<>();
+//    private List<Morpheme> morphemeList = new ArrayList<>();
+//
+//    {
+//        morphemeList.add(new Morpheme(""));
+//    }
 
-    {
-        morphemeList.add(new Morpheme(""));
-    }
-
+    /**
+     * 개인정보인지 아니면 그냥 금융지식인지에 판단
+     *
+     * return true : 개인정보
+     * ㅎ
+     * 근데 특정 은행의 계좌인지 아니면 모든 계좌리스트를 보여달라는건지
+     *
+     * feat. 신한은행의 뭐 어떤 ~~이 있는지 알려줘 같은 기능도 있으면 좋겠네. 오늘 환율 알려줘?
+     */
     public boolean analyzeSentence(String sentence){
 
         KomoranResult analyze = komoran.analyze(sentence);
@@ -89,9 +109,9 @@ public class KomoranUtil {
         }
 
 
+        return false;
     }
 
-    private
 
 
 }

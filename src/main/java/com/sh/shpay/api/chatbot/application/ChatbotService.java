@@ -82,8 +82,8 @@ public class ChatbotService {
                 .messages(messages)
                 .build();
 
-        return openAiApiClient.chatCompletion(chatReqDto);
-
+//        return openAiApiClient.chatCompletion(chatReqDto);
+        return "a";
     }
 
 
@@ -120,13 +120,17 @@ public class ChatbotService {
  *
  *
  * +++++++++++++
+ * 신한은행 챗봇 참고
+ * 계좌정보 : 계좌(NNG) + 정보(NNG) -> 보유계좌리스트 노출
+ * 계좌내역 : 계좌(NNG) + 내역(NNG) -> 보유계좌리스트 노출
+ * 잔액정보 : 잔액(NNG) + 정보(NNG) -> 보유계좌리스트 노출
+ * 잔액내역 : 잔액(NNG) + 내역(NNG) -> 보유계좌리스트 노출
+ * 통장잔고 : 통장(NNG) + 잔고(NNG) -> 예금잔액증명서는 인터넷뱅킹(PC)이나 영업점에서 발급할 수 있습니다. 노출
+ * 통장내역 : 통장(NNG) + 내역(NNG) -> 보유계좌리스트 노출
+ * 신한은행 계좌정보 : 신한은행(NNP) -> 특정은행 계좌정보 노출
+ * ibk기업은행, kb산업은행 -> 앞에 영어 있는 은행들 "은행을 포함하고 있으면" 앞에 있는 단어까지 합쳐서 return하기
  *
- * 계좌정보 : 계좌(NNG) + 정보(NNG)
- * 계좌내역 : 계좌(NNG) + 내역(NNG)
- * 잔액정보 : 잔액(NNG) + 정보(NNG)
- * 잔액내역 : 잔액(NNG) + 내역(NNG)
- * 통장잔고 : 통장(NNG) + 잔고(NNG)
- * 통장내역 : 통장(NNG) + 내역(NNG)
+ * 신한, 국민 ... 신한 은행 -> 신한(NNG) + 은행(NNG)
  *
  * 트리로 만들어놔야겠네, 이거 자료구조 찾아봐야겠다
  *
