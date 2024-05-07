@@ -2,6 +2,10 @@ package com.sh.shpay.api.chatbot.api;
 
 
 import com.sh.shpay.api.chatbot.application.ChatbotService;
+import com.sh.shpay.global.resolver.session.UserInfoFromSession;
+import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
+import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeader;
+import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeaderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,9 +28,11 @@ public class ChatbotController {
      * @param question
      */
     @PostMapping("")
-    public ResponseEntity<String> requestChatCompletion(@RequestParam(value = "question") String question){
+    public ResponseEntity<String> requestChatCompletion(@RequestParam(value = "question") String question,
+                                                        @OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
+                                                        @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
 
-        String answer = chatbotService.requestChatCompletion(question);
+        String answer = chatbotService.requestChatCompletion(question, openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto);
 
         return new ResponseEntity<>(answer, HttpStatus.OK);
     }
