@@ -100,9 +100,16 @@ public class KomoranUtil {
      */
     public boolean analyzeSentence(String sentence){
 
+        // 형태소 분석
         KomoranResult analyze = komoran.analyze(sentence);
 
+        // 개인정보인지 금융정보인지 판단
+
         List<Token> tokenList = analyze.getTokenList();
+
+        if(KomoranSearchStore.analyzeSentence(tokenList)){
+            return true;
+        }
 
         for (Token token : tokenList) {
             System.out.format("(%2d, %2d) %s/%s\n", token.getBeginIndex(), token.getEndIndex(), token.getMorph(), token.getPos());

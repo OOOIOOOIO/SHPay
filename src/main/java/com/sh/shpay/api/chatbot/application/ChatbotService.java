@@ -36,9 +36,8 @@ public class ChatbotService {
     public String requestChatCompletion(String question){
         String sentence = question.trim(); // komoran: 맨 뒤 공백이 있을 경우 토큰으로 못 자름
 
-        boolean result = isAboutAccount(sentence);
 
-        if(result){ // 내 계좌 정보
+        if(isAboutPrivacy(sentence)){ // 내 계좌 정보
 
             return null;
         }
@@ -58,7 +57,7 @@ public class ChatbotService {
      * 거래내역조회 : 계좌내용 및 거래내역(거래내역은 입출금내역)
      *
      */
-    private boolean isAboutAccount(String question){
+    private boolean isAboutPrivacy(String question){
         return komoranUtil.analyzeSentence(question);
 
     }
@@ -121,12 +120,14 @@ public class ChatbotService {
  *
  * +++++++++++++
  * 신한은행 챗봇 참고
- * 계좌정보 : 계좌(NNG) + 정보(NNG) -> 보유계좌리스트 노출
- * 계좌내역 : 계좌(NNG) + 내역(NNG) -> 보유계좌리스트 노출
- * 잔액정보 : 잔액(NNG) + 정보(NNG) -> 보유계좌리스트 노출
- * 잔액내역 : 잔액(NNG) + 내역(NNG) -> 보유계좌리스트 노출
- * 통장잔고 : 통장(NNG) + 잔고(NNG) -> 예금잔액증명서는 인터넷뱅킹(PC)이나 영업점에서 발급할 수 있습니다. 노출
- * 통장내역 : 통장(NNG) + 내역(NNG) -> 보유계좌리스트 노출
+ *
+ * 보유계좌리스트 노출
+ * 계좌정보 : 계좌(NNG) + 정보(NNG)
+ * 계좌내역 : 계좌(NNG) + 내역(NNG)
+ * 잔액정보 : 잔액(NNG) + 정보(NNG)
+ * 잔액내역 : 잔액(NNG) + 내역(NNG)
+ * 통장잔고 : 통장(NNG) + 잔고(NNG)
+ * 통장내역 : 통장(NNG) + 내역(NNG)
  * 신한은행 계좌정보 : 신한은행(NNP) -> 특정은행 계좌정보 노출
  * ibk기업은행, kb산업은행 -> 앞에 영어 있는 은행들 "은행을 포함하고 있으면" 앞에 있는 단어까지 합쳐서 return하기
  *
