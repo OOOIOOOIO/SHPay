@@ -2,6 +2,7 @@ package com.sh.shpay.global.util.komoran;
 
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
+import kr.co.shineware.nlp.komoran.model.AnalyzeResult;
 import kr.co.shineware.nlp.komoran.model.KomoranResult;
 import kr.co.shineware.nlp.komoran.model.Token;
 import lombok.Getter;
@@ -98,7 +99,7 @@ public class KomoranUtil {
      *
      * feat. 신한은행의 뭐 어떤 ~~이 있는지 알려줘 같은 기능도 있으면 좋겠네. 오늘 환율 알려줘?
      */
-    public boolean analyzeSentence(String sentence){
+    public AnalyzeResultDto analyzeSentence(String sentence){
 
         // 형태소 분석
         KomoranResult analyze = komoran.analyze(sentence);
@@ -107,8 +108,9 @@ public class KomoranUtil {
 
         List<Token> tokenList = analyze.getTokenList();
 
-        if(KomoranSearchStore.analyzeSentence(tokenList)){
-            return true;
+        AnalyzeResultDto analyzeResultDto = KomoranSearchStore.analyzeSentence(tokenList);
+        if(analyzeResultDto.isPrivacy()){
+            return analyzeResultDto;
         }
 
         for (Token token : tokenList) {
@@ -116,7 +118,7 @@ public class KomoranUtil {
         }
 
 
-        return false;
+        return null;
     }
 
 

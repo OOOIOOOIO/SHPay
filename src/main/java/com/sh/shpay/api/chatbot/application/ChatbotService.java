@@ -3,6 +3,7 @@ package com.sh.shpay.api.chatbot.application;
 import com.sh.shpay.api.chatbot.api.dto.req.ChatReqDto;
 import com.sh.shpay.api.chatbot.api.dto.req.Message;
 import com.sh.shpay.domain.acconut.application.AccountService;
+import com.sh.shpay.global.util.komoran.AnalyzeResultDto;
 import com.sh.shpay.global.util.komoran.KomoranUtil;
 import com.sh.shpay.global.util.openai.OpenAiApiClient;
 import lombok.RequiredArgsConstructor;
@@ -31,15 +32,21 @@ public class ChatbotService {
 
     /**
      * Create chat completion
+     * return 값 어떻게 하지
      * 질문 보내기
      */
     public String requestChatCompletion(String question){
         String sentence = question.trim(); // komoran: 맨 뒤 공백이 있을 경우 토큰으로 못 자름
 
+        AnalyzeResultDto analyzeResultDto = komoranUtil.analyzeSentence(question);
 
-        if(isAboutPrivacy(sentence)){ // 내 계좌 정보
+        if(analyzeResultDto != null){ // 내 계좌 정보
 
-            return null;
+
+            if(analyzeResultDto.isSpecificBank()){ // 특정은행만
+
+            }
+
         }
 
         return chatCompletionToChatGpt(sentence); // 일반금융정보
@@ -58,7 +65,7 @@ public class ChatbotService {
      *
      */
     private boolean isAboutPrivacy(String question){
-        return komoranUtil.analyzeSentence(question);
+        if(komoranUtil.analyzeSentence(question)
 
     }
 
@@ -67,8 +74,6 @@ public class ChatbotService {
      *
      */
     private String chatCompletionToChatGpt(String question){
-
-
         Message message = Message.builder()
                 .content(question)
                 .role(user)

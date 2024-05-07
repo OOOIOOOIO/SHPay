@@ -1,5 +1,6 @@
 package com.sh.shpay.global.util.komoran;
 
+import kr.co.shineware.nlp.komoran.model.AnalyzeResult;
 import kr.co.shineware.nlp.komoran.model.Token;
 import lombok.Getter;
 
@@ -32,17 +33,6 @@ public class KomoranSearchStore {
         }
     }
 
-    static class analyzeResult {
-        private boolean pronoun;
-        private boolean noun;
-        private boolean verb;
-
-        public analyzeResult(boolean pronoun, boolean noun, boolean verb) {
-            this.pronoun = pronoun;
-            this.noun = noun;
-            this.verb = verb;
-        }
-    }
 
     private static List<WordAndMorphPair> pronounList = new ArrayList<>();
     private static List<WordAndMorphPair> nounList = new ArrayList<>();
@@ -95,7 +85,7 @@ public class KomoranSearchStore {
      * @param tokenList
      * @return
      */
-    public static boolean analyzeSentence(List<Token> tokenList) {
+    public static AnalyzeResultDto analyzeSentence(List<Token> tokenList) {
 
         List<WordAndMorphPair> collect = tokenList.stream().map(wm -> new WordAndMorphPair(wm.getMorph(), wm.getPos()))
                 .collect(Collectors.toList());
