@@ -70,6 +70,8 @@ public class KomoranUtil {
      *
      *
      */
+
+
     @Getter
     private class Morpheme{
         private String morph;

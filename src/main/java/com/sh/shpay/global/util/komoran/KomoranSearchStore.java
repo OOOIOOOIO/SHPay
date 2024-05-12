@@ -99,7 +99,6 @@ public class KomoranSearchStore {
 //        for (WordAndMorphPair pair : collect) {
         for(int i = 0; i < wordAndMorphPairList.size(); i++){
 
-
             if(pronounList.contains(wordAndMorphPairList.get(i)) || nounList.contains(wordAndMorphPairList.get(i))){ // 개인정보인지
                 analyzeResultDto.setPrivacy(true);
 

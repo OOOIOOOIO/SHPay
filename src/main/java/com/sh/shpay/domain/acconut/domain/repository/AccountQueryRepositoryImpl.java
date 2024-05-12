@@ -44,4 +44,7 @@ public class AccountQueryRepositoryImpl implements AccountQueryRepository{
                         account.bankName.eq(bankName))
                 .fetch();
     }
+
+
+
 }
