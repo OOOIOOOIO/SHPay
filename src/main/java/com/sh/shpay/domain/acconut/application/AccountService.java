@@ -46,7 +46,7 @@ public class AccountService {
 
 
     /**
-     *  DB에서 계좌 조회 --> 오픈뱅킹 API로 잔액조회
+     *  DB에서 계좌 조회 & 오픈뱅킹 API로 잔액조회
      */
     @LogTrace
     public AccountListResponseDto requestAccountList(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto){
@@ -98,6 +98,63 @@ public class AccountService {
         return new AccountListResponseDto(userAccountDtoList);
     }
 
+
+    /**
+     *  DB에서 특정은행계좌 조회 & 오픈뱅킹 API로 잔액조회
+     */
+    @LogTrace
+    public AccountListResponseDto requestSpecificAccountList(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
+                                                     UserInfoFromSessionDto userInfoFromSessionDto,
+                                                     String bankName){
+
+        log.info("=== bankname : " + bankName);
+
+        Users users = userRepository.findById(userInfoFromSessionDto.getUserId()).orElseThrow(() -> new CustomException(ErrorCode.NotExistUserException));
+
+        List<Account> specificBankAccountList = accountQueryRepository.findSpecificBankAccount(users.getUserId(), bankName);
+
+        if(specificBankAccountList.isEmpty()){
+            throw new CustomException(ErrorCode.NotExistAccountException);
+        }
+
+        //계좌 수 만큼 비동기 요청
+        List<UserAccountDto> userAccountDtoList = specificBankAccountList.stream()
+                .map(account -> CompletableFuture.supplyAsync(() -> {
+                                    String balanceAmt = getBalanceAmt(account.getFintechUseNum(), // Openbanking api 잔액조회
+                                            openbankingTokenInfoFromHeaderDto.getAccessToken(),
+                                            users.getUserId());
+
+                                    UserAccountDto userAccountDto = UserAccountDto.builder()
+                                            .userAccountId(account.getAccountId())
+                                            .balanceAmt(balanceAmt)
+                                            .accountNum(account.getAccountNum())
+                                            .accountSeq(account.getAccountSeq())
+                                            .bankCode(account.getBankCode())
+                                            .fintechUseNum(account.getFintechUseNum())
+                                            .bankName(account.getBankName())
+                                            .userId(users.getUserId())
+                                            .build();
+                                    return userAccountDto;
+
+                                }, getAppropriateThreadPool(specificBankAccountList.size()))
+                                .orTimeout(10, TimeUnit.SECONDS) // 10초 지정
+                                .handle((result,ex) -> {
+                                    if(ex == null){
+                                        return result;
+                                    }
+                                    else{
+                                        throw new CustomException(ErrorCode.FailToAccessBalanceAmount);
+                                    }
+                                })
+                )
+                .collect(Collectors.toList())
+                .stream()
+                .map(CompletableFuture::join)
+                .sorted(Comparator.comparing(UserAccountDto::getUserAccountId).reversed()) //최근 계좌 순으로 정렬
+                .collect(Collectors.toList());
+
+        return new AccountListResponseDto(userAccountDtoList);
+    }
 
     /**
      * 계좌 저장
@@ -164,7 +221,7 @@ public class AccountService {
 
 
 
-        Optional<Account> lastMainAccount = accountQueryRepository.findMainAccountByUsers(users.getUserId(), AccountType.MAIN);
+        Optional<Account> lastMainAccount = accountQueryRepository.findMainAccount(users.getUserId(), AccountType.MAIN);
 
         if(lastMainAccount.isEmpty()){ // 주계좌가 없다면 조회한 계좌를 주계좌로 변경
             account.updateAccountType(AccountType.MAIN);

@@ -2,14 +2,12 @@ package com.sh.shpay.global.util.komoran;
 
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
-import kr.co.shineware.nlp.komoran.model.AnalyzeResult;
 import kr.co.shineware.nlp.komoran.model.KomoranResult;
 import kr.co.shineware.nlp.komoran.model.Token;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -105,11 +103,11 @@ public class KomoranUtil {
         KomoranResult analyze = komoran.analyze(sentence);
 
         // 개인정보인지 금융정보인지 판단
-
         List<Token> tokenList = analyze.getTokenList();
 
         AnalyzeResultDto analyzeResultDto = KomoranSearchStore.analyzeSentence(tokenList);
-        if(analyzeResultDto.isPrivacy()){
+
+        if(analyzeResultDto.isPrivacy()){ // 개인정보
             return analyzeResultDto;
         }
 
@@ -117,8 +115,9 @@ public class KomoranUtil {
             System.out.format("(%2d, %2d) %s/%s\n", token.getBeginIndex(), token.getEndIndex(), token.getMorph(), token.getPos());
         }
 
+        analyzeResultDto.setSentence(sentence); //gpt
 
-        return null;
+        return analyzeResultDto;
     }
 
 

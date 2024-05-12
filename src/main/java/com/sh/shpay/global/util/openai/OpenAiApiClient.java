@@ -1,9 +1,7 @@
 package com.sh.shpay.global.util.openai;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.sh.shpay.api.chatbot.api.dto.req.ChatReqDto;
-import com.sh.shpay.api.chatbot.api.dto.res.ChatResDto;
+import com.sh.shpay.api.chatbot.api.dto.res.ChatCompletionResDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +9,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
@@ -37,16 +34,16 @@ public class OpenAiApiClient {
 
         HttpEntity httpEntity = generateHttpEntityWithBody(httpHeaders, chatReqDto);
 
-        ChatResDto chatResDto = restTemplate.exchange(url, HttpMethod.POST, httpEntity, ChatResDto.class).getBody();
+        ChatCompletionResDto chatCompletionResDto = restTemplate.exchange(url, HttpMethod.POST, httpEntity, ChatCompletionResDto.class).getBody();
 
-        log.info("===============" + chatResDto.getId() + "==============");
-        log.info("===============" + chatResDto.getModel() + "==============");
-        log.info("===============" + chatResDto.getChoices().size() + "==============");
-        log.info("===============" + chatResDto.getChoices().get(0).getMessage().getContent() + "==============");
-        log.info("===============" + chatResDto.getChoices().get(0).getMessage().getRole() + "==============");
-        log.info("===============" + chatResDto.getUsage().getTotal_tokens() + "==============");
+        log.info("===============" + chatCompletionResDto.getId() + "==============");
+        log.info("===============" + chatCompletionResDto.getModel() + "==============");
+        log.info("===============" + chatCompletionResDto.getChoices().size() + "==============");
+        log.info("===============" + chatCompletionResDto.getChoices().get(0).getMessage().getContent() + "==============");
+        log.info("===============" + chatCompletionResDto.getChoices().get(0).getMessage().getRole() + "==============");
+        log.info("===============" + chatCompletionResDto.getUsage().getTotal_tokens() + "==============");
 
-        return chatResDto.getChoices().get(0).getMessage().getContent();
+        return chatCompletionResDto.getChoices().get(0).getMessage().getContent();
 
     }
 

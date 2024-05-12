@@ -2,9 +2,10 @@ package com.sh.shpay.api.chatbot.application;
 
 import com.sh.shpay.api.chatbot.api.dto.req.ChatReqDto;
 import com.sh.shpay.api.chatbot.api.dto.req.Message;
+import com.sh.shpay.api.chatbot.api.dto.res.AnswerResDto;
 import com.sh.shpay.domain.acconut.api.dto.res.AccountListResponseDto;
 import com.sh.shpay.domain.acconut.application.AccountService;
-import com.sh.shpay.global.resolver.session.UserInfoFromSession;
+import com.sh.shpay.global.log.LogTrace;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
 import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeaderDto;
 import com.sh.shpay.global.util.komoran.AnalyzeResultDto;
@@ -37,29 +38,40 @@ public class ChatbotService {
     /**
      * Create chat completion
      * return 값 어떻게 하지
+     * 1. 계좌리스트
+     * 2. chatgpt
      * 질문 보내기
      */
-    public String requestChatCompletion(String question,
+    @LogTrace
+    public AnswerResDto requestChatCompletion(String question,
                                         OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
                                         UserInfoFromSessionDto userInfoFromSessionDto){
         String sentence = question.trim(); // komoran: 맨 뒤 공백이 있을 경우 토큰으로 못 자름
 
-        AnalyzeResultDto analyzeResultDto = komoranUtil.analyzeSentence(question); // 분석
+        AnalyzeResultDto analyzeResultDto = komoranUtil.analyzeSentence(sentence); // 분석완료
 
-        if(analyzeResultDto != null){ // 내 계좌 정보
+        if(analyzeResultDto.isPrivacy()){ // 내 계좌 정보
 
             if(analyzeResultDto.isSpecificBank()){ // 특정은행만
 
-                return null;
+                // 특정은행 리스트 리턴
+                AccountListResponseDto accountListResponseDto = accountService.requestSpecificAccountList(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto, analyzeResultDto.getBankName());
+
+                return new AnswerResDto(accountListResponseDto, sentence, null);
             }
 
+            // 은행리스트 리턴
             AccountListResponseDto accountListResponseDto = accountService.requestAccountList(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto);
 
-            return null;
+            return new AnswerResDto(accountListResponseDto, sentence, null);
+
 
         }
 
-        return chatCompletionToChatGpt(sentence); // 일반금융정보
+        String completionToChatGpt = chatCompletionToChatGpt(analyzeResultDto.getSentence()); // chatgpt 질문결과
+
+        return new AnswerResDto(null, sentence, completionToChatGpt); // 일반금융정보
+
 
     }
 

@@ -52,6 +52,8 @@ public class UsersController {
         session.setAttribute(SessionConst.COMMON_USER.name(), new UserInfoFromSessionDto(userResponseDto.getUserId(), userResponseDto.getName(), userResponseDto.getEmail()));
 
         UserInfoFromSessionDto userInfoFromSessionDto = (UserInfoFromSessionDto) session.getAttribute(SessionConst.COMMON_USER.name());
+        log.info("userId : " + userInfoFromSessionDto.getUserId());
+        log.info("email : " + userInfoFromSessionDto.getEmail());
 
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }

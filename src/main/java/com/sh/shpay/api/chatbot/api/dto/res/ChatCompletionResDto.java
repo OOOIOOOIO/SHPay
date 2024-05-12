@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChatResDto {
+public class ChatCompletionResDto {
     private String id;
     private String object;
     private String created;

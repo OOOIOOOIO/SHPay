@@ -1,6 +1,7 @@
 package com.sh.shpay.api.chatbot.api;
 
 
+import com.sh.shpay.api.chatbot.api.dto.res.AnswerResDto;
 import com.sh.shpay.api.chatbot.application.ChatbotService;
 import com.sh.shpay.global.resolver.session.UserInfoFromSession;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
@@ -28,12 +29,12 @@ public class ChatbotController {
      * @param question
      */
     @PostMapping("")
-    public ResponseEntity<String> requestChatCompletion(@RequestParam(value = "question") String question,
+    public ResponseEntity<AnswerResDto> requestChatCompletion(@RequestParam(value = "question") String question,
                                                         @OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
                                                         @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
 
-        String answer = chatbotService.requestChatCompletion(question, openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto);
+        AnswerResDto answerResDto = chatbotService.requestChatCompletion(question, openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto);
 
-        return new ResponseEntity<>(answer, HttpStatus.OK);
+        return new ResponseEntity<>(answerResDto, HttpStatus.OK);
     }
 }
