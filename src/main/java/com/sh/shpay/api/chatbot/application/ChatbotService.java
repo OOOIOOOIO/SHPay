@@ -2,6 +2,13 @@ package com.sh.shpay.api.chatbot.application;
 
 import com.sh.shpay.api.chatbot.api.dto.req.ChatReqDto;
 import com.sh.shpay.api.chatbot.api.dto.req.Message;
+import com.sh.shpay.api.chatbot.api.dto.res.AnswerResDto;
+import com.sh.shpay.domain.acconut.api.dto.res.AccountListResponseDto;
+import com.sh.shpay.domain.acconut.application.AccountService;
+import com.sh.shpay.global.log.LogTrace;
+import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
+import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeaderDto;
+import com.sh.shpay.global.util.komoran.AnalyzeResultDto;
 import com.sh.shpay.global.util.komoran.KomoranUtil;
 import com.sh.shpay.global.util.openai.OpenAiApiClient;
 import lombok.RequiredArgsConstructor;
@@ -23,37 +30,53 @@ public class ChatbotService {
     private String user;
 
     private final OpenAiApiClient openAiApiClient;
+    private final AccountService accountService;
     private final KomoranUtil komoranUtil;
 
 
+
     /**
-     * Create chat completion
-     * 질문 보내기
+     * Create chat completion & return 사용자개인정보
      */
-    public String requestChatCompletion(String question){
+    @LogTrace
+    public AnswerResDto requestChatCompletion(String question,
+                                        OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
+                                        UserInfoFromSessionDto userInfoFromSessionDto){
+        String sentence = question.trim(); // komoran: 맨 뒤 공백이 있을 경우 토큰으로 못 자름
 
-        boolean result = isAboutAccount(question);
+        AnalyzeResultDto analyzeResultDto = komoranUtil.analyzeSentence(sentence); // 분석완료
 
-        if(result){ // 내 계좌 정보
-            return null;
+        if(analyzeResultDto.isPrivacy()){ // 내 계좌 정보
+
+            if(analyzeResultDto.isSpecificBank()){ // 특정은행만
+
+                // 특정은행 리스트 리턴
+                AccountListResponseDto accountListResponseDto = accountService.requestSpecificAccountList(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto, analyzeResultDto.getBankName());
+
+                return new AnswerResDto(accountListResponseDto, sentence, null);
+            }
+
+            // 은행리스트 리턴
+            AccountListResponseDto accountListResponseDto = accountService.requestAccountList(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto);
+
+            return new AnswerResDto(accountListResponseDto, sentence, null);
+
+
         }
 
-        return chatCompletion(question);
+        String completionToChatGpt = chatCompletionToChatGpt(analyzeResultDto.getSentence()); // chatgpt 질문결과
+
+        return new AnswerResDto(null, sentence, completionToChatGpt); // 일반금융정보
+
 
     }
 
-    private String chatCompletion(String question){
 
-        boolean result = isAboutAccount(question);
-
-
-        if(result){ // 내 계좌 정보
-
-        }
-        else{
-
-        }
-
+    /**
+     * chatgpt에게 질문하기
+     *
+     */
+    private String chatCompletionToChatGpt(String question){
         Message message = Message.builder()
                 .content(question)
                 .role(user)
@@ -66,20 +89,12 @@ public class ChatbotService {
                 .messages(messages)
                 .build();
 
-        return openAiApiClient.chatCompletion(chatReqDto);
-
+//        return openAiApiClient.chatCompletion(chatReqDto);
+        return "a";
     }
 
-
-    /**
-     * 형태소 분석을 통해 본인계좌에 대한 질문인지 금융지식에 대한 질문인지 판별
-     */
-    private boolean isAboutAccount(String question){
-        komoranUtil.analyzeSentence(question);
-
-        return true;
-    }
 
 
 
 }
+

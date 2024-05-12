@@ -27,7 +27,7 @@ public class AccountController {
     private final AccountService accountService;
 
     /**
-     * 계좌 조회(DB에서 계좌 조회 --> 오픈뱅킹 API로 잔액조회)
+     * 계좌 조회(DB에서 계좌 조회 & 오픈뱅킹 API로 잔액조회)
      *
      */
     @LogTrace
@@ -39,8 +39,11 @@ public class AccountController {
         return new ResponseEntity(accountListResponseDto, OK);
     }
 
+
     /**
-     * 등록계좌조회 후 DB 저장(계좌 조회 API 조회 후 DB 저장)
+     * 계좌 등록 후 등록한 계좌조회 후 DB 저장(계좌 조회 API 조회 후 DB 저장)
+     * 오픈뱅킹에 계좌 등록할 때
+     * 새로고침 누를 때
      *
      * openAPI에서 계좌 리스트 가져옴
      */
