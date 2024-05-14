@@ -96,7 +96,6 @@ public class KomoranSearchStore {
 
         AnalyzeResultDto analyzeResultDto = new AnalyzeResultDto(false, false, null);
 
-//        for (WordAndMorphPair pair : collect) {
         for(int i = 0; i < wordAndMorphPairList.size(); i++){
 
             if(pronounList.contains(wordAndMorphPairList.get(i)) || nounList.contains(wordAndMorphPairList.get(i))){ // 개인정보인지
@@ -111,7 +110,9 @@ public class KomoranSearchStore {
 
             if (bankList.contains(wordAndMorphPairList.get(i))) { // 특정 은행인지
                 analyzeResultDto.setSpecificBank(true);
-                if(wordAndMorphPairList.get(i-1).morpheme.equals("SL")) analyzeResultDto.setBankName(wordAndMorphPairList.get(i-1).word + wordAndMorphPairList.get(i).word); // ibk등 영어
+                if(wordAndMorphPairList.get(i-1).morpheme.equals("SL")){
+                    analyzeResultDto.setBankName(wordAndMorphPairList.get(i-1).word + wordAndMorphPairList.get(i).word); // ibk등 영어
+                }
                 else analyzeResultDto.setBankName(wordAndMorphPairList.get(i).word);
 
                 break;

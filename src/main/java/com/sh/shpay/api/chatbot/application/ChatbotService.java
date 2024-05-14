@@ -89,8 +89,7 @@ public class ChatbotService {
                 .messages(messages)
                 .build();
 
-//        return openAiApiClient.chatCompletion(chatReqDto);
-        return "a";
+        return openAiApiClient.chatCompletion(chatReqDto);
     }
 
 
