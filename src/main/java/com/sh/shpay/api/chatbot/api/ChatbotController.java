@@ -8,6 +8,9 @@ import com.sh.shpay.global.resolver.session.UserInfoFromSession;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
 import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeader;
 import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeaderDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Chatbot", description = "Chatbot API")
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -29,6 +33,14 @@ public class ChatbotController {
      * 토큰이 있을 때만 가능하게 할건지
      * @param question
      */
+    @Operation(
+            summary = "Chatbot 질문 API",
+            description = "Chatbot"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Chatbot 질문에 성공하였습니다."
+    )
     @LogTrace
     @PostMapping("")
     public ResponseEntity<AnswerResDto> requestChatCompletion(@RequestParam(value = "question") String question,

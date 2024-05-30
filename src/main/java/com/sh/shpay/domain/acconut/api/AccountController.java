@@ -10,6 +10,9 @@ import com.sh.shpay.global.resolver.session.UserInfoFromSession;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
 import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeader;
 import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeaderDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.*;
 
+@Tag(name = "Openbanking - Account", description = "Openbanking Account API")
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +34,14 @@ public class AccountController {
      * 계좌 조회(DB에서 계좌 조회 & 오픈뱅킹 API로 잔액조회)
      *
      */
+    @Operation(
+            summary = "계좌 리스트 조회 API",
+            description = "Openbanking Account"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "계좌 리스트 조회에 성공하였습니다."
+    )
     @LogTrace
     @GetMapping("/list")
     public ResponseEntity<AccountListResponseDto> requestAccountInfo(@OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
@@ -47,6 +59,14 @@ public class AccountController {
      *
      * openAPI에서 계좌 리스트 가져옴
      */
+    @Operation(
+            summary = "계좌 DB 저장(새로고침) API",
+            description = "Openbanking Account"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "계좌를 DB에 저장했습니다."
+    )
     @LogTrace
     @PostMapping("/list")
     public ResponseEntity<Long> saveAccountList(@OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
@@ -59,6 +79,14 @@ public class AccountController {
     /**
      * 주계좌 설정
      */
+    @Operation(
+            summary = "주계좌 설정 API",
+            description = "Openbanking Account"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "주계좌 설정에 성공하였습니다."
+    )
     @LogTrace
     @PutMapping("/{accountId}")
     public ResponseEntity<String> updateAccountType(@PathVariable("accountId") Long accountId,
@@ -73,6 +101,14 @@ public class AccountController {
     /**
      * 거래내역조회
      */
+    @Operation(
+            summary = "거래내역 조회 API",
+            description = "Openbanking Account"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "거래내역 조회에 성공하였습니다."
+    )
     @LogTrace
     @GetMapping("/transaction/{accountId}")
     public ResponseEntity<TransactionListResponseDto> getTransactionList(@PathVariable("accountId") Long accountId,
@@ -88,6 +124,14 @@ public class AccountController {
     /**
      * 출금이제
      */
+    @Operation(
+            summary = "출금이체 API",
+            description = "Openbanking Account"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "출금이체에 성공하였습니다."
+    )
     @LogTrace
     @PostMapping("/withdraw/{accountId}")
     public OpenBankingTransferResponseDto requestWithdraw(@PathVariable("accountId") Long accountId,
@@ -95,13 +139,36 @@ public class AccountController {
                                                           @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto,
                                                           @RequestBody WithdrawRequestDto withdrawRequestDto){
 
-        log.info("================= AccountController | api/openbanking/token/request - 2-legged =================");
+        OpenBankingTransferResponseDto openBankingTransferResponseDto = accountService.requestWithdraw(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto, accountId, withdrawRequestDto);
+
+        return openBankingTransferResponseDto;
+
+    }
+
+    /**
+     * 입금이체
+     */
+    @Operation(
+            summary = "입급이체 API",
+            description = "Openbanking Account"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "입금이체에 성공하였습니다."
+    )
+    @LogTrace
+    @PostMapping("/deposit/{accountId}")
+    public OpenBankingTransferResponseDto requestDeposit(@PathVariable("accountId") Long accountId,
+                                                          @OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
+                                                          @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto,
+                                                          @RequestBody WithdrawRequestDto withdrawRequestDto){
 
         OpenBankingTransferResponseDto openBankingTransferResponseDto = accountService.requestWithdraw(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto, accountId, withdrawRequestDto);
 
         return openBankingTransferResponseDto;
 
     }
+
 
 
 

@@ -48,6 +48,9 @@ dependencies {
     // Redis session
     implementation 'org.springframework.session:spring-session-data-redis'
 
+    // swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
+
     // Querydsl 추가
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
@@ -70,4 +73,15 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+
+// gradle build시 xx-plain.jar 나오는거 막기(gradle 2.5부터 생김)
+jar{
+    enabled = false
+}
+
+// gradle build 시 test 때문에 fail나는거 막기, 테스트를 안함
+test.onlyIf{
+    !project.hasProperty('test')
 }

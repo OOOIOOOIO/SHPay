@@ -27,7 +27,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(new UserSessionCheckInterceptor())
                 .order(1)
                 .addPathPatterns("/api/**")
-                .excludePathPatterns("/users/**", "/api/users/**");
+                .excludePathPatterns("/users/**", "/api/users/**",
+                        "/favicon.ico", "/swagger-ui/**", "/api-docs/**");
 //                .excludePathPatterns("/api/openbanking/**", "/api/users/**", "/api/menu/**", "/api/main/**");
 
     }

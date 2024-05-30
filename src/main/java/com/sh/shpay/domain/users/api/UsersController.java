@@ -7,6 +7,9 @@ import com.sh.shpay.domain.users.application.UsersService;
 import com.sh.shpay.global.common.SessionConst;
 import com.sh.shpay.global.log.LogTrace;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "User", description = "User API")
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +31,14 @@ public class UsersController {
     /**
      * 회원가입
      */
+    @Operation(
+            summary = "회원가입 API",
+            description = "회원가입"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "회원가입에 성공하였습니다."
+    )
     @LogTrace
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@ModelAttribute UserSignUpRequestDto userSignUpRequestDto){
@@ -40,6 +52,14 @@ public class UsersController {
     /**
      * 로그인, session방식
      */
+    @Operation(
+            summary = "로그인 API",
+            description = "로그인"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "로그인 성공하였습니다."
+    )
     @LogTrace
     @PostMapping("/signin")
     public ResponseEntity<UserResponseDto> signIn(@ModelAttribute UserSignInRequestDto signInRequestDto,
