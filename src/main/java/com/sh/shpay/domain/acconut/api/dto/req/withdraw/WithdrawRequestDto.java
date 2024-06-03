@@ -1,4 +1,4 @@
-package com.sh.shpay.domain.openbanking.openbanking.api.dto.req;
+package com.sh.shpay.domain.acconut.api.dto.req.withdraw;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OpenBankingTransferRequestDto {
+public class WithdrawRequestDto {
     private String bank_tran_id; //M202111920+U+랜덤숫자 9 자리
     private String cntr_account_type; //n  약정 계좌/계정 구분주2)  n:계좌, c:계정
     private String cntr_account_num;  //약정 계좌/계정 번호주2) 내계좌
@@ -27,7 +27,7 @@ public class OpenBankingTransferRequestDto {
     private String recv_client_account_num;
 
     @Builder
-    public OpenBankingTransferRequestDto(String bank_tran_id, String cntr_account_type, String cntr_account_num, String dps_print_content, String fintech_use_num, String wd_print_content, String tran_amt, String req_client_name, String req_client_fintech_use_num, String req_client_num, String transfer_purpose, String recv_client_name, String recv_client_bank_code, String recv_client_account_num) {
+    public WithdrawRequestDto(String bank_tran_id, String cntr_account_type, String cntr_account_num, String dps_print_content, String fintech_use_num, String wd_print_content, String tran_amt, String req_client_name, String req_client_fintech_use_num, String req_client_num, String transfer_purpose, String recv_client_name, String recv_client_bank_code, String recv_client_account_num) {
         this.bank_tran_id = bank_tran_id;
         this.cntr_account_type = cntr_account_type;
         this.cntr_account_num = cntr_account_num;

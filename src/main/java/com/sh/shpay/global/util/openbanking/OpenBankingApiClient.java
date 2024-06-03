@@ -1,6 +1,10 @@
 package com.sh.shpay.global.util.openbanking;
 
+import com.sh.shpay.domain.acconut.api.dto.req.deposit.DepositRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.req.withdraw.WithdrawRequestDto;
 import com.sh.shpay.domain.acconut.api.dto.req.TransactionListRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.res.deposit.DepositResponseDto;
+import com.sh.shpay.domain.acconut.api.dto.res.withdraw.WithdrawResponseDto;
 import com.sh.shpay.domain.acconut.api.dto.res.TransactionListResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.*;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.*;
@@ -221,18 +225,32 @@ public class OpenBankingApiClient {
 
 
     /**
-     * 출금이체
+     * 출금이체(핀테크이용번호 사용)
      */
-    public OpenBankingTransferResponseDto requestWithdraw(String access_token, OpenBankingTransferRequestDto openBankingTransferRequestDto){
+    public WithdrawResponseDto requestWithdraw(String access_token, WithdrawRequestDto withdrawRequestDto){
         String url = BASE_URL + "/v2.0/transfer/withdraw/fin_num";
 
-        openBankingTransferRequestDto.setTran_dtime(OpenBankingUtil.transTime());
+        ResponseEntity<WithdrawRequestDto> body = new ResponseEntity<>(withdrawRequestDto, generateHeader("Authorization", access_token), HttpStatus.OK);
 
-        ResponseEntity<OpenBankingTransferRequestDto> body = new ResponseEntity<>(openBankingTransferRequestDto, generateHeader("Authorization", access_token), HttpStatus.OK);
+        WithdrawResponseDto withdrawResponseDto = restTemplate.exchange(url, HttpMethod.POST, body, WithdrawResponseDto.class).getBody();
 
-        OpenBankingTransferResponseDto transferResponseDto = restTemplate.exchange(url, HttpMethod.POST, body, OpenBankingTransferResponseDto.class).getBody();
+        return withdrawResponseDto;
 
-        return transferResponseDto;
+    }
+
+
+    /**
+     * 입금이체(핀테크이용번호 사용)
+     */
+    public DepositResponseDto requestDeposit(String access_token, DepositRequestDto depositRequestDto) {
+        String url = BASE_URL + "/v2.0/transfer/deposit/fin_num";
+
+        ResponseEntity<DepositRequestDto> body = new ResponseEntity<>(depositRequestDto, generateHeader("Authorization", access_token), HttpStatus.OK);
+
+        DepositResponseDto depositResponseDto = restTemplate.exchange(url, HttpMethod.POST, body, DepositResponseDto.class).getBody();
+
+        return depositResponseDto;
+
 
     }
 

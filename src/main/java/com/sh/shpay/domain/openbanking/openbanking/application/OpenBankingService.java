@@ -1,11 +1,16 @@
 package com.sh.shpay.domain.openbanking.openbanking.application;
 
 
-import com.sh.shpay.domain.acconut.api.dto.WithdrawAccountInfoDto;
-import com.sh.shpay.domain.acconut.api.dto.req.AccountRequestDto;
-import com.sh.shpay.domain.acconut.api.dto.req.BalanceRequestDto;
-import com.sh.shpay.domain.acconut.api.dto.req.TransactionListRequestDto;
-import com.sh.shpay.domain.acconut.api.dto.req.WithdrawRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.req.deposit.DepositAccountInfoDto;
+import com.sh.shpay.domain.acconut.api.dto.req.deposit.DepositRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.req.deposit.DepositRequestList;
+import com.sh.shpay.domain.acconut.api.dto.req.deposit.DepositUserInputRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.res.deposit.DepositResponseDto;
+import com.sh.shpay.domain.acconut.api.dto.res.withdraw.WithdrawAccountInfoDto;
+import com.sh.shpay.domain.acconut.api.dto.req.*;
+import com.sh.shpay.domain.acconut.api.dto.req.withdraw.WithdrawRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.req.withdraw.WithdrawUserInputRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.res.withdraw.WithdrawResponseDto;
 import com.sh.shpay.domain.acconut.api.dto.res.TransactionListResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.*;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.*;
@@ -29,6 +34,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 
 @Slf4j
 @Service
@@ -232,32 +239,72 @@ public class OpenBankingService {
 
 
     /**
-     * 출금이체
+     * 출금이체(핀테크이용번호 사용)
      */
-    public OpenBankingTransferResponseDto requestWithdraw(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, WithdrawAccountInfoDto withdrawAccountInfoDto, WithdrawRequestDto withdrawRequestDto){
+    public WithdrawResponseDto requestWithdraw(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, WithdrawAccountInfoDto withdrawAccountInfoDto, WithdrawUserInputRequestDto withdrawUserInputRequestDto){
 
-        OpenBankingTransferRequestDto openBankingTransferRequestDto = OpenBankingTransferRequestDto.builder()
+        WithdrawRequestDto withdrawRequestDto = WithdrawRequestDto.builder()
                 .bank_tran_id(openBankingUtil.generateBankTranId(bankTranId + "U"))
                 .cntr_account_type("N") // N : 계좌, C : 계정
                 .cntr_account_num(withdrawAccountInfoDto.getAccount_num())
-                .dps_print_content(withdrawRequestDto.getDps_print_content())
-                .fintech_use_num(withdrawAccountInfoDto.getFintech_use_num())
-                .wd_print_content(withdrawRequestDto.getWd_print_content())
-                .tran_amt(withdrawRequestDto.getTran_amt())
+                .dps_print_content(withdrawUserInputRequestDto.getDps_print_content())
+                .fintech_use_num(withdrawAccountInfoDto.getFintech_use_num()) //입금계좌
+                .wd_print_content(withdrawUserInputRequestDto.getWd_print_content())
+                .tran_amt(withdrawUserInputRequestDto.getTran_amt())
                 .req_client_name(userInfoFromSessionDto.getName())
-                .req_client_fintech_use_num(withdrawAccountInfoDto.getFintech_use_num())
+                .req_client_fintech_use_num(withdrawUserInputRequestDto.getFintech_use_num()) //출금계좌(내계좌)
                 .req_client_num(userInfoFromSessionDto.getName()) //영어로
                 .transfer_purpose("ST")
-                .recv_client_name(withdrawRequestDto.getRecv_client_name())
+                .recv_client_name(withdrawUserInputRequestDto.getRecv_client_name())
                 .recv_client_bank_code("097") // test : 097
-                .recv_client_account_num(withdrawRequestDto.getRecv_client_account_num())
+                .recv_client_account_num(withdrawUserInputRequestDto.getRecv_client_account_num())
                 .build();
 
-        openBankingTransferRequestDto.setTran_dtime(OpenBankingUtil.transTime());
+        withdrawRequestDto.setTran_dtime(OpenBankingUtil.transTime());
 
-        OpenBankingTransferResponseDto openBankingTransferResponseDto = openBankingApiClient.requestWithdraw(openbankingTokenInfoFromHeaderDto.getAccessToken(), openBankingTransferRequestDto);
+        WithdrawResponseDto withdrawResponseDto = openBankingApiClient.requestWithdraw(openbankingTokenInfoFromHeaderDto.getAccessToken(), withdrawRequestDto);
 
-        return openBankingTransferResponseDto;
+        return withdrawResponseDto;
+
+    }
+
+
+    /**
+     * 입급이체(핀테크이용번호 사용)
+     */
+    public DepositResponseDto requestDeposit(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, DepositAccountInfoDto depositAccountInfoDto, DepositUserInputRequestDto depositUserInputRequestDto){
+
+        ArrayList<DepositRequestList> depositRequestList = new ArrayList<>();
+
+        DepositRequestList depositRequestListDto = DepositRequestList.builder()
+                .tran_no("1") // 단건만 가능
+                .fintech_use_num(depositAccountInfoDto.getFintech_use_num()) //출금계좌
+                .print_content(depositUserInputRequestDto.getPrint_content())
+                .tran_amt(depositUserInputRequestDto.getTran_amt())
+                .req_client_name(depositUserInputRequestDto.getReq_client_name())
+                .req_client_fintech_use_num(depositUserInputRequestDto.getFintech_use_num()) //입금계좌(내계좌)
+                .req_client_num(depositUserInputRequestDto.getReq_client_num())
+                .transfer_purpose("ST")
+                .build();
+
+        depositRequestList.add(depositRequestListDto);
+
+        DepositRequestDto depositRequestDto = DepositRequestDto.builder()
+                .cntr_account_type("N")
+                .cntr_account_num(depositAccountInfoDto.getAccount_num())
+                .wd_pass_phrase("NONE")
+                .wd_print_content(depositUserInputRequestDto.getWd_print_content())
+                .name_check_option("off")
+                .req_cnt("1")
+                .req_list(depositRequestList)
+                .build();
+
+        depositRequestDto.setTran_dtime(OpenBankingUtil.transTime());
+
+
+        DepositResponseDto withdrawResponseDto = openBankingApiClient.requestDeposit(openbankingTokenInfoFromHeaderDto.getAccessToken(), depositRequestDto);
+
+        return withdrawResponseDto;
 
     }
 

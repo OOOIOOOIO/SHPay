@@ -1,10 +1,10 @@
 package com.sh.shpay.domain.acconut.api;
 
-import com.sh.shpay.domain.acconut.api.dto.req.WithdrawRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.req.withdraw.WithdrawUserInputRequestDto;
 import com.sh.shpay.domain.acconut.api.dto.res.AccountListResponseDto;
 import com.sh.shpay.domain.acconut.api.dto.res.TransactionListResponseDto;
 import com.sh.shpay.domain.acconut.application.AccountService;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingTransferResponseDto;
+import com.sh.shpay.domain.acconut.api.dto.res.withdraw.WithdrawResponseDto;
 import com.sh.shpay.global.log.LogTrace;
 import com.sh.shpay.global.resolver.session.UserInfoFromSession;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
@@ -134,14 +134,14 @@ public class AccountController {
     )
     @LogTrace
     @PostMapping("/withdraw/{accountId}")
-    public OpenBankingTransferResponseDto requestWithdraw(@PathVariable("accountId") Long accountId,
-                                                          @OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
-                                                          @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto,
-                                                          @RequestBody WithdrawRequestDto withdrawRequestDto){
+    public WithdrawResponseDto requestWithdraw(@PathVariable("accountId") Long accountId,
+                                               @OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
+                                               @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto,
+                                               @RequestBody WithdrawUserInputRequestDto withdrawUserInputRequestDto){
 
-        OpenBankingTransferResponseDto openBankingTransferResponseDto = accountService.requestWithdraw(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto, accountId, withdrawRequestDto);
+        WithdrawResponseDto withdrawResponseDto = accountService.requestWithdraw(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto, accountId, withdrawUserInputRequestDto);
 
-        return openBankingTransferResponseDto;
+        return withdrawResponseDto;
 
     }
 
@@ -158,14 +158,14 @@ public class AccountController {
     )
     @LogTrace
     @PostMapping("/deposit/{accountId}")
-    public OpenBankingTransferResponseDto requestDeposit(@PathVariable("accountId") Long accountId,
-                                                          @OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
-                                                          @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto,
-                                                          @RequestBody WithdrawRequestDto withdrawRequestDto){
+    public WithdrawResponseDto requestDeposit(@PathVariable("accountId") Long accountId,
+                                              @OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
+                                              @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto,
+                                              @RequestBody WithdrawUserInputRequestDto withdrawUserInputRequestDto){
 
-        OpenBankingTransferResponseDto openBankingTransferResponseDto = accountService.requestWithdraw(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto, accountId, withdrawRequestDto);
+        WithdrawResponseDto withdrawResponseDto = accountService.requestWithdraw(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto, accountId, withdrawUserInputRequestDto);
 
-        return openBankingTransferResponseDto;
+        return withdrawResponseDto;
 
     }
 

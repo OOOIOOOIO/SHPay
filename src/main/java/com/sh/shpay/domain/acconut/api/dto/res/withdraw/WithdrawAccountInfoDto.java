@@ -1,4 +1,4 @@
-package com.sh.shpay.domain.acconut.api.dto;
+package com.sh.shpay.domain.acconut.api.dto.res.withdraw;
 
 import lombok.AccessLevel;
 import lombok.Getter;

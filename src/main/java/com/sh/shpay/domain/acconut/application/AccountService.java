@@ -1,10 +1,13 @@
 package com.sh.shpay.domain.acconut.application;
 
 import com.sh.shpay.domain.acconut.api.dto.UserAccountDto;
-import com.sh.shpay.domain.acconut.api.dto.WithdrawAccountInfoDto;
+import com.sh.shpay.domain.acconut.api.dto.req.deposit.DepositAccountInfoDto;
+import com.sh.shpay.domain.acconut.api.dto.req.deposit.DepositUserInputRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.res.deposit.DepositResponseDto;
+import com.sh.shpay.domain.acconut.api.dto.res.withdraw.WithdrawAccountInfoDto;
 import com.sh.shpay.domain.acconut.api.dto.req.AccountRequestDto;
 import com.sh.shpay.domain.acconut.api.dto.req.BalanceRequestDto;
-import com.sh.shpay.domain.acconut.api.dto.req.WithdrawRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.req.withdraw.WithdrawUserInputRequestDto;
 import com.sh.shpay.domain.acconut.api.dto.res.AccountListResponseDto;
 import com.sh.shpay.domain.acconut.api.dto.res.TransactionListResponseDto;
 import com.sh.shpay.domain.acconut.domain.Account;
@@ -13,7 +16,7 @@ import com.sh.shpay.domain.acconut.domain.repository.AccountQueryRepositoryImpl;
 import com.sh.shpay.domain.acconut.domain.repository.AccountRepository;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingBalanceResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingAccountListResponseDto;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingTransferResponseDto;
+import com.sh.shpay.domain.acconut.api.dto.res.withdraw.WithdrawResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.application.OpenBankingService;
 import com.sh.shpay.domain.users.domain.Users;
 import com.sh.shpay.domain.users.domain.repository.UsersRepository;
@@ -275,22 +278,38 @@ public class AccountService {
 
 
     /**
-     * 출금이제
+     * 출금이체(핀테크이용번호 사용)
      */
     @LogTrace
-    public OpenBankingTransferResponseDto requestWithdraw(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, Long accountId, WithdrawRequestDto withdrawRequestDto){
+    public WithdrawResponseDto requestWithdraw(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, Long accountId, WithdrawUserInputRequestDto withdrawUserInputRequestDto){
 
 
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new CustomException(ErrorCode.NotExistAccountException));
 
         WithdrawAccountInfoDto withdrawAccountInfoDto = new WithdrawAccountInfoDto(account.getAccountNum(), account.getFintechUseNum());
 
-        OpenBankingTransferResponseDto openBankingTransferResponseDto = openBankService.requestWithdraw(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto, withdrawAccountInfoDto, withdrawRequestDto);
+        WithdrawResponseDto withdrawResponseDto = openBankService.requestWithdraw(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto, withdrawAccountInfoDto, withdrawUserInputRequestDto);
 
-        return openBankingTransferResponseDto;
+        return withdrawResponseDto;
 
     }
 
+    /**
+     * 입금이체(핀테크이용번호 사용)
+     */
+    @LogTrace
+    public DepositResponseDto requestDeposit(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, Long accountId, DepositUserInputRequestDto depositUserInputRequestDto){
+
+
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new CustomException(ErrorCode.NotExistAccountException));
+
+        DepositAccountInfoDto depositAccountInfoDto = new DepositAccountInfoDto(account.getAccountNum(), account.getFintechUseNum());
+
+        DepositResponseDto depositResponseDto = openBankService.requestDeposit(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto, depositAccountInfoDto, depositUserInputRequestDto);
+
+        return depositResponseDto;
+
+    }
 
 
     // =================
