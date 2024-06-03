@@ -7,7 +7,7 @@
 
 ### 역할 및 기간
 - **개인 프로젝트**
-- **기간 : 2024.01.15 ~**
+- **기간 : 2024.01.15 ~ 2024.05.01**
 
 <br>
 <hr>
@@ -59,7 +59,7 @@
 
 ## Architecture
 
-![img.png](img.png)
+![img_8.png](img_8.png)
 
 ## ERD
 
@@ -68,7 +68,8 @@
 <br>
 <hr>
 
-## API 목록
+## Swagger API & Http API 목록
+[Swagger API 목록](https://github.com/OOOIOOOIO/SHPay/wiki/Swagger-API-%EB%AA%A9%EB%A1%9D.md)
 [API 확인하러 가기](https://github.com/OOOIOOOIO/SHPay/tree/main/src/main/java/http)
 
 <br>
