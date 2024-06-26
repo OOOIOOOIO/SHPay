@@ -118,12 +118,12 @@ public class OpenBankingTokenController {
      *
      */
     @Operation(
-            summary = "2-legged Token 발급 API",
+            summary = "2-legged Token 갱신 API",
             description = "Openbanking Token"
     )
     @ApiResponse(
             responseCode = "200",
-            description = "Token 발급에 성공하였습니다."
+            description = "Token 갱신에 성공하였습니다."
     )
     @LogTrace
     @PostMapping("/token2/refresh")
