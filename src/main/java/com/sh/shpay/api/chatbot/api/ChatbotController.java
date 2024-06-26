@@ -6,8 +6,8 @@ import com.sh.shpay.api.chatbot.application.ChatbotService;
 import com.sh.shpay.global.log.LogTrace;
 import com.sh.shpay.global.resolver.session.UserInfoFromSession;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
-import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeader;
-import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeaderDto;
+import com.sh.shpay.global.resolver.token.three.Openbanking3LeggedTokenFromHeader;
+import com.sh.shpay.global.resolver.token.three.Openbanking3LeggedTokenFromHeaderDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,10 +44,10 @@ public class ChatbotController {
     @LogTrace
     @PostMapping("")
     public ResponseEntity<AnswerResDto> requestChatCompletion(@RequestParam(value = "question") String question,
-                                                        @OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
+                                                        @Openbanking3LeggedTokenFromHeader Openbanking3LeggedTokenFromHeaderDto openbanking3LeggedTokenFromHeaderDto,
                                                         @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
 
-        AnswerResDto answerResDto = chatbotService.requestChatCompletion(question, openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto);
+        AnswerResDto answerResDto = chatbotService.requestChatCompletion(question, openbanking3LeggedTokenFromHeaderDto, userInfoFromSessionDto);
 
         return new ResponseEntity<>(answerResDto, HttpStatus.OK);
     }

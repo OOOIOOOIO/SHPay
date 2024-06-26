@@ -1,5 +1,6 @@
 package com.sh.shpay.global.util.komoran;
 
+import com.sh.shpay.global.log.LogTrace;
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
 import kr.co.shineware.nlp.komoran.model.KomoranResult;
@@ -29,9 +30,7 @@ public class KomoranUtil {
 
     }
 
-
-
-
+    @LogTrace
     public AnalyzeResultDto analyzeSentence(String sentence){
 
         // 형태소 분석
@@ -44,10 +43,6 @@ public class KomoranUtil {
 
         if(analyzeResultDto.isPrivacy()){ // 개인정보
             return analyzeResultDto;
-        }
-
-        for (Token token : tokenList) {
-            System.out.format("(%2d, %2d) %s/%s\n", token.getBeginIndex(), token.getEndIndex(), token.getMorph(), token.getPos());
         }
 
         analyzeResultDto.setSentence(sentence); //gpt

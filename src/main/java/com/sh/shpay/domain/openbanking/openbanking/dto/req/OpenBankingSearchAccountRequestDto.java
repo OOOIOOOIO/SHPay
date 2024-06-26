@@ -1,4 +1,4 @@
-package com.sh.shpay.domain.openbanking.openbanking.api.dto.req;
+package com.sh.shpay.domain.openbanking.openbanking.dto.req;
 
 import lombok.AccessLevel;
 import lombok.Builder;

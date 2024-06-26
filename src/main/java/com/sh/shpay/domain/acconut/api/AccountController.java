@@ -1,20 +1,26 @@
 package com.sh.shpay.domain.acconut.api;
 
+import com.sh.shpay.domain.acconut.api.dto.req.deposit.DepositRequestDto;
+import com.sh.shpay.domain.acconut.api.dto.req.deposit.DepositUserInputRequestDto;
 import com.sh.shpay.domain.acconut.api.dto.req.withdraw.WithdrawUserInputRequestDto;
 import com.sh.shpay.domain.acconut.api.dto.res.AccountListResponseDto;
 import com.sh.shpay.domain.acconut.api.dto.res.TransactionListResponseDto;
+import com.sh.shpay.domain.acconut.api.dto.res.deposit.DepositResponseDto;
 import com.sh.shpay.domain.acconut.application.AccountService;
 import com.sh.shpay.domain.acconut.api.dto.res.withdraw.WithdrawResponseDto;
 import com.sh.shpay.global.log.LogTrace;
 import com.sh.shpay.global.resolver.session.UserInfoFromSession;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
-import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeader;
-import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeaderDto;
+import com.sh.shpay.global.resolver.token.three.Openbanking3LeggedTokenFromHeader;
+import com.sh.shpay.global.resolver.token.three.Openbanking3LeggedTokenFromHeaderDto;
+import com.sh.shpay.global.resolver.token.two.Openbanking2LeggedTokenFromHeader;
+import com.sh.shpay.global.resolver.token.two.Openbanking2LeggedTokenFromHeaderDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,9 +50,9 @@ public class AccountController {
     )
     @LogTrace
     @GetMapping("/list")
-    public ResponseEntity<AccountListResponseDto> requestAccountInfo(@OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
+    public ResponseEntity<AccountListResponseDto> requestAccountInfo(@Openbanking3LeggedTokenFromHeader Openbanking3LeggedTokenFromHeaderDto openbanking3LeggedTokenFromHeaderDto,
                                                                  @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
-        AccountListResponseDto accountListResponseDto = accountService.requestAccountList(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto);
+        AccountListResponseDto accountListResponseDto = accountService.requestAccountList(openbanking3LeggedTokenFromHeaderDto, userInfoFromSessionDto);
 
         return new ResponseEntity(accountListResponseDto, OK);
     }
@@ -69,9 +75,9 @@ public class AccountController {
     )
     @LogTrace
     @PostMapping("/list")
-    public ResponseEntity<Long> saveAccountList(@OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
+    public ResponseEntity<Long> saveAccountList(@Openbanking3LeggedTokenFromHeader Openbanking3LeggedTokenFromHeaderDto openbanking3LeggedTokenFromHeaderDto,
                                              @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
-        Long size = accountService.saveAccountList(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto);
+        Long size = accountService.saveAccountList(openbanking3LeggedTokenFromHeaderDto, userInfoFromSessionDto);
 
         return new ResponseEntity(size, OK);
     }
@@ -112,9 +118,9 @@ public class AccountController {
     @LogTrace
     @GetMapping("/transaction/{accountId}")
     public ResponseEntity<TransactionListResponseDto> getTransactionList(@PathVariable("accountId") Long accountId,
-                                                                      @OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto){
+                                                                      @Openbanking3LeggedTokenFromHeader Openbanking3LeggedTokenFromHeaderDto openbanking3LeggedTokenFromHeaderDto){
 
-        TransactionListResponseDto transactionListResponseDto = accountService.requestTransactionList(openbankingTokenInfoFromHeaderDto, accountId);
+        TransactionListResponseDto transactionListResponseDto = accountService.requestTransactionList(openbanking3LeggedTokenFromHeaderDto, accountId);
 
         return new ResponseEntity<>(transactionListResponseDto, OK);
     }
@@ -134,14 +140,14 @@ public class AccountController {
     )
     @LogTrace
     @PostMapping("/withdraw/{accountId}")
-    public WithdrawResponseDto requestWithdraw(@PathVariable("accountId") Long accountId,
-                                               @OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
+    public ResponseEntity<WithdrawResponseDto> requestWithdraw(@PathVariable("accountId") Long accountId,
+                                               @Openbanking2LeggedTokenFromHeader Openbanking2LeggedTokenFromHeaderDto openbanking2LeggedTokenFromHeaderDto,
                                                @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto,
                                                @RequestBody WithdrawUserInputRequestDto withdrawUserInputRequestDto){
 
-        WithdrawResponseDto withdrawResponseDto = accountService.requestWithdraw(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto, accountId, withdrawUserInputRequestDto);
+        WithdrawResponseDto withdrawResponseDto = accountService.requestWithdraw(openbanking2LeggedTokenFromHeaderDto, userInfoFromSessionDto, accountId, withdrawUserInputRequestDto);
 
-        return withdrawResponseDto;
+        return new ResponseEntity<>(withdrawResponseDto, OK);
 
     }
 
@@ -158,14 +164,14 @@ public class AccountController {
     )
     @LogTrace
     @PostMapping("/deposit/{accountId}")
-    public WithdrawResponseDto requestDeposit(@PathVariable("accountId") Long accountId,
-                                              @OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
+    public ResponseEntity<DepositResponseDto> requestDeposit(@PathVariable("accountId") Long accountId,
+                                              @Openbanking2LeggedTokenFromHeader Openbanking2LeggedTokenFromHeaderDto openbanking2LeggedTokenFromHeaderDto,
                                               @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto,
-                                              @RequestBody WithdrawUserInputRequestDto withdrawUserInputRequestDto){
+                                              @RequestBody DepositUserInputRequestDto depositUserInputRequestDto){
 
-        WithdrawResponseDto withdrawResponseDto = accountService.requestWithdraw(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto, accountId, withdrawUserInputRequestDto);
+        DepositResponseDto depositResponseDto = accountService.requestDeposit(openbanking2LeggedTokenFromHeaderDto, userInfoFromSessionDto, accountId, depositUserInputRequestDto);
 
-        return withdrawResponseDto;
+        return new ResponseEntity<>(depositResponseDto, OK);
 
     }
 

@@ -14,8 +14,8 @@ import com.sh.shpay.domain.acconut.domain.Account;
 import com.sh.shpay.domain.acconut.domain.AccountType;
 import com.sh.shpay.domain.acconut.domain.repository.AccountQueryRepositoryImpl;
 import com.sh.shpay.domain.acconut.domain.repository.AccountRepository;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingBalanceResponseDto;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.OpenBankingAccountListResponseDto;
+import com.sh.shpay.domain.openbanking.openbanking.dto.res.OpenBankingBalanceResponseDto;
+import com.sh.shpay.domain.openbanking.openbanking.dto.res.OpenBankingAccountListResponseDto;
 import com.sh.shpay.domain.acconut.api.dto.res.withdraw.WithdrawResponseDto;
 import com.sh.shpay.domain.openbanking.openbanking.application.OpenBankingService;
 import com.sh.shpay.domain.users.domain.Users;
@@ -24,7 +24,8 @@ import com.sh.shpay.global.exception.CustomException;
 import com.sh.shpay.global.exception.ErrorCode;
 import com.sh.shpay.global.log.LogTrace;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
-import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeaderDto;
+import com.sh.shpay.global.resolver.token.three.Openbanking3LeggedTokenFromHeaderDto;
+import com.sh.shpay.global.resolver.token.two.Openbanking2LeggedTokenFromHeaderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -52,7 +53,7 @@ public class AccountService {
      *  DB에서 계좌 조회 & 오픈뱅킹 API로 잔액조회
      */
     @LogTrace
-    public AccountListResponseDto requestAccountList(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto){
+    public AccountListResponseDto requestAccountList(Openbanking3LeggedTokenFromHeaderDto openbanking3LeggedTokenFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto){
 
         Users users = userRepository.findById(userInfoFromSessionDto.getUserId()).orElseThrow(() -> new CustomException(ErrorCode.NotExistUserException));
 
@@ -66,7 +67,7 @@ public class AccountService {
         List<UserAccountDto> userAccountDtoList = accountList.stream()
                 .map(account -> CompletableFuture.supplyAsync(() -> {
                             String balanceAmt = getBalanceAmt(account.getFintechUseNum(), // Openbanking api 잔액조회
-                                    openbankingTokenInfoFromHeaderDto.getAccessToken(),
+                                    openbanking3LeggedTokenFromHeaderDto.getAccessToken(),
                                     users.getUserId());
 
                             UserAccountDto userAccountDto = UserAccountDto.builder()
@@ -106,9 +107,9 @@ public class AccountService {
      *  DB에서 특정은행계좌 조회 & 오픈뱅킹 API로 잔액조회
      */
     @LogTrace
-    public AccountListResponseDto requestSpecificAccountList(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
-                                                     UserInfoFromSessionDto userInfoFromSessionDto,
-                                                     String bankName){
+    public AccountListResponseDto requestSpecificAccountList(Openbanking3LeggedTokenFromHeaderDto openbanking3LeggedTokenFromHeaderDto,
+                                                             UserInfoFromSessionDto userInfoFromSessionDto,
+                                                             String bankName){
 
         log.info("=== bankname : " + bankName);
 
@@ -124,7 +125,7 @@ public class AccountService {
         List<UserAccountDto> userAccountDtoList = specificBankAccountList.stream()
                 .map(account -> CompletableFuture.supplyAsync(() -> {
                                     String balanceAmt = getBalanceAmt(account.getFintechUseNum(), // Openbanking api 잔액조회
-                                            openbankingTokenInfoFromHeaderDto.getAccessToken(),
+                                            openbanking3LeggedTokenFromHeaderDto.getAccessToken(),
                                             users.getUserId());
 
                                     UserAccountDto userAccountDto = UserAccountDto.builder()
@@ -163,12 +164,12 @@ public class AccountService {
      * 계좌 저장
      */
     @LogTrace
-    public Long saveAccountList(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto){
+    public Long saveAccountList(Openbanking3LeggedTokenFromHeaderDto openbanking3LeggedTokenFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto){
 
         Users users = userRepository.findById(userInfoFromSessionDto.getUserId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
 
         AccountRequestDto accountRequestDto = AccountRequestDto.builder()
-                .accessToken(openbankingTokenInfoFromHeaderDto.getAccessToken())
+                .accessToken(openbanking3LeggedTokenFromHeaderDto.getAccessToken())
                 .userSeqNo(users.getUserSeqNo())
                 .build();
 
@@ -266,11 +267,11 @@ public class AccountService {
      * 거래내역조회
      */
     @LogTrace
-    public TransactionListResponseDto requestTransactionList(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, Long accountId){
+    public TransactionListResponseDto requestTransactionList(Openbanking3LeggedTokenFromHeaderDto openbanking3LeggedTokenFromHeaderDto, Long accountId){
 
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new CustomException(ErrorCode.NotExistAccountException));
 
-        TransactionListResponseDto transactionListResponseDto = openBankService.requestTransactionList(openbankingTokenInfoFromHeaderDto, account.getFintechUseNum());
+        TransactionListResponseDto transactionListResponseDto = openBankService.requestTransactionList(openbanking3LeggedTokenFromHeaderDto, account.getFintechUseNum());
 
         return transactionListResponseDto;
 
@@ -281,14 +282,14 @@ public class AccountService {
      * 출금이체(핀테크이용번호 사용)
      */
     @LogTrace
-    public WithdrawResponseDto requestWithdraw(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, Long accountId, WithdrawUserInputRequestDto withdrawUserInputRequestDto){
+    public WithdrawResponseDto requestWithdraw(Openbanking2LeggedTokenFromHeaderDto openbanking2LeggedTokenFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, Long accountId, WithdrawUserInputRequestDto withdrawUserInputRequestDto){
 
 
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new CustomException(ErrorCode.NotExistAccountException));
 
         WithdrawAccountInfoDto withdrawAccountInfoDto = new WithdrawAccountInfoDto(account.getAccountNum(), account.getFintechUseNum());
 
-        WithdrawResponseDto withdrawResponseDto = openBankService.requestWithdraw(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto, withdrawAccountInfoDto, withdrawUserInputRequestDto);
+        WithdrawResponseDto withdrawResponseDto = openBankService.requestWithdraw(openbanking2LeggedTokenFromHeaderDto, userInfoFromSessionDto, withdrawAccountInfoDto, withdrawUserInputRequestDto);
 
         return withdrawResponseDto;
 
@@ -298,14 +299,14 @@ public class AccountService {
      * 입금이체(핀테크이용번호 사용)
      */
     @LogTrace
-    public DepositResponseDto requestDeposit(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, Long accountId, DepositUserInputRequestDto depositUserInputRequestDto){
+    public DepositResponseDto requestDeposit(Openbanking2LeggedTokenFromHeaderDto openbanking2LeggedTokenFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, Long accountId, DepositUserInputRequestDto depositUserInputRequestDto){
 
 
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new CustomException(ErrorCode.NotExistAccountException));
 
         DepositAccountInfoDto depositAccountInfoDto = new DepositAccountInfoDto(account.getAccountNum(), account.getFintechUseNum());
 
-        DepositResponseDto depositResponseDto = openBankService.requestDeposit(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto, depositAccountInfoDto, depositUserInputRequestDto);
+        DepositResponseDto depositResponseDto = openBankService.requestDeposit(openbanking2LeggedTokenFromHeaderDto, userInfoFromSessionDto, depositAccountInfoDto, depositUserInputRequestDto);
 
         return depositResponseDto;
 
@@ -317,6 +318,7 @@ public class AccountService {
     /**
      * 비동기 쓰레드 개수 설정
      */
+    @LogTrace
     private ExecutorService getAppropriateThreadPool(int size){
         ExecutorService executorService = Executors.newFixedThreadPool(Math.min(size, 100),
                 r -> {
@@ -331,6 +333,7 @@ public class AccountService {
     /**
      * fintechUseNum 추출
      */
+    @LogTrace
     private HashMap<String, String> getFintechUseNum(List<Account> accountList){
         if(accountList.size() == 0) return new HashMap<>();
 
@@ -345,6 +348,7 @@ public class AccountService {
     /**
      * 기존 계좌를 통해 fintechUseNum 존재하는지 확인
      */
+    @LogTrace
     private boolean existFintechUseNum(HashMap<String, String> fintechUseNumMap, String fintechUseNum){
 
         return !fintechUseNumMap.containsKey(fintechUseNum);

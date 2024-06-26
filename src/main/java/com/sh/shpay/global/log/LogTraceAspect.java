@@ -17,19 +17,25 @@ public class LogTraceAspect {
     public Object doLogTrace(ProceedingJoinPoint joinPoint) throws Throwable{
         StopWatch stopWatch = new StopWatch();
 
-        log.info("[트랜잭션 시작]");
-        stopWatch.start();
-        Object proceed = joinPoint.proceed();
-        stopWatch.stop();
-        log.info("[트랜잭션 종료]");
+        log.info("[ 트랜잭션 시작 ]");
 
-        long totalTimeMillis = stopWatch.getTotalTimeMillis();
+        stopWatch.start();
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         String methodName = signature.getMethod().getName();
         Class returnType = signature.getReturnType();
+        log.info("=> 실행 메서드: {} | return type = {}", methodName, returnType);
 
-        log.info("실행 메서드: {}, 실행시간 = {}ms, return type = {}", methodName, totalTimeMillis, returnType);
+        Object proceed = joinPoint.proceed();
+
+        stopWatch.stop();
+
+        long totalTimeMillis = stopWatch.getTotalTimeMillis();
+        log.info("[ 트랜잭션 종료 | 실행시간 = {}]", totalTimeMillis);
+
+
+//        log.info("실행 메서드: {} | 실행시간 = {}ms | return type = {}", methodName, totalTimeMillis, returnType);
+
 
         return proceed;
     }

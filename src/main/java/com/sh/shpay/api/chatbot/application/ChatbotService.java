@@ -7,7 +7,7 @@ import com.sh.shpay.domain.acconut.api.dto.res.AccountListResponseDto;
 import com.sh.shpay.domain.acconut.application.AccountService;
 import com.sh.shpay.global.log.LogTrace;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
-import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeaderDto;
+import com.sh.shpay.global.resolver.token.three.Openbanking3LeggedTokenFromHeaderDto;
 import com.sh.shpay.global.util.komoran.AnalyzeResultDto;
 import com.sh.shpay.global.util.komoran.KomoranUtil;
 import com.sh.shpay.global.util.openai.OpenAiApiClient;
@@ -40,7 +40,7 @@ public class ChatbotService {
      */
     @LogTrace
     public AnswerResDto requestChatCompletion(String question,
-                                        OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
+                                        Openbanking3LeggedTokenFromHeaderDto openbanking3LeggedTokenFromHeaderDto,
                                         UserInfoFromSessionDto userInfoFromSessionDto){
         String sentence = question.trim(); // komoran: 맨 뒤 공백이 있을 경우 토큰으로 못 자름
 
@@ -51,13 +51,13 @@ public class ChatbotService {
             if(analyzeResultDto.isSpecificBank()){ // 특정은행만
 
                 // 특정은행 리스트 리턴
-                AccountListResponseDto accountListResponseDto = accountService.requestSpecificAccountList(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto, analyzeResultDto.getBankName());
+                AccountListResponseDto accountListResponseDto = accountService.requestSpecificAccountList(openbanking3LeggedTokenFromHeaderDto, userInfoFromSessionDto, analyzeResultDto.getBankName());
 
                 return new AnswerResDto(accountListResponseDto, sentence, null);
             }
 
             // 은행리스트 리턴
-            AccountListResponseDto accountListResponseDto = accountService.requestAccountList(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto);
+            AccountListResponseDto accountListResponseDto = accountService.requestAccountList(openbanking3LeggedTokenFromHeaderDto, userInfoFromSessionDto);
 
             return new AnswerResDto(accountListResponseDto, sentence, null);
 
@@ -76,6 +76,7 @@ public class ChatbotService {
      * chatgpt에게 질문하기
      *
      */
+    @LogTrace
     private String chatCompletionToChatGpt(String question){
         Message message = Message.builder()
                 .content(question)

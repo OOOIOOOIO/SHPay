@@ -12,8 +12,13 @@ import com.sh.shpay.domain.acconut.api.dto.req.withdraw.WithdrawRequestDto;
 import com.sh.shpay.domain.acconut.api.dto.req.withdraw.WithdrawUserInputRequestDto;
 import com.sh.shpay.domain.acconut.api.dto.res.withdraw.WithdrawResponseDto;
 import com.sh.shpay.domain.acconut.api.dto.res.TransactionListResponseDto;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.*;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.res.*;
+import com.sh.shpay.domain.openbanking.openbanking.dto.req.AuthType;
+import com.sh.shpay.domain.openbanking.openbanking.dto.req.OpenBankingBalanceRequestDto;
+import com.sh.shpay.domain.openbanking.openbanking.dto.req.OpenBankingCodeAuthorizationRequestDto;
+import com.sh.shpay.domain.openbanking.openbanking.dto.req.OpenBankingSearchAccountRequestDto;
+import com.sh.shpay.domain.openbanking.openbanking.dto.res.OpenBankingAccountListResponseDto;
+import com.sh.shpay.domain.openbanking.openbanking.dto.res.OpenBankingBalanceResponseDto;
+import com.sh.shpay.domain.openbanking.openbanking.dto.res.OpenBankingUserInfoResponseDto;
 import com.sh.shpay.domain.openbanking.token.api.dto.req.OpenBankingUser2leggedTokenRequestDto;
 import com.sh.shpay.domain.openbanking.token.api.dto.req.OpenBankingUserCodeRequestDto;
 import com.sh.shpay.domain.openbanking.token.api.dto.req.OpenBankingUserRefreshTokenRequestDto;
@@ -25,8 +30,10 @@ import com.sh.shpay.domain.users.domain.Users;
 import com.sh.shpay.domain.users.domain.repository.UsersRepository;
 import com.sh.shpay.global.exception.CustomException;
 import com.sh.shpay.global.exception.ErrorCode;
+import com.sh.shpay.global.log.LogTrace;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
-import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeaderDto;
+import com.sh.shpay.global.resolver.token.three.Openbanking3LeggedTokenFromHeaderDto;
+import com.sh.shpay.global.resolver.token.two.Openbanking2LeggedTokenFromHeaderDto;
 import com.sh.shpay.global.util.openbanking.OpenBankingApiClient;
 import com.sh.shpay.global.util.openbanking.OpenBankingUtil;
 import lombok.RequiredArgsConstructor;
@@ -69,6 +76,7 @@ public class OpenBankingService {
      * 토큰 신청 페이지
      * 사용자 AuthCode 발급 요청 -> 사용자 토큰 발급 요청으로 넘어감(callback url)
      */
+    @LogTrace
     public OpenBankingCodeAuthorizationRequestDto requestAuthorization(){
 
         OpenBankingCodeAuthorizationRequestDto openBankingCodeAuthorizationRequestDto = OpenBankingCodeAuthorizationRequestDto.builder()
@@ -87,6 +95,7 @@ public class OpenBankingService {
     /**
      * 사용자 토큰 발급 요청, 3-legged
      */
+    @LogTrace
     public OpenBankingUser3leggedTokenResponseDto requestUser3leggedToken(OpenBankingUserCodeRequestDto openBankingUserCodeRequestDto, String state){
 
 
@@ -115,9 +124,10 @@ public class OpenBankingService {
     /**
      * 사용자 토큰 갱신(Access Token), 3-legged
      */
-    public OpenBankingUserRefreshTokenResponseDto refreshUserToken(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto) {
+    @LogTrace
+    public OpenBankingUserRefreshTokenResponseDto refreshUserToken(Openbanking3LeggedTokenFromHeaderDto openbanking3LeggedTokenFromHeaderDto) {
 
-        if (openbankingTokenInfoFromHeaderDto.getRefreshToken().isBlank() || openbankingTokenInfoFromHeaderDto.getRefreshToken() == null) {
+        if (openbanking3LeggedTokenFromHeaderDto.getRefreshToken().isBlank() || openbanking3LeggedTokenFromHeaderDto.getRefreshToken() == null) {
             throw new CustomException(ErrorCode.NotExistRefreshTokenException);
         }
 
@@ -125,7 +135,7 @@ public class OpenBankingService {
                 .client_id(clientId)
                 .client_secret(clientSecret)
                 .scope(SCOPE_3_LEGGED)
-                .refresh_token(openbankingTokenInfoFromHeaderDto.getRefreshToken())
+                .refresh_token(openbanking3LeggedTokenFromHeaderDto.getRefreshToken())
                 .grant_type(REFRESH_TOKEN_GRANT_TYPE)
                 .build();
 
@@ -138,6 +148,7 @@ public class OpenBankingService {
      * 사용자 토큰 발급 요청, 2-legged
      *
      */
+    @LogTrace
     public OpenBankingUser2leggedTokenResponseDto requestUser2leggedToken(){
 
 
@@ -158,7 +169,8 @@ public class OpenBankingService {
     /**
      * 사용자 정보 가져오기 - ci값
      */
-    public OpenBankingUserInfoResponseDto requestUserInfo(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto){
+    @LogTrace
+    public OpenBankingUserInfoResponseDto requestUserInfo(Openbanking3LeggedTokenFromHeaderDto openbanking3LeggedTokenFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto){
 
         Users users = usersRepository.findById(userInfoFromSessionDto.getUserId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다"));
 
@@ -166,7 +178,7 @@ public class OpenBankingService {
             throw new CustomException(ErrorCode.NotExistUserException);
         }
 
-        OpenBankingUserInfoResponseDto openBankingUserInfoResponseDto = openBankingApiClient.requestUserInfo(openbankingTokenInfoFromHeaderDto, users.getUserSeqNo());
+        OpenBankingUserInfoResponseDto openBankingUserInfoResponseDto = openBankingApiClient.requestUserInfo(openbanking3LeggedTokenFromHeaderDto, users.getUserSeqNo());
 
         if(!users.hasOpenBankCi()){
             users.updateOpenBankCi(openBankingUserInfoResponseDto.getUser_ci());
@@ -180,6 +192,7 @@ public class OpenBankingService {
     /**
      * 등록계좌조회
      */
+    @LogTrace
     public OpenBankingAccountListResponseDto requestAccountList(AccountRequestDto accountRequestDto){
 
         OpenBankingSearchAccountRequestDto openBankingSearchAccountRequestDto = OpenBankingSearchAccountRequestDto.builder()
@@ -199,6 +212,7 @@ public class OpenBankingService {
      * 잔액조회
      *
      */
+    @LogTrace
     public OpenBankingBalanceResponseDto requestBalance(BalanceRequestDto balanceRequestDto){
 
         OpenBankingBalanceRequestDto openBankingBalanceRequestDto = OpenBankingBalanceRequestDto.builder()
@@ -217,7 +231,8 @@ public class OpenBankingService {
     /**
      * 거래내역조회
      */
-    public TransactionListResponseDto requestTransactionList(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, String fintechUseNum){
+    @LogTrace
+    public TransactionListResponseDto requestTransactionList(Openbanking3LeggedTokenFromHeaderDto openbanking3LeggedTokenFromHeaderDto, String fintechUseNum){
 
 
         TransactionListRequestDto transactionListRequestDto = TransactionListRequestDto.builder()
@@ -230,7 +245,7 @@ public class OpenBankingService {
                 .sort_order("D")
                 .build();
 
-        TransactionListResponseDto transactionListResponseDto = openBankingApiClient.requestTransactionList(openbankingTokenInfoFromHeaderDto, transactionListRequestDto);
+        TransactionListResponseDto transactionListResponseDto = openBankingApiClient.requestTransactionList(openbanking3LeggedTokenFromHeaderDto, transactionListRequestDto);
 
         return transactionListResponseDto;
 
@@ -241,7 +256,8 @@ public class OpenBankingService {
     /**
      * 출금이체(핀테크이용번호 사용)
      */
-    public WithdrawResponseDto requestWithdraw(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, WithdrawAccountInfoDto withdrawAccountInfoDto, WithdrawUserInputRequestDto withdrawUserInputRequestDto){
+    @LogTrace
+    public WithdrawResponseDto requestWithdraw(Openbanking2LeggedTokenFromHeaderDto openbanking2LeggedTokenFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, WithdrawAccountInfoDto withdrawAccountInfoDto, WithdrawUserInputRequestDto withdrawUserInputRequestDto){
 
         WithdrawRequestDto withdrawRequestDto = WithdrawRequestDto.builder()
                 .bank_tran_id(openBankingUtil.generateBankTranId(bankTranId + "U"))
@@ -262,7 +278,7 @@ public class OpenBankingService {
 
         withdrawRequestDto.setTran_dtime(OpenBankingUtil.transTime());
 
-        WithdrawResponseDto withdrawResponseDto = openBankingApiClient.requestWithdraw(openbankingTokenInfoFromHeaderDto.getAccessToken(), withdrawRequestDto);
+        WithdrawResponseDto withdrawResponseDto = openBankingApiClient.requestWithdraw(openbanking2LeggedTokenFromHeaderDto.getAccessToken(), withdrawRequestDto);
 
         return withdrawResponseDto;
 
@@ -272,7 +288,8 @@ public class OpenBankingService {
     /**
      * 입급이체(핀테크이용번호 사용)
      */
-    public DepositResponseDto requestDeposit(OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, DepositAccountInfoDto depositAccountInfoDto, DepositUserInputRequestDto depositUserInputRequestDto){
+    @LogTrace
+    public DepositResponseDto requestDeposit(Openbanking2LeggedTokenFromHeaderDto openbanking2LeggedTokenFromHeaderDto, UserInfoFromSessionDto userInfoFromSessionDto, DepositAccountInfoDto depositAccountInfoDto, DepositUserInputRequestDto depositUserInputRequestDto){
 
         ArrayList<DepositRequestList> depositRequestList = new ArrayList<>();
 
@@ -302,7 +319,7 @@ public class OpenBankingService {
         depositRequestDto.setTran_dtime(OpenBankingUtil.transTime());
 
 
-        DepositResponseDto withdrawResponseDto = openBankingApiClient.requestDeposit(openbankingTokenInfoFromHeaderDto.getAccessToken(), depositRequestDto);
+        DepositResponseDto withdrawResponseDto = openBankingApiClient.requestDeposit(openbanking2LeggedTokenFromHeaderDto.getAccessToken(), depositRequestDto);
 
         return withdrawResponseDto;
 

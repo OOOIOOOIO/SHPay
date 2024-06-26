@@ -1,6 +1,7 @@
 package com.sh.shpay.global.config;
 
-import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeaderResolver;
+import com.sh.shpay.global.resolver.token.three.Openbanking3LeggedTokenFromHeaderResolver;
+import com.sh.shpay.global.resolver.token.two.Openbanking2LeggedTokenFromHeaderResolver;
 import com.sh.shpay.global.session.interceptor.sessionCheckInterceptor.UserSessionCheckInterceptor;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionResolver;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,8 @@ import java.util.List;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     private final UserInfoFromSessionResolver userInfoFromSessionResolver;
-    private final OpenbankingTokenInfoFromHeaderResolver openbankingTokenInfoFromHeaderResolver;
+    private final Openbanking3LeggedTokenFromHeaderResolver openbanking3LeggedTokenFromHeaderResolver;
+    private final Openbanking2LeggedTokenFromHeaderResolver openbanking2LeggedTokenFromHeaderResolver;
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new UserSessionCheckInterceptor())
@@ -36,7 +38,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(userInfoFromSessionResolver);
-        resolvers.add(openbankingTokenInfoFromHeaderResolver);
+        resolvers.add(openbanking3LeggedTokenFromHeaderResolver);
+        resolvers.add(openbanking2LeggedTokenFromHeaderResolver);
 
     }
 

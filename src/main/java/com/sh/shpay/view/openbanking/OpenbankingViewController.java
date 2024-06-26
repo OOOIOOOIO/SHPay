@@ -2,13 +2,13 @@ package com.sh.shpay.view.openbanking;
 
 import com.sh.shpay.domain.acconut.api.dto.res.AccountListResponseDto;
 import com.sh.shpay.domain.acconut.application.AccountService;
-import com.sh.shpay.domain.openbanking.openbanking.api.dto.req.OpenBankingCodeAuthorizationRequestDto;
+import com.sh.shpay.domain.openbanking.openbanking.dto.req.OpenBankingCodeAuthorizationRequestDto;
 import com.sh.shpay.domain.openbanking.openbanking.application.OpenBankingService;
 import com.sh.shpay.global.log.LogTrace;
 import com.sh.shpay.global.resolver.session.UserInfoFromSession;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
-import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeader;
-import com.sh.shpay.global.resolver.token.OpenbankingTokenInfoFromHeaderDto;
+import com.sh.shpay.global.resolver.token.three.Openbanking3LeggedTokenFromHeader;
+import com.sh.shpay.global.resolver.token.three.Openbanking3LeggedTokenFromHeaderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -49,10 +49,10 @@ public class OpenbankingViewController {
     @LogTrace
     @GetMapping("/balance")
     public String balancePage(Model model,
-                              @OpenbankingTokenInfoFromHeader OpenbankingTokenInfoFromHeaderDto openbankingTokenInfoFromHeaderDto,
+                              @Openbanking3LeggedTokenFromHeader Openbanking3LeggedTokenFromHeaderDto openbanking3LeggedTokenFromHeaderDto,
                               @UserInfoFromSession UserInfoFromSessionDto userInfoFromSessionDto){
 
-        AccountListResponseDto accountListResponseDto = accountService.requestAccountList(openbankingTokenInfoFromHeaderDto, userInfoFromSessionDto);
+        AccountListResponseDto accountListResponseDto = accountService.requestAccountList(openbanking3LeggedTokenFromHeaderDto, userInfoFromSessionDto);
         model.addAttribute("accountList", accountListResponseDto);
 
         return "balance-page";

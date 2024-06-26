@@ -1,10 +1,9 @@
-package com.sh.shpay.domain.openbanking.token.domain;
+package com.sh.shpay.domain.openbanking.token.domain.three;
 
 import com.sh.shpay.domain.common.BaseTimeEntity;
 import com.sh.shpay.domain.openbanking.token.api.dto.res.OpenBankingUserRefreshTokenResponseDto;
 import com.sh.shpay.domain.users.domain.Users;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OpenBankingToken extends BaseTimeEntity {
+public class OpenBanking3LeggedToken extends BaseTimeEntity {
 
 
     @Id
@@ -25,12 +24,9 @@ public class OpenBankingToken extends BaseTimeEntity {
      member 하나당 오픈뱅킹 사용자 토큰 생성된다.
      **/
     @Column(length = 3000)
-    @NotNull
     private String accessToken;
     @Column(length = 3000)
-    @NotNull
     private String refreshToken;
-    @NotNull
     private Long expireMin;
     @Column(unique = true)
     private String userSeqNo; // user_seq_no --> users에 있는데
@@ -39,7 +35,7 @@ public class OpenBankingToken extends BaseTimeEntity {
     private Users users; // oneToOne 고려
 
     @Builder
-    private OpenBankingToken(Users users, String accessToken, String refreshToken, Long expireMin, String userSeqNo) {
+    private OpenBanking3LeggedToken(Users users, String accessToken, String refreshToken, Long expireMin, String userSeqNo) {
         this.users = users;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
@@ -47,8 +43,8 @@ public class OpenBankingToken extends BaseTimeEntity {
         this.userSeqNo = userSeqNo;
     }
 
-    public static OpenBankingToken createOpenBankingToken(Users users, String accessToken, String refreshToken, Long expireMin, String userSeqNo){
-        return OpenBankingToken.builder()
+    public static OpenBanking3LeggedToken createOpenBankingToken(Users users, String accessToken, String refreshToken, Long expireMin, String userSeqNo){
+        return OpenBanking3LeggedToken.builder()
                 .users(users)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)

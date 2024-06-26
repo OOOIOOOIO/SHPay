@@ -1,6 +1,5 @@
 package com.sh.shpay.global.util.komoran;
 
-import kr.co.shineware.nlp.komoran.model.AnalyzeResult;
 import kr.co.shineware.nlp.komoran.model.Token;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -39,34 +38,35 @@ public class KomoranSearchStore {
     private static List<WordAndMorphPair> pronounList = new ArrayList<>();
     private static List<WordAndMorphPair> nounList = new ArrayList<>();
     private static List<WordAndMorphPair> bankList = new ArrayList<>();
-    //    private static List<WordAndMorphPair> verbLlist = new ArrayList<>();
+    private static List<WordAndMorphPair> exlustionList = new ArrayList<>();
 
     static {
 
         /**
-         * 대명사
+         * 개인정보(대명사)
          */
         pronounList.add(new WordAndMorphPair("내", "NP"));
         pronounList.add(new WordAndMorphPair("나", "NP"));
         pronounList.add(new WordAndMorphPair("내", "MM"));
 
         /**
-         * 명사(계좌, 잔고 등등)
+         * 개인정보(명사)
          */
         nounList.add(new WordAndMorphPair("계좌", "NNG"));
         nounList.add(new WordAndMorphPair("잔액", "NNG"));
         nounList.add(new WordAndMorphPair("통장", "NNG"));
 
         /**
-         * 동사
-         * 동사라고 해봤자 그냥 알려줘, 보여줘 등일 것이기에 무시
+         * 해당질문은 일반질문으로 분기(각 은행마다 기준 다름)
          */
-//        verbLlist.add(new WordAndMorphPair("알리", "VV"));
-//        verbLlist.add(new WordAndMorphPair("보이", "VV"));
-//        verbLlist.add(new WordAndMorphPair("내놓", "VV"));
+        exlustionList.add(new WordAndMorphPair("개설", "NNG"));
+        exlustionList.add(new WordAndMorphPair("만들", "VV"));
+        exlustionList.add(new WordAndMorphPair("생성", "VV"));
+        exlustionList.add(new WordAndMorphPair("삭제", "NNG"));
+        exlustionList.add(new WordAndMorphPair("철회", "NNG"));
 
         /**
-         * 은행"
+         * 은행목록
          */
         bankList.add(new WordAndMorphPair("신한은행", "NNP"));
         bankList.add(new WordAndMorphPair("국민은행", "NNP"));
@@ -86,8 +86,6 @@ public class KomoranSearchStore {
      * 1. 코모란에서 형태소 분석 결과 리스트 받음
      * 2. pronoun || noun = true -> 개인정보
      * 3. false -> chatgpt
-     * @param tokenList
-     * @return
      */
     public static AnalyzeResultDto analyzeSentence(List<Token> tokenList) {
 
@@ -96,28 +94,38 @@ public class KomoranSearchStore {
 
         AnalyzeResultDto analyzeResultDto = new AnalyzeResultDto(false, false, null);
 
+        //특정 질문 일반질문으로 처리
         for(int i = 0; i < wordAndMorphPairList.size(); i++){
 
-            if(pronounList.contains(wordAndMorphPairList.get(i)) || nounList.contains(wordAndMorphPairList.get(i))){ // 개인정보인지
+            if(exlustionList.contains(wordAndMorphPairList.get(i))){
+                return analyzeResultDto;
+            }
+        }
+
+        //개인정보 판별
+        for(int i = 0; i < wordAndMorphPairList.size(); i++){
+
+            if(pronounList.contains(wordAndMorphPairList.get(i)) || nounList.contains(wordAndMorphPairList.get(i))){
                 analyzeResultDto.setPrivacy(true);
 
                 break;
             }
-
         }
 
-        for(int i = 0; i < wordAndMorphPairList.size(); i++){
+        // 특정은행 판별
+        if(analyzeResultDto.isPrivacy()){
+            for(int i = 0; i < wordAndMorphPairList.size(); i++){
 
-            if (bankList.contains(wordAndMorphPairList.get(i))) { // 특정 은행인지
-                analyzeResultDto.setSpecificBank(true);
-                if(wordAndMorphPairList.get(i-1).morpheme.equals("SL")){
-                    analyzeResultDto.setBankName(wordAndMorphPairList.get(i-1).word + wordAndMorphPairList.get(i).word); // ibk등 영어
+                if (bankList.contains(wordAndMorphPairList.get(i))) {
+                    analyzeResultDto.setSpecificBank(true);
+                    if(wordAndMorphPairList.get(i-1).morpheme.equals("SL")){
+                        analyzeResultDto.setBankName(wordAndMorphPairList.get(i-1).word + wordAndMorphPairList.get(i).word); //영어일 경우(ibk, ...)
+                    }
+                    else analyzeResultDto.setBankName(wordAndMorphPairList.get(i).word);
+
+                    break;
                 }
-                else analyzeResultDto.setBankName(wordAndMorphPairList.get(i).word);
-
-                break;
             }
-
         }
 
         return analyzeResultDto;

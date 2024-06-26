@@ -1,7 +1,7 @@
 package com.sh.shpay.domain.users.application;
 
 import com.sh.shpay.domain.openbanking.openbanking.application.OpenBankingService;
-import com.sh.shpay.domain.openbanking.token.domain.repository.OpenBankingTokenRepository;
+import com.sh.shpay.domain.openbanking.token.domain.three.repository.OpenBanking3LeggedTokenRepository;
 import com.sh.shpay.domain.users.api.dto.req.UserSignInRequestDto;
 import com.sh.shpay.domain.users.api.dto.req.UserSignUpRequestDto;
 import com.sh.shpay.domain.users.api.dto.res.UserResponseDto;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UsersService {
 
     private final UsersRepository userRepository;
-    private final OpenBankingTokenRepository openBankingTokenRepository;
+    private final OpenBanking3LeggedTokenRepository openBanking3LeggedTokenRepository;
     private final OpenBankingService openBankingService;
 
     /**

@@ -2,7 +2,7 @@ package com.sh.shpay.domain.users.domain;
 
 import com.sh.shpay.domain.acconut.domain.Account;
 import com.sh.shpay.domain.common.BaseTimeEntity;
-import com.sh.shpay.domain.openbanking.token.domain.OpenBankingToken;
+import com.sh.shpay.domain.openbanking.token.domain.three.OpenBanking3LeggedToken;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -42,7 +42,7 @@ public class Users extends BaseTimeEntity {
 
     // OpenBankingToken OneToOne 생각
     @OneToOne(mappedBy = "users")
-    private OpenBankingToken openBankingToken;
+    private OpenBanking3LeggedToken openBanking3LeggedToken;
 
     @Builder
     private Users(String name, String email, String password, String openBankCi, String userSeqNo) {
