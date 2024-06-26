@@ -5,12 +5,17 @@
 > 금융결제원 OpenAPI를 이용해 오픈뱅킹 서비스를 제공하여 사용자 정보 등을 제공하고 간편한 금융 서비스를 제공합니다. 사용자의 계좌 정보를 확인할 수 있으며 출금 및 입금을 간편하게 이용할 수 있습니다.<br><br>
 > 더불어 ChatGPT 기반 챗봇을 통해 금융지식을 얻을 수 있으며 편리하게 사용자의 계좌 내역을 조회할 수 있습니다.
 
+<br>
+<hr>
+<br>
+
 ### 역할 및 기간
 - **개인 프로젝트**
 - **기간 : 2024.01.15 ~ 2024.05.01**
 
 <br>
 <hr>
+<br>
 
 ## 시작 가이드
 ```html
@@ -31,11 +36,16 @@
         user: -
 4. Run this project!
 ```
+<br>
+
+### 참고 
+
 - [금융결제원 OpenAPI 개발자 사이트](https://developers.kftc.or.kr/dev)
 - [Check out application-real.yml file](https://github.com/OOOIOOOIO/SHPay/wiki/application%E2%80%90real.md)
 
 <br>
 <hr>
+<br>
 
 ## SKills
 - **Java 17**
@@ -56,10 +66,15 @@
 
 <br>
 <hr>
+<br>
 
 ## Architecture
 
 ![img_8.png](img_8.png)
+
+<br>
+<hr>
+<br>
 
 ## Table
 
@@ -67,13 +82,16 @@
 
 <br>
 <hr>
+<br>
 
 ## Swagger API & Http API 목록
-[Swagger API 목록보기](https://github.com/OOOIOOOIO/SHPay/wiki/Swagger-API-%EB%AA%A9%EB%A1%9D.md) <br>
-[Http API 보러가기](https://github.com/OOOIOOOIO/SHPay/tree/main/src/main/java/http)
+- [Swagger API 목록보기](https://github.com/OOOIOOOIO/SHPay/wiki/Swagger-API-%EB%AA%A9%EB%A1%9D.md)
+
+- [Http API 보러가기](https://github.com/OOOIOOOIO/SHPay/tree/main/src/main/java/http)
 
 <br>
 <hr>
+<br>
 
 ## 역할 및 기능
 - **도메인 개발**
@@ -98,10 +116,10 @@
 - **OpenAI ChatGPT API를 이용한 Custom Chatbot 서비스 개발**
   - **Komoran을 이용한 개인정보 분기 처리 로직 개발**
 
-
-
+  
 <br>
 <hr>
+<br>
 
 ## Flowchart
 
@@ -112,12 +130,14 @@
 
 <br>
 <hr>
+<br>
 
 ## Screenshot
-[Screenshot 보러가기](https://github.com/OOOIOOOIO/SHPay/wiki/Screenshot.md)
+- [Screenshot 보러가기](https://github.com/OOOIOOOIO/SHPay/wiki/Screenshot.md)
 
 <br>
 <hr>
+<br>
 
 ## 주요 Code
 
@@ -131,6 +151,8 @@
 - **성과**
   - **이를 통해 불필요한 DB IO를 줄일 수 있는 방법에 대해 고민할 수 있었고 캐싱 기능을 조금 더 이해할 수 있었습니다.**
 
+<br>
+<hr>
 <br>
 
 ### 계좌정보 확인 로직
@@ -149,6 +171,8 @@
   - **로직을 개발하며 어느 부분에서 문제가 발생할 수 있을지에 대해 고민하며 이를 해결하기 위해 고민하는 능력을 길렀습니다.**
 
 
+<br>
+<hr>
 <br>
 
 ### 일반 금융상식 및 개인 정보 조회 질문 구분 로직
