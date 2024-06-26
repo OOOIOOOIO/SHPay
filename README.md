@@ -178,10 +178,10 @@
 ### 일반 금융상식 및 개인 정보 조회 질문 구분 로직
 
 - KomoranUtil Class
-![img_7.png](img_7.png)
+![img_15.png](img_15.png)
 
 - KomoranSearchStore Class
-![img_6.png](img_6.png)
+![img_14.png](img_14.png)
 
 - **문제상황**
   - **ChatGPT를 사용하여 일반 금융상식에 대해선 답변이 가능하나, 사용자 개인정보를 질문할 경우 분기처리 필요했습니다.**
@@ -191,7 +191,7 @@
 - **성과**
   - **적절한 오픈소스를 이용해 문제상황을 해결한 경험을 얻었습니다.**
   - **ChatGpt API를 활용해 서비스를 개발한 경험을 얻었습니다.**
-  - [분석 기준 보러가기](https://github.com/OOOIOOOIO/SHPay/wiki/%ED%98%95%ED%83%9C%EC%86%8C%EB%B6%84%EC%84%9D-%EA%B8%B0%EC%A4%80)
+  - [분석 기준 보러가기](https://github.com/OOOIOOOIO/SHPay/wiki/Komoran-%ED%98%95%ED%83%9C%EC%86%8C-%EB%B6%84%EC%84%9D-%EA%B8%B0%EC%A4%80)
   
 
 
