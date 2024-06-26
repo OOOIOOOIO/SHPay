@@ -61,16 +61,16 @@
 
 ![img_8.png](img_8.png)
 
-## ERD
+## Table
 
-![img_1.png](img_1.png)
+![img_13.png](img_13.png)
 
 <br>
 <hr>
 
 ## Swagger API & Http API 목록
-[Swagger API 목록](https://github.com/OOOIOOOIO/SHPay/wiki/Swagger-API-%EB%AA%A9%EB%A1%9D.md)
-[API 확인하러 가기](https://github.com/OOOIOOOIO/SHPay/tree/main/src/main/java/http)
+[Swagger API 목록보기](https://github.com/OOOIOOOIO/SHPay/wiki/Swagger-API-%EB%AA%A9%EB%A1%9D.md) <br>
+[Http API 보러가기](https://github.com/OOOIOOOIO/SHPay/tree/main/src/main/java/http)
 
 <br>
 <hr>
@@ -89,21 +89,26 @@
     - **입-출금이체용**
   - **사용자 토큰 갱신**
   - **사용자 정보 조회**
-  - **사용자 계좌 리스트 조회**
+  - **사용자 계좌 목록 조회**
   - **사용자 잔액 조회**
   - **거래내역 조회**
   - **출금이체**
   - **입금이체**
 
-- **OpenAI의 ChatGPT를 이용한 Custom Chatbot 서비스 개발**
-  - **Komoran을 이용해 문장에서 개인정보 질문 추출을 통한 분기처리**
+- **OpenAI ChatGPT API를 이용한 Custom Chatbot 서비스 개발**
+  - **Komoran을 이용한 개인정보 분기 처리 로직 개발**
 
 
 
 <br>
 <hr>
+
 ## Flowchart
 
+
+![img_11.png](img_11.png)
+
+![img_12.png](img_12.png)
 
 <br>
 <hr>
@@ -140,7 +145,8 @@
     - orTimeout() : 계좌조회시 10초 정도 걸릴 경우 문제가 발생한 것으로 간주하고 제한시간을 두었습니다. TimeOutException이 발생하기 때문에 RestControllerAdvice를 이용해 예외처리를 했습니다.
     - handle() : 비동기 요청시 예외가 발생할 경우 CustomException을 던져 예외처리를 진행했습니다.
 - **성과**
-  - **비동기 처리를 통해 동시성에 대한 개념을 이해했고, 로직을 개발하며 어느 부분에서 문제가 발생할 수 있을지에 대해 생각해보고 이를 해결하기 위해 고민하는 능력을 길렀습니다.**
+  - **비동기 처리를 통해 동시성에 대한 개념을 학습했습니다.**
+  - **로직을 개발하며 어느 부분에서 문제가 발생할 수 있을지에 대해 고민하며 이를 해결하기 위해 고민하는 능력을 길렀습니다.**
 
 
 <br>
@@ -159,8 +165,9 @@
   - **오픈소스 komoran 형태소 분석기를 사용하여 문장에서 개인정보를 나타내는 단어를 추출했습니다. 이후 개인정보의 경우와 특정 은행의 경우를 판별하여 사용자의 질문에 맞춤 답변을 제공했습니다.** 
   
 - **성과**
-  - **적절한 오픈소스를 이용해 문제상황을 해결한 경험**
-  - [분석기준](https://github.com/OOOIOOOIO/SHPay/wiki/%ED%98%95%ED%83%9C%EC%86%8C%EB%B6%84%EC%84%9D-%EA%B8%B0%EC%A4%80)
+  - **적절한 오픈소스를 이용해 문제상황을 해결한 경험을 얻었습니다.**
+  - **ChatGpt API를 활용해 서비스를 개발한 경험을 얻었습니다.**
+  - [분석 기준 보러가기](https://github.com/OOOIOOOIO/SHPay/wiki/%ED%98%95%ED%83%9C%EC%86%8C%EB%B6%84%EC%84%9D-%EA%B8%B0%EC%A4%80)
   
 
 
