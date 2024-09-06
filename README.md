@@ -163,8 +163,8 @@
   - **계좌를 DB에 저장하고 DB에서 계좌 조회시 오픈뱅킹 API를 호출하여 계좌잔액을 조회해야 했습니다. 잔액 조회시 해당 은행에 요청해야 하는데, 이때 요청이 길어질 경우 이후 요청에 차질이 생길 것 같았습니다.**
 - **해결방법 및 실행**
   - **비동기 방식을 이용하여 이전 작업의 완료를 기다리지 않고 동시에 실행했습니다. Java8의 CompletableFuture 클래스를 활용했습니다.**
-    - supplyAsync() : 비동기 요청을 실행하였으며 Dto를 반환값으로 받고 있습니다.
-    - orTimeout() : 계좌조회시 10초 정도 걸릴 경우 문제가 발생한 것으로 간주하고 제한시간을 두었습니다. TimeOutException이 발생하기 때문에 RestControllerAdvice를 이용해 예외처리를 했습니다.
+    - supplyAsync() : 비동기 요청을 실행하였으며 계좌정보Dto를 반환값으로 받고 있습니다.
+    - orTimeout() : 계좌조회시 10초 정도 걸릴 경우 문제가 발생한 것으로 간주하고 제한시간을 두었습니다.
     - handle() : 비동기 요청시 예외가 발생할 경우 CustomException을 던져 예외처리를 진행했습니다.
 - **성과**
   - **비동기 처리를 통해 동시성에 대한 개념을 학습했습니다.**
@@ -180,9 +180,9 @@
 - KomoranUtil Class
 ![img_15.png](img_15.png)
 
-- KomoranSearchStore Class
-![img_14.png](img_14.png)
-
+- KomoranSearch Class
+![img_6.png](img_6.png)
+![img_7.png](img_7.png)
 - **문제상황**
   - **ChatGPT를 사용하여 일반 금융상식에 대해선 답변이 가능하나, 사용자 개인정보를 질문할 경우 분기처리 필요했습니다.**
 - **해결방법 및 실행**
