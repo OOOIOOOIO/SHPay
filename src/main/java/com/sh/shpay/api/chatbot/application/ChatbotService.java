@@ -8,7 +8,7 @@ import com.sh.shpay.domain.acconut.application.AccountService;
 import com.sh.shpay.global.log.LogTrace;
 import com.sh.shpay.global.resolver.session.UserInfoFromSessionDto;
 import com.sh.shpay.global.resolver.token.three.Openbanking3LeggedTokenFromHeaderDto;
-import com.sh.shpay.global.util.komoran.AnalyzeResultDto;
+import com.sh.shpay.global.util.komoran.vo.AnalyzeResultDto;
 import com.sh.shpay.global.util.komoran.KomoranUtil;
 import com.sh.shpay.global.util.openai.OpenAiApiClient;
 import lombok.RequiredArgsConstructor;

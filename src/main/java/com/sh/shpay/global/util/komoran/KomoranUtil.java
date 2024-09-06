@@ -1,6 +1,7 @@
 package com.sh.shpay.global.util.komoran;
 
 import com.sh.shpay.global.log.LogTrace;
+import com.sh.shpay.global.util.komoran.vo.AnalyzeResultDto;
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
 import kr.co.shineware.nlp.komoran.model.KomoranResult;
@@ -39,7 +40,7 @@ public class KomoranUtil {
         // 개인정보인지 금융정보인지 판단
         List<Token> tokenList = analyze.getTokenList();
 
-        AnalyzeResultDto analyzeResultDto = KomoranSearchStore.analyzeSentence(tokenList);
+        AnalyzeResultDto analyzeResultDto = KomoranSearch.analyzeSentence(tokenList);
 
         if(analyzeResultDto.isPrivacy()){ // 개인정보
             return analyzeResultDto;

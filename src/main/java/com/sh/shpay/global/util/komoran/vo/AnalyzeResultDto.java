@@ -1,4 +1,4 @@
-package com.sh.shpay.global.util.komoran;
+package com.sh.shpay.global.util.komoran.vo;
 
 import lombok.AccessLevel;
 import lombok.Getter;
